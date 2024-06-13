@@ -44,6 +44,7 @@
             android:layout_weight="1"
             android:scaleType="fitCenter"
             android:backgroundTint="#EFE0BA"
+
             />
 
         <ImageButton

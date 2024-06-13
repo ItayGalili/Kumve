@@ -14,7 +14,7 @@
         android:text="Register" />
 
     <ImageButton
-        android:id="@+id/imageButton7"
+        android:id="@+id/image_person"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="center"
@@ -97,9 +97,7 @@
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:id="@+id/hour"
-        android:background="@color/black"
         android:orientation="horizontal">
 
         <RadioButton
@@ -107,7 +105,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="18:00"
+            android:text="male"
             android:textColor="#8E7749"
             android:textSize="20sp" />
 
@@ -116,7 +114,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="21:00"
+            android:text="female"
             android:textColor="#8E7749"
             android:textSize="20sp" />
 
@@ -128,8 +126,7 @@
         android:id="@+id/location_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:spinnerMode="dropdown"
-         />
+        android:spinnerMode="dropdown" />
 
 
     <Button
@@ -139,6 +136,6 @@
         android:layout_marginTop="10dp"
         android:gravity="center"
         android:backgroundTint="#C49649"
-        android:text="Register"
+        android:text="Sing in"
         android:layout_gravity="center"/>
 </LinearLayout>
