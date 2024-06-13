@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">MyKumve</string>
+    <string-array name="locations_array">
+        <item>Ramat HaGolan</item>
+        <item>Galilee</item>
+        <item>Jezreel Valley</item>
+        <item>Tiberias</item>
+        <item>Haifa</item>
+        <item>Sharon</item>
+        <item>Central District</item>
+        <item>Shfela</item>
+        <item>Jerusalem</item>
+        <item>Negev</item>
+        <item>Arava</item>
+    </string-array>
+</resources>
