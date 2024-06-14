@@ -25,6 +25,7 @@ class TravelManager : Fragment() {
         _binding = TravelManagerViewBinding.inflate(inflater, container, false)
         binding.doneBtn.setOnClickListener {
 
+            //TODO: Update difficulty level, date and picture sections
             val item = Item(binding.nameTrip.text.toString(),
                 binding.description.text.toString(),
                 "hard", "14.6.24", "1")
