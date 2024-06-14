@@ -16,7 +16,7 @@
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/button2"
+        android:id="@+id/add_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/baseline_add_24"
@@ -37,7 +37,7 @@
        >
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/Partners_btn_ms"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/network"
@@ -48,7 +48,7 @@
             />
 
         <ImageButton
-            android:id="@+id/imageButton2"
+            android:id="@+id/ms_btn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -58,7 +58,7 @@
             />
 
         <ImageButton
-            android:id="@+id/imageButton3"
+            android:id="@+id/flowers_btn"
             android:layout_width="match_parent"
             android:layout_height="90dp"
             android:layout_weight="1"
