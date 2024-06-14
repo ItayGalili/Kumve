@@ -74,13 +74,22 @@
                     android:scaleType="fitCenter" />
 
                 <ImageButton
-                    android:id="@+id/imageButton6"
+                android:id="@+id/map_btn_card"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"
+                android:scaleType="fitCenter"
+                android:src="@drawable/map" />
+
+                <ImageButton
+                    android:id="@+id/edit_btn"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_weight="1"
                     android:backgroundTint="@color/white"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/map" />
+                    android:src="@drawable/pencil"/>
             </LinearLayout>
 
         </LinearLayout>
