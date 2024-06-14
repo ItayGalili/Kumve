@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.mykumve.databinding.MainScreenBinding
 import com.example.mykumve.databinding.RegisterBinding
 
@@ -20,6 +21,9 @@ class RegisterManager : Fragment() {
     ): View? {
         _binding = RegisterBinding.inflate(inflater,container,false)
 
+        binding.RegisterBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_registerManager_to_loginManager)
+        }
         return binding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

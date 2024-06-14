@@ -42,7 +42,7 @@
                 android:textSize="10sp"
                 android:text="area in the country"
                 android:layout_marginTop="6dp"
-                android:id="@+id/area_text_card"/>
+                android:id="@+id/area_card"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -50,7 +50,7 @@
                 android:textSize="10sp"
                 android:text="level of trip"
                 android:layout_marginTop="6dp"
-                android:id="@+id/level_text_card"/>
+                android:id="@+id/level_card"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -58,7 +58,7 @@
                 android:textSize="10sp"
                 android:text="date"
                 android:layout_marginTop="6dp"
-                android:id="@+id/date_text_card"/>
+                android:id="@+id/date_card"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

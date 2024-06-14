@@ -15,7 +15,11 @@
             app:destination="@id/networkManager" />
         <action
             android:id="@+id/action_mainScreenManager_to_travelManager"
-            app:destination="@id/travelManager" />
+            app:destination="@id/travelManager"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right" />
     </fragment>
     <fragment
         android:id="@+id/registerManager"
@@ -24,7 +28,13 @@
         tools:layout="@layout/register" >
         <action
             android:id="@+id/action_registerManager_to_loginManager"
-            app:destination="@id/loginManager" />
+            app:destination="@id/loginManager"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left"
+            app:popUpTo="@id/loginManager"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/travelManager"
@@ -33,7 +43,13 @@
         tools:layout="@layout/travel_manager_view" >
         <action
             android:id="@+id/action_travelManager_to_mainScreenManager"
-            app:destination="@id/mainScreenManager" />
+            app:destination="@id/mainScreenManager"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right"
+            app:popEnterAnim="@anim/from_right"
+            app:popExitAnim="@anim/to_left"
+            app:popUpTo="@id/mainScreenManager"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/networkManager"
@@ -42,7 +58,9 @@
         tools:layout="@layout/travel_network" >
         <action
             android:id="@+id/action_networkManager_to_mainScreenManager"
-            app:destination="@id/mainScreenManager" />
+            app:destination="@id/mainScreenManager"
+            app:popUpTo="@id/mainScreenManager"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/loginManager"
@@ -51,9 +69,17 @@
         tools:layout="@layout/login" >
         <action
             android:id="@+id/action_loginManager_to_mainScreenManager"
-            app:destination="@id/mainScreenManager" />
+            app:destination="@id/mainScreenManager"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right" />
         <action
             android:id="@+id/action_loginManager_to_registerManager"
-            app:destination="@id/registerManager" />
+            app:destination="@id/registerManager"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right" />
     </fragment>
 </navigation>

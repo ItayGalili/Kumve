@@ -33,8 +33,8 @@ class MainScreenManager: Fragment(){
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //binding.recycler.adapter = ItemAdapter(ItemManager.items)
-        //binding.recycler.layoutManager = LinearLayoutManager(requireContext())
+        binding.mainRecyclerView.adapter = ItemAdapter(ItemManager.items)
+        binding.mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
 

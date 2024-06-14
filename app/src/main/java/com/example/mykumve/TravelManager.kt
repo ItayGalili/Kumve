@@ -24,6 +24,11 @@ class TravelManager : Fragment() {
     ): View? {
         _binding = TravelManagerViewBinding.inflate(inflater, container, false)
         binding.doneBtn.setOnClickListener {
+
+            val item = Item(binding.nameTrip.text.toString(),
+                binding.description.text.toString(),
+                "hard", "14.6.24", "1")
+            ItemManager.add(item)
             findNavController().navigate(R.id.action_travelManager_to_mainScreenManager)
         }
 
