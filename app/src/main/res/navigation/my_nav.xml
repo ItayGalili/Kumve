@@ -3,11 +3,57 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_nav"
-    app:startDestination="@id/mainActivity">
+    app:startDestination="@id/loginManager">
 
-    <activity
-        android:id="@+id/mainActivity"
-        android:name="com.example.mykumve.MainActivity"
-        android:label="activity_main"
-        tools:layout="@layout/activity_main" />
+    <fragment
+        android:id="@+id/mainScreenManager"
+        android:name="com.example.mykumve.MainScreenManager"
+        android:label="main_screen"
+        tools:layout="@layout/main_screen" >
+        <action
+            android:id="@+id/action_mainScreenManager_to_networkManager"
+            app:destination="@id/networkManager" />
+        <action
+            android:id="@+id/action_mainScreenManager_to_travelManager"
+            app:destination="@id/travelManager" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerManager"
+        android:name="com.example.mykumve.RegisterManager"
+        android:label="register"
+        tools:layout="@layout/register" >
+        <action
+            android:id="@+id/action_registerManager_to_loginManager"
+            app:destination="@id/loginManager" />
+    </fragment>
+    <fragment
+        android:id="@+id/travelManager"
+        android:name="com.example.mykumve.TravelManager"
+        android:label="travel_manager_view"
+        tools:layout="@layout/travel_manager_view" >
+        <action
+            android:id="@+id/action_travelManager_to_mainScreenManager"
+            app:destination="@id/mainScreenManager" />
+    </fragment>
+    <fragment
+        android:id="@+id/networkManager"
+        android:name="com.example.mykumve.NetworkManager"
+        android:label="travel_network"
+        tools:layout="@layout/travel_network" >
+        <action
+            android:id="@+id/action_networkManager_to_mainScreenManager"
+            app:destination="@id/mainScreenManager" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginManager"
+        android:name="com.example.mykumve.LoginManager"
+        android:label="login"
+        tools:layout="@layout/login" >
+        <action
+            android:id="@+id/action_loginManager_to_mainScreenManager"
+            app:destination="@id/mainScreenManager" />
+        <action
+            android:id="@+id/action_loginManager_to_registerManager"
+            app:destination="@id/registerManager" />
+    </fragment>
 </navigation>
