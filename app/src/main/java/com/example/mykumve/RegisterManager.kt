@@ -1,4 +1,4 @@
 package com.example.mykumve
 
-class TravelManager {
+class RegisterManager {
 }
