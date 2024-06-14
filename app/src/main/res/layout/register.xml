@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:textColor="@color/TextColor"
+        android:textColor="@color/statusBarColor"
         android:textSize="30sp"
         android:layout_marginTop="10dp"
         android:text="Register" />
@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColorHint="#C49649"
-        app:hintTextColor="@color/TextColor"
+        app:hintTextColor="@color/statusBarColor"
         >
 
         <com.google.android.material.textfield.TextInputEditText
@@ -47,7 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColorHint="#C49649"
-        app:hintTextColor="@color/TextColor"
+        app:hintTextColor="@color/statusBarColor"
 
         >
 
@@ -66,7 +66,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColorHint="#C49649"
-        app:hintTextColor="@color/TextColor"
+        app:hintTextColor="@color/statusBarColor"
         >
 
         <com.google.android.material.textfield.TextInputEditText
@@ -82,7 +82,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColorHint="#C49649"
-        app:hintTextColor="@color/TextColor"
+        app:hintTextColor="@color/statusBarColor"
 
         >
 
@@ -101,7 +101,7 @@
         android:text="Select a gender"
         android:textSize="20sp"
         android:layout_marginTop="10dp"
-        android:textColor="@color/TextColor"
+        android:textColor="@color/statusBarColor"
         />
 
     <RadioGroup
@@ -135,7 +135,7 @@
         android:text="Level of difficulty in trips"
         android:textSize="20sp"
         android:layout_marginTop="10dp"
-        android:textColor="@color/TextColor"
+        android:textColor="@color/statusBarColor"
         />
 
     <RadioGroup

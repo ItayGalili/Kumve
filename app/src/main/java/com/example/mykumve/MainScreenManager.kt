@@ -21,10 +21,14 @@ class MainScreenManager: Fragment(){
     ): View? {
         _binding = MainScreenBinding.inflate(inflater,container,false)
 
-        /*binding.add_btn.setOnClickListener{
-            //findNavController().navigate(R.id.action_allItemsFragment_to_addItemFragment)
+        binding.addBtn.setOnClickListener{
+            findNavController().navigate(R.id.action_mainScreenManager_to_travelManager)
         }
-        */
+
+        binding.partnersBtnMs.setOnClickListener{
+            findNavController().navigate(R.id.action_mainScreenManager_to_networkManager)
+        }
+
     return binding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

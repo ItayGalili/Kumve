@@ -39,7 +39,7 @@
        >
 
         <ImageButton
-            android:id="@+id/Partners_btn_ms"
+            android:id="@+id/partners_btn_ms"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/network"
