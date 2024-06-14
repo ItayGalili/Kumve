@@ -1,4 +1,8 @@
 package com.example.mykumve
 
-class MainScreenManager {
+import androidx.fragment.app.Fragment
+
+class MainScreenManager: Fragment(){
+
+
 }

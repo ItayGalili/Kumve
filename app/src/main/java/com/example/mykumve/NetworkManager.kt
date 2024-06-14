@@ -1,4 +1,6 @@
 package com.example.mykumve
 
-class NetworkManager {
+import androidx.fragment.app.Fragment
+
+class NetworkManager : Fragment() {
 }

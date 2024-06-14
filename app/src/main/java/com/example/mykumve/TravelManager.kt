@@ -1,4 +1,6 @@
 package com.example.mykumve
 
-class TravelManager {
+import androidx.fragment.app.Fragment
+
+class TravelManager : Fragment() {
 }

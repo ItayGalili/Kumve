@@ -1,4 +1,6 @@
 package com.example.mykumve
 
-class RegisterManager {
+import androidx.fragment.app.Fragment
+
+class RegisterManager : Fragment() {
 }
