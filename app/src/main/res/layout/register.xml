@@ -11,6 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
+        android:textColor="@color/statusBarColor"
+        android:textSize="30sp"
         android:text="Register" />
 
     <ImageButton
@@ -46,7 +48,7 @@
         >
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/password"
+            android:id="@+id/pass"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Enter password"
@@ -81,10 +83,10 @@
         >
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/password"
+            android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter password"
+            android:hint="Enter a self description"
 
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -92,16 +94,20 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Select a gender"/>
+        android:text="Select a gender"
+        android:textSize="20sp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/statusBarColor"
+        />
 
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/hour"
+        android:id="@+id/gender"
         android:orientation="horizontal">
 
         <RadioButton
-            android:id="@+id/h18"
+            android:id="@+id/male"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -110,16 +116,56 @@
             android:textSize="20sp" />
 
         <RadioButton
-            android:id="@+id/h21"
+            android:id="@+id/female"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="female"
             android:textColor="#8E7749"
             android:textSize="20sp" />
+    </RadioGroup>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Level of difficulty in trips"
+        android:textSize="20sp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/statusBarColor"
+        />
 
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/level"
+        android:orientation="horizontal">
 
+        <RadioButton
+            android:id="@+id/easy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="easy"
+            android:textColor="#8E7749"
+            android:textSize="20sp" />
+
+        <RadioButton
+            android:id="@+id/medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="medium"
+            android:textColor="#8E7749"
+            android:textSize="20sp" />
+
+        <RadioButton
+            android:id="@+id/hard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="hard"
+            android:textColor="#8E7749"
+            android:textSize="20sp" />
     </RadioGroup>
 
     <Spinner
