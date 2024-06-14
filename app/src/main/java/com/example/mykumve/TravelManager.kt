@@ -23,6 +23,10 @@ class TravelManager : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = TravelManagerViewBinding.inflate(inflater, container, false)
+        binding.doneBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_travelManager_to_mainScreenManager)
+        }
+
         return binding.root
     }
 
