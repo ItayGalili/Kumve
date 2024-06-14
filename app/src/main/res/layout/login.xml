@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColorHint="#C49649"
-        app:hintTextColor="@color/statusBarColor"
+        app:hintTextColor="@color/TextColor"
         >
 
         <com.google.android.material.textfield.TextInputEditText
@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColorHint="#C49649"
-        app:hintTextColor="@color/statusBarColor"
+        app:hintTextColor="@color/TextColor"
         android:layout_marginTop="10dp"
         >
 

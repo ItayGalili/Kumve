@@ -2,6 +2,6 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="statusBarColor">#C49649</color>
+    <color name="TextColor">#EFE0BA</color>
 
 </resources>
