@@ -6,8 +6,8 @@
     android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".TravelManager"
-
-    android:background="#FFFFFF">
+    android:background="@color/white"
+    >
 
     <TextView
         android:id="@+id/textView"
