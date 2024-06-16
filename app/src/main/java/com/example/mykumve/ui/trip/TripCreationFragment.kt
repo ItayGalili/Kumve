@@ -21,7 +21,7 @@ class TripCreationFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.trip_creation, container, false)
+//        val view = inflater.inflate(R.layout.trip_creation, container, false)
         travelManager = TravelManager(requireContext())
 
         // TODO: Implement form fields and handle trip creation.

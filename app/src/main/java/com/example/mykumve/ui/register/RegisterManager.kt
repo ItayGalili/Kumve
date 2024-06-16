@@ -1,5 +1,6 @@
 import android.content.Context
 import android.util.Base64
+import com.example.mykumve.data.model.User
 import com.example.mykumve.data.repository.RepositoryProvider
 import com.example.mykumve.data.repository.UserRepository
 import kotlinx.coroutines.GlobalScope

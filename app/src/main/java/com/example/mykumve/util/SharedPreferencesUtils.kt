@@ -11,7 +11,7 @@ import android.content.SharedPreferences
  */
 object SharedPreferencesUtils {
 
-    fun getEncryptedSharedPreferences(context: Context): SharedPreferences {
+    /*fun getEncryptedSharedPreferences(context: Context): SharedPreferences {
         val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
         return EncryptedSharedPreferences.create(
             "encrypted_prefs",
@@ -40,5 +40,5 @@ object SharedPreferencesUtils {
         } else {
             null
         }
-    }
+    }*/
 }

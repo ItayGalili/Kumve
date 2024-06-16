@@ -21,7 +21,7 @@ class TripListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.trip_list, container, false)
+//        val view = inflater.inflate(R.layout.trip_list, container, false)
         travelManager = TravelManager(requireContext())
 
         // TODO: Initialize RecyclerView and load trips.

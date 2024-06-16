@@ -19,7 +19,7 @@ class MapFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.map, container, false)
+//        val view = inflater.inflate(R.layout.map, container, false)
 
         // TODO: Implement Google Maps integration and display routes.
 

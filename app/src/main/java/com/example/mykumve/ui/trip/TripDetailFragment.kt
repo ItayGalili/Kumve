@@ -21,7 +21,7 @@ class TripDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.trip_detail, container, false)
+//        val view = inflater.inflate(R.layout.trip_detail, container, false)
         travelManager = TravelManager(requireContext())
 
         // TODO: Load and display trip details.

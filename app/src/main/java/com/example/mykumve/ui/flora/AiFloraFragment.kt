@@ -19,7 +19,7 @@ class AiFloraFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.ai_flora, container, false)
+//        val view = inflater.inflate(R.layout.ai_flora, container, false)
 
         // TODO: Implement plant identification using ML Kit.
 

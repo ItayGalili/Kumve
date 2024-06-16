@@ -11,9 +11,9 @@ import com.example.mykumve.data.repository.TripRepository
  */
 class TravelManager(private val context: Context) {
 
-    private val tripRepository: TripRepository by lazy {
-        RepositoryProvider.getTripRepository(context)
-    }
+//    private val tripRepository: TripRepository by lazy {
+//        RepositoryProvider.getTripRepository(context)
+//    }
 
     // TODO: Implement methods for trip creation, update, and deletion.
 }
