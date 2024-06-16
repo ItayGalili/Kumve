@@ -1,3 +1,5 @@
+package com.example.mykumve.ui.login
+
 import android.content.Context
 import android.util.Base64
 import com.example.mykumve.data.repository.RepositoryProvider
@@ -5,7 +7,6 @@ import com.example.mykumve.data.repository.UserRepository
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.security.MessageDigest
-import java.security.SecureRandom
 
 /**
  * Manages login logic and operations.
@@ -13,32 +14,41 @@ import java.security.SecureRandom
  *
  * TODO: Implement more robust error handling and logging.
  */
-class LoginManager(private val context: Context) {
 
-    private val userRepository: UserRepository by lazy {
-        RepositoryProvider.getUserRepository(context)
-    }
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import com.example.mykumve.R
 
-    fun loginUser(username: String, password: String): Boolean {
-        var isValid = false
-        GlobalScope.launch {
-            val user = userRepository.getUserByUsername(username)
-            if (user != null) {
-                val passwordHash = hashPassword(password, user.salt)
-                if (passwordHash == user.passwordHash) {
-                    // Handle successful login
-                    isValid = true
-                }
+class LoginManager : Fragment() {
+
+    private lateinit var loginManager: LoginManagerHelper
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.login, container, false)
+        loginManager = LoginManagerHelper(requireContext())
+
+        view.findViewById<Button>(R.id.Login_Btn).setOnClickListener {
+            val username = view.findViewById<EditText>(R.id.email_ad).text.toString()
+            val password = view.findViewById<EditText>(R.id.password).text.toString()
+            if (loginManager.loginUser(username, password)) {
+                Toast.makeText(requireContext(), "Login successful", Toast.LENGTH_SHORT).show()
+                // Navigate to main screen
+                // Assuming you have a NavController setup
+                // findNavController().navigate(R.id.action_loginManager_to_mainScreenManager)
+            } else {
+                Toast.makeText(requireContext(), "Login failed", Toast.LENGTH_SHORT).show()
             }
-            // Handle invalid login
         }
-        return isValid
-    }
 
-    private fun hashPassword(password: String, salt: String): String {
-        val digest = MessageDigest.getInstance("SHA-256")
-        digest.update(Base64.decode(salt, Base64.DEFAULT))
-        val hashedBytes = digest.digest(password.toByteArray())
-        return Base64.encodeToString(hashedBytes, Base64.DEFAULT)
+        return view
     }
 }

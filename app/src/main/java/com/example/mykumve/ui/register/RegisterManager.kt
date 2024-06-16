@@ -1,12 +1,14 @@
-import android.content.Context
-import android.util.Base64
-import com.example.mykumve.data.model.User
-import com.example.mykumve.data.repository.RepositoryProvider
-import com.example.mykumve.data.repository.UserRepository
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import java.security.MessageDigest
-import java.security.SecureRandom
+package com.example.mykumve.ui.register
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import com.example.mykumve.R
 
 /**
  * Manages registration logic and operations.
@@ -14,37 +16,34 @@ import java.security.SecureRandom
  *
  * TODO: Implement more robust error handling and logging.
  */
-class RegisterManager(private val context: Context) {
 
-    private val userRepository: UserRepository by lazy {
-        RepositoryProvider.getUserRepository(context)
-    }
 
-    fun registerUser(username: String, password: String) {
-        GlobalScope.launch {
-            if (userRepository.getUserByUsername(username) != null) {
-                // Handle user already exists
-                return@launch
+class RegisterManager : Fragment() {
+
+    private lateinit var registerManager: RegisterManagerHelper
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.register, container, false)
+        registerManager = RegisterManagerHelper(requireContext())
+
+        view.findViewById<Button>(R.id.Register_Btn).setOnClickListener {
+            val username = view.findViewById<EditText>(R.id.name).text.toString()
+            val password = view.findViewById<EditText>(R.id.password_register).text.toString()
+            registerManager.registerUser(username, password) { success ->
+                if (success) {
+                    Toast.makeText(requireContext(), "Registration successful", Toast.LENGTH_SHORT).show()
+                    // Navigate to login screen
+                    // Assuming you have a NavController setup
+                    // findNavController().navigate(R.id.action_registerManager_to_loginManager)
+                } else {
+                    Toast.makeText(requireContext(), "User already exists", Toast.LENGTH_SHORT).show()
+                }
             }
-            val salt = generateSalt()
-            val passwordHash = hashPassword(password, salt)
-            val newUser = User(username = username, passwordHash = passwordHash, salt = salt)
-            userRepository.insertUser(newUser)
-            // Handle successful registration
         }
-    }
 
-    private fun generateSalt(): String {
-        val random = SecureRandom()
-        val salt = ByteArray(16)
-        random.nextBytes(salt)
-        return Base64.encodeToString(salt, Base64.DEFAULT)
-    }
-
-    private fun hashPassword(password: String, salt: String): String {
-        val digest = MessageDigest.getInstance("SHA-256")
-        digest.update(Base64.decode(salt, Base64.DEFAULT))
-        val hashedBytes = digest.digest(password.toByteArray())
-        return Base64.encodeToString(hashedBytes, Base64.DEFAULT)
+        return view
     }
 }

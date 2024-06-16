@@ -21,7 +21,7 @@ class TravelManager : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = TravelManagerViewBinding.inflate(inflater, container, false)
         binding.doneBtn.setOnClickListener {
 
