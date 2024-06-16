@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainScreenManager"
-        android:name="com.example.mykumve.MainScreenManager"
+        android:name="com.example.mykumve.ui.main.MainScreenManager"
         android:label="main_screen"
         tools:layout="@layout/main_screen" >
         <action
@@ -23,7 +23,7 @@
     </fragment>
     <fragment
         android:id="@+id/registerManager"
-        android:name="com.example.mykumve.RegisterManager"
+        android:name="com.example.mykumve.ui.register.RegisterManager"
         android:label="register"
         tools:layout="@layout/register" >
         <action
@@ -64,7 +64,7 @@
     </fragment>
     <fragment
         android:id="@+id/loginManager"
-        android:name="com.example.mykumve.LoginManager"
+        android:name="com.example.mykumve.ui.login.LoginManager"
         android:label="login"
         tools:layout="@layout/login" >
         <action

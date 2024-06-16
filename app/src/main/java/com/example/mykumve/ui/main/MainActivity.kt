@@ -1,4 +1,4 @@
-package com.example.mykumve
+package com.example.mykumve.ui.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -6,6 +6,7 @@ import android.os.Build
 import android.view.Window
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
+import com.example.mykumve.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

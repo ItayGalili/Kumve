@@ -1,4 +1,4 @@
-package com.example.mykumve
+package com.example.mykumve.ui.main
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.mykumve.ItemAdapter
+import com.example.mykumve.ItemManager
+import com.example.mykumve.R
 import com.example.mykumve.databinding.MainScreenBinding
 
 class MainScreenManager: Fragment(){
