@@ -1,5 +1,7 @@
 package com.example.mykumve.data.model
 
+import androidx.room.PrimaryKey
+
 /**
  * Data class representing a plant for AI flora identification.
  * Contains plant details such as name, description, and image URL.
@@ -7,7 +9,7 @@ package com.example.mykumve.data.model
  * TODO: Define properties and methods required for AI flora identification.
  */
 data class Plant(
-    @PrimaryKey(auto-generate = true) val id: Int = 0,
+    @PrimaryKey(true) val id: Int = 0,
     val name: String,
     val description: String,
     val imageUrl: String

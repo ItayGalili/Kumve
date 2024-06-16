@@ -1,5 +1,12 @@
 package com.example.mykumve.ui.trip
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.example.mykumve.R
+
 /**
  * Fragment displaying trip details.
  * Manages the trip detail UI and interactions.

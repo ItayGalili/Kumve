@@ -1,5 +1,10 @@
 package com.example.mykumve.data.db
 
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import com.example.mykumve.data.model.Trip
+import com.example.mykumve.data.model.User
+
 /**
  * Abstract class for Room database setup.
  * Includes DAOs for accessing the User and Trip tables.

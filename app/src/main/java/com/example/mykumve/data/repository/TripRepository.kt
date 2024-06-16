@@ -1,5 +1,7 @@
 package com.example.mykumve.data.repository
 
+import com.example.mykumve.data.model.Trip
+
 /**
  * Repository interface for trip-related data operations.
  * Abstracts data source for trip operations.

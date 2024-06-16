@@ -1,5 +1,10 @@
 package com.example.mykumve.data.db
 
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import com.example.mykumve.data.model.User
+
 /**
  * DAO interface for user-related database operations.
  * Defines methods for querying and inserting users.

@@ -1,5 +1,12 @@
 package com.example.mykumve.data.db
 
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
+import com.example.mykumve.data.model.Trip
+
 /**
  * DAO interface for trip-related database operations.
  * Defines methods for querying, inserting, updating, and deleting trips.

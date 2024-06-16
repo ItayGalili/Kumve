@@ -1,5 +1,7 @@
 package com.example.mykumve.data.model
 
+import androidx.room.PrimaryKey
+
 /**
  * Data class representing a trip.
  * Contains trip details such as name, start date, end date, equipment, participants, and route.
@@ -7,7 +9,7 @@ package com.example.mykumve.data.model
  * TODO: Add methods to handle JSON conversion for equipment, participants, and route.
  */
 data class Trip(
-    @PrimaryKey(auto-generate = true) val id: Int = 0,
+    @PrimaryKey( true) val id: Int = 0,
     val name: String,
     val startDate: Long,
     val endDate: Long,

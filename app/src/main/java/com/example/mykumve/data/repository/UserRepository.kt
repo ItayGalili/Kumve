@@ -1,5 +1,7 @@
 package com.example.mykumve.data.repository
 
+import com.example.mykumve.data.model.User
+
 /**
  * Repository interface for user-related data operations.
  * Abstracts data source for user operations.

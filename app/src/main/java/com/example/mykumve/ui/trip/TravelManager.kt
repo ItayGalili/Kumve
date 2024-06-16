@@ -1,5 +1,8 @@
 package com.example.mykumve.ui.trip
 
+import android.content.Context
+import com.example.mykumve.data.repository.TripRepository
+
 /**
  * Manages trip creation and editing logic.
  * Handles data operations for trips.

@@ -1,5 +1,8 @@
 package com.example.mykumve.data.db
 
+import android.content.Context
+import androidx.room.Room
+
 /**
  * Singleton pattern for providing the Room database instance.
  *
