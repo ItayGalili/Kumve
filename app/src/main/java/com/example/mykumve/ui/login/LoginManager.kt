@@ -23,6 +23,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
 
 class LoginManager : Fragment() {
@@ -43,7 +44,7 @@ class LoginManager : Fragment() {
                 Toast.makeText(requireContext(), "Login successful", Toast.LENGTH_SHORT).show()
                 // Navigate to main screen
                 // Assuming you have a NavController setup
-                // findNavController().navigate(R.id.action_loginManager_to_mainScreenManager)
+                 findNavController().navigate(R.id.action_loginManager_to_mainScreenManager)
             } else {
                 Toast.makeText(requireContext(), "Login failed", Toast.LENGTH_SHORT).show()
             }
