@@ -5,7 +5,6 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.mykumve.data.model.Trip
 
 /**
  * DAO interface for trip-related database operations.
@@ -13,20 +12,20 @@ import com.example.mykumve.data.model.Trip
  *
  * TODO: Add methods for complex queries if necessary.
  */
-@Dao
-interface TripDao {
-    @Query("SELECT * FROM trips")
-    fun getAllTrips(): List<Trip>
-
-    @Query("SELECT * FROM trips WHERE id = :id")
-    fun getTripById(id: Int): Trip?
-
-    @Insert
-    fun insertTrip(trip: Trip): Long
-
-    @Update
-    fun updateTrip(trip: Trip)
-
-    @Delete
-    fun deleteTrip(trip: Trip)
-}
+//@Dao
+//interface TripDao {
+//    @Query("SELECT * FROM trips")
+//    fun getAllTrips(): List<Trip>
+//
+//    @Query("SELECT * FROM trips WHERE id = :id")
+//    fun getTripById(id: Int): Trip?
+//
+//    @Insert
+//    fun insertTrip(trip: Trip): Long
+//
+//    @Update
+//    fun updateTrip(trip: Trip)
+//
+//    @Delete
+//    fun deleteTrip(trip: Trip)
+//}

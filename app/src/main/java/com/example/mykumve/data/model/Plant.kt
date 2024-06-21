@@ -8,9 +8,9 @@ import androidx.room.PrimaryKey
  *
  * TODO: Define properties and methods required for AI flora identification.
  */
-data class Plant(
-    @PrimaryKey(true) val id: Int = 0,
-    val name: String,
-    val description: String,
-    val imageUrl: String
-)
+//data class Plant(
+//    @PrimaryKey(true) val id: Int = 0,
+//    val name: String,
+//    val description: String,
+//    val imageUrl: String
+//)
