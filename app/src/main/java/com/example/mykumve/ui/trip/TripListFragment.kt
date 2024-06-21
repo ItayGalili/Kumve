@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.mykumve.R
 
 /**
  * Fragment displaying a list of trips.
@@ -15,14 +14,14 @@ import com.example.mykumve.R
  */
 class TripListFragment : Fragment() {
 
-    private lateinit var travelManager: TravelManager
+    private lateinit var tripManager: TripManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 //        val view = inflater.inflate(R.layout.trip_list, container, false)
-        travelManager = TravelManager(requireContext())
+        tripManager = TripManager()
 
         // TODO: Initialize RecyclerView and load trips.
 
