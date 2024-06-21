@@ -1,4 +1,4 @@
-package com.example.mykumve
+package com.example.mykumve.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.mykumve.databinding.TravelManagerViewBinding
+import com.example.mykumve.R
 import com.example.mykumve.databinding.TravelNetworkBinding
 
-class NetworkManager : Fragment() {
+class SocialNetworkManager : Fragment() {
 
     private var _binding : TravelNetworkBinding? = null
     private val binding get() = _binding!!

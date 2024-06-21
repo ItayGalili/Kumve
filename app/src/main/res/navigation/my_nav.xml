@@ -41,7 +41,7 @@
     </fragment>
     <fragment
         android:id="@+id/travelManager"
-        android:name="com.example.mykumve.TravelManager"
+        android:name="com.example.mykumve.ui.trip.TripManager"
         android:label="travel_manager_view"
         tools:layout="@layout/travel_manager_view" >
         <action
@@ -56,7 +56,7 @@
     </fragment>
     <fragment
         android:id="@+id/networkManager"
-        android:name="com.example.mykumve.NetworkManager"
+        android:name="com.example.mykumve.ui.SocialNetworkManager"
         android:label="travel_network"
         tools:layout="@layout/travel_network" >
         <action
