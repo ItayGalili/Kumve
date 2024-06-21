@@ -20,7 +20,7 @@
         android:text="Create and update your trip" />
 
     <ImageButton
-        android:id="@+id/image_person"
+        android:id="@+id/trip_image"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_gravity="center"
