@@ -20,6 +20,9 @@
             app:exitAnim="@anim/to_left"
             app:popEnterAnim="@anim/from_left"
             app:popExitAnim="@anim/to_right" />
+        <action
+            android:id="@+id/action_mainScreenManager_to_tripReviewManager2"
+            app:destination="@id/tripReviewManager" />
     </fragment>
     <fragment
         android:id="@+id/registerManager"
@@ -82,4 +85,9 @@
             app:popEnterAnim="@anim/from_left"
             app:popExitAnim="@anim/to_right" />
     </fragment>
+    <fragment
+        android:id="@+id/tripReviewManager"
+        android:name="com.example.mykumve.ui.trip.TripReviewManager"
+        android:label="trip_review"
+        tools:layout="@layout/trip_review" />
 </navigation>
