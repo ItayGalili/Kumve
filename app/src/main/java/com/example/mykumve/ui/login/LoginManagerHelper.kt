@@ -2,17 +2,15 @@ package com.example.mykumve.ui.login
 
 import android.content.Context
 import android.util.Base64
-import com.example.mykumve.data.repository.RepositoryProvider
-import com.example.mykumve.data.repository.UserRepository
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.security.MessageDigest
 
 class LoginManagerHelper(private val context: Context) {
 
-    private val userRepository: UserRepository by lazy {
-        RepositoryProvider.getUserRepository(context)
-    }
+//    private val userRepository: UserRepository by lazy {
+//        RepositoryProvider.getUserRepository(context)
+//    }
 
     fun loginUser(username: String, password: String): Boolean {
         var isValid = true

@@ -3,7 +3,6 @@ package com.example.mykumve.data.db
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.example.mykumve.data.model.User
 
 /**
  * DAO interface for user-related database operations.
@@ -11,11 +10,11 @@ import com.example.mykumve.data.model.User
  *
  * TODO: Add methods for updating and deleting users if necessary.
  */
-@Dao
-interface UserDao {
-    @Query("SELECT * FROM users WHERE username = :username")
-    fun getUserByUsername(username: String): User?
-
-    @Insert
-    fun insertUser(user: User): Long
-}
+//@Dao
+//interface UserDao {
+//    @Query("SELECT * FROM users WHERE username = :username")
+//    fun getUserByUsername(username: String): User?
+//
+//    @Insert
+//    fun insertUser(user: User): Long
+//}

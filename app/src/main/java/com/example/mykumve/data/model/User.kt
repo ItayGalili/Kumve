@@ -8,9 +8,9 @@ import androidx.room.PrimaryKey
  *
  * TODO: Add any additional user-related fields if necessary.
  */
-data class User(
-    @PrimaryKey( true) val id: Int = 0,
-    val username: String,
-    val passwordHash: String,
-    val salt: String
-)
+//data class User(
+//    @PrimaryKey( true) val id: Int = 0,
+//    val username: String,
+//    val passwordHash: String,
+//    val salt: String
+//)

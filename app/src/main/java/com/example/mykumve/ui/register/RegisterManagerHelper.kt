@@ -2,9 +2,6 @@ package com.example.mykumve.ui.register
 
 import android.content.Context
 import android.util.Base64
-import com.example.mykumve.data.model.User
-import com.example.mykumve.data.repository.RepositoryProvider
-import com.example.mykumve.data.repository.UserRepository
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.security.MessageDigest
@@ -12,20 +9,20 @@ import java.security.SecureRandom
 
 class RegisterManagerHelper(private val context: Context) {
 
-    private val userRepository: UserRepository by lazy {
-        RepositoryProvider.getUserRepository(context)
-    }
+//    private val userRepository: UserRepository by lazy {
+//        RepositoryProvider.getUserRepository(context)
+//    }
 
     fun registerUser(username: String, password: String, callback: (Boolean) -> Unit) {
         GlobalScope.launch {
-            if (userRepository.getUserByUsername(username) != null) {
-                callback(false)
-                return@launch
-            }
-            val salt = generateSalt()
-            val passwordHash = hashPassword(password, salt)
-            val newUser = User(username = username, passwordHash = passwordHash, salt = salt)
-            userRepository.insertUser(newUser)
+//            if (userRepository.getUserByUsername(username) != null) {
+//                callback(false)
+//                return@launch
+//            }
+//            val salt = generateSalt()
+//            val passwordHash = hashPassword(password, salt)
+//            val newUser = User(username = username, passwordHash = passwordHash, salt = salt)
+//            userRepository.insertUser(newUser)
             callback(true)
         }
     }

@@ -1,26 +1,29 @@
 package com.example.mykumve.data.db
 
-import android.content.Context
-import androidx.room.Room
-
 /**
  * Singleton pattern for providing the Room database instance.
  *
  * TODO: Ensure thread-safety and handle migrations if necessary.
  */
-object DatabaseProvider {
-    private var INSTANCE: AppDatabase? = null
 
-    fun getDatabase(context: Context): AppDatabase {
-        if (INSTANCE == null) {
-            synchronized(AppDatabase::class) {
-                INSTANCE = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "app_database"
-                ).build()
-            }
-        }
-        return INSTANCE!!
-    }
-}
+//@Module
+//object DatabaseProvider {
+//    @Provides
+//    @Singleton
+//    fun provideDatabase(context: Context): AppDatabase {
+//        return Room.databaseBuilder(context, AppDatabase::class.java, "app_database").build()
+//    }
+//
+//    @Provides
+//    @Singleton
+//    fun provideUserDao(database: AppDatabase): UserDao {
+//        return database.userDao()
+//    }
+//
+//    @Provides
+//    @Singleton
+//    fun provideTripDao(database: AppDatabase): TripDao {
+//        return database.tripDao()
+//    }
+//}
+
