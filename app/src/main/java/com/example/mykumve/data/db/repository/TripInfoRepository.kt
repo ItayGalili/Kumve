@@ -1,11 +1,10 @@
 package com.example.mykumve.data.db.repository
 
-import android.app.Application
-import com.example.mykumve.data.db.local_db.AppDatabase
-import com.example.mykumve.data.db.local_db.TripDao
 import com.example.mykumve.data.db.local_db.TripInfoDao
-import com.example.mykumve.data.model.Trip
-import com.example.mykumve.util.DifficultyLevel
+import androidx.lifecycle.LiveData
+import com.example.mykumve.data.model.TripInfo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 /**
@@ -13,17 +12,34 @@ import com.example.mykumve.util.DifficultyLevel
  *
  * TODO: Add additional methods to handle complex trip operations if needed.
  */
-class TripInfoRepository(application: Application){
-    private var tripInfoDao: TripInfoDao?
-    init {
-        val db = AppDatabase.getDatabase(application.applicationContext)
-        tripInfoDao = db.tripInfoDao()
+
+class TripInfoRepository(private val tripInfoDao: TripInfoDao) {
+
+    fun getAllTripInfo(): LiveData<List<TripInfo>> {
+        return tripInfoDao.getAllTripInfo()
     }
 
-    fun getTripById(id: Int) =
-        tripInfoDao?.getTripById(id)
+    fun getTripInfoById(id: Int): LiveData<TripInfo> {
+        return tripInfoDao.getTripInfoById(id)
+    }
 
-    fun getTripByTripId(id: Int) =
-        tripInfoDao?.getTripByTripId(id)
+    suspend fun insertTripInfo(tripInfo: TripInfo) {
+        withContext(Dispatchers.IO) {
+            tripInfoDao.insertTripInfo(tripInfo)
+        }
+    }
+
+    suspend fun updateTripInfo(tripInfo: TripInfo) {
+        withContext(Dispatchers.IO) {
+            tripInfoDao.updateTripInfo(tripInfo)
+        }
+    }
+
+    suspend fun deleteTripInfo(tripInfo: TripInfo) {
+        withContext(Dispatchers.IO) {
+            tripInfoDao.deleteTripInfo(tripInfo)
+        }
+    }
 }
+
 

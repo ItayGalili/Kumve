@@ -1,11 +1,11 @@
 package com.example.mykumve.data.model
 
+import com.example.mykumve.util.Converters
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.example.mykumve.util.Converters
 
 @Entity(tableName = "trips",
     foreignKeys = [ForeignKey(
@@ -13,35 +13,24 @@ import com.example.mykumve.util.Converters
         parentColumns = ["id"],
         childColumns = ["user_id"],
         onDelete = ForeignKey.CASCADE
+    ),
+    ForeignKey(
+        entity = TripInfo::class,
+        parentColumns = ["id"],
+        childColumns = ["trip_info_id"],
+        onDelete = ForeignKey.SET_NULL
     )]
 )
 @TypeConverters(Converters::class)
-
 data class Trip(
-    @ColumnInfo(name = "title")
-    val title: String,
+    @PrimaryKey(autoGenerate = true) var id: Int = 0,
+    @ColumnInfo(name = "title") val title: String,
+    @ColumnInfo(name = "gather_time") val gatherTime: Long?,
+    @ColumnInfo(name = "gather_place") val gatherPlace: String?,
+    @ColumnInfo(name = "notes") val notes: String?,
+    @ColumnInfo(name = "participants") val participants: List<User>?,
+    @ColumnInfo(name = "equipment") val equipment: List<String>?,
+    @ColumnInfo(name = "user_id") val userId: Int,
+    @ColumnInfo(name = "trip_info_id") val tripInfoId: Int? = null
 
-    @ColumnInfo(name = "notes")
-    val notes: String?,
-
-//    @ColumnInfo(name = "place")
-//    val place: String?,
-
-//    @ColumnInfo(name = "difficulty")
-//    val level: DifficultyLevel,
-
-    @ColumnInfo(name = "start_date")
-    val startDate: Long?,
-
-    @ColumnInfo(name = "end_date")
-    val endDate: Long?,
-
-    @ColumnInfo(name = "photo_uri")
-    val photo: String?,
-
-    @ColumnInfo(name = "user_id")
-    var userId: Int,
-
-    @PrimaryKey(autoGenerate = true)
-    var id: Int = 0
 )
