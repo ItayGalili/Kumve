@@ -1,11 +1,10 @@
 package com.example.mykumve.util
 
 import androidx.room.TypeConverter
-import com.example.mykumve.data.model.Trip
+import com.example.mykumve.data.model.User
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 class Converters {
 
@@ -20,26 +19,45 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromTripList(trips: List<Trip>?): String? {
-        if (trips == null) {
+    fun fromUserList(users: List<User>?): String? {
+        if (users == null) {
             return null
         }
         val gson = Gson()
-        val type = object : TypeToken<List<Trip>>() {}.type
-        return gson.toJson(trips, type)
+        val type = object : TypeToken<List<User>>() {}.type
+        return gson.toJson(users, type)
     }
 
     @TypeConverter
-    fun toTripList(tripsString: String?): List<Trip>? {
-        if (tripsString == null) {
+    fun toUserList(usersString: String?): List<User>? {
+        if (usersString == null) {
             return null
         }
         val gson = Gson()
-        val type = object : TypeToken<List<Trip>>() {}.type
-        return gson.fromJson(tripsString, type)
+        val type = object : TypeToken<List<User>>() {}.type
+        return gson.fromJson(usersString, type)
     }
 
     @TypeConverter
+    fun fromStringList(strings: List<String>?): String? {
+        if (strings == null) {
+            return null
+        }
+        val gson = Gson()
+        val type = object : TypeToken<List<String>>() {}.type
+        return gson.toJson(strings, type)
+    }
+
+    @TypeConverter
+    fun toStringList(stringsString: String?): List<String>? {
+        if (stringsString == null) {
+            return null
+        }
+        val gson = Gson()
+        val type = object : TypeToken<List<String>>() {}.type
+        return gson.fromJson(stringsString, type)
+    }
+
     fun fromDate(date: Date?): Long? {
         return date?.time
     }
@@ -48,16 +66,4 @@ class Converters {
     fun toDate(timestamp: Long?): Date? {
         return timestamp?.let { Date(it) }
     }
-}
-
-fun Long.toFormattedDateString(): String {
-    val date = Date(this)
-    val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-    return format.format(date)
-}
-
-fun String.toTimestamp(): Long {
-    val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-    val date = format.parse(this)
-    return date?.time ?: 0
 }

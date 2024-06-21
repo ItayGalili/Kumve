@@ -1,5 +1,6 @@
 package com.example.mykumve.ui.trip
 
+import com.example.mykumve.util.Converters
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -13,9 +14,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
 import com.example.mykumve.data.model.Trip
+import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.TravelManagerViewBinding
 import com.example.mykumve.ui.viewmodel.TripViewModel
-import com.example.mykumve.util.toTimestamp
+import java.util.Date
 
 class TripManager : Fragment() {
 
@@ -41,18 +43,21 @@ class TripManager : Fragment() {
     ): View {
         _binding = TravelManagerViewBinding.inflate(inflater, container, false)
 
-
+        val hashedPass = EncryptionUtils.hashPassword("admin", "admin")
+        val dummyUser = User("daniel", "eni", null, null, hashedPass, "admin")
         binding.doneBtn.setOnClickListener {
 
-            val startDate: Long = "2024-06-24 09:00:00".toTimestamp()
+            val startDate: Date = Date(2024, 6, 1, 0,9,0)
             //TODO: Update difficulty level, date and picture sections
             val trip = Trip(
-                title = binding.nameTrip.text.toString(),
-                description = binding.description.text.toString(),
-                startDate = startDate,
-                endDate = null,
-                photo = null,
-                userId = 0)
+                title=binding.nameTrip.text.toString(),
+                gatherTime = Converters().fromDate(startDate),
+                gatherPlace="",
+                notes=binding.description.text.toString(),
+                participants= listOf(dummyUser),
+                equipment=null,
+                userId = dummyUser.id,
+                tripInfoId=null)
             viewModel.addTrip(trip)
 
             findNavController().navigate(R.id.action_travelManager_to_mainScreenManager)

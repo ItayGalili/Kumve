@@ -3,11 +3,8 @@ package com.example.mykumve.data.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
-import com.example.mykumve.util.Converters
 
 @Entity(tableName = "users")
-@TypeConverters(Converters::class)
 data class User(
     @ColumnInfo(name = "first_name")
     val firstName: String,
@@ -20,9 +17,6 @@ data class User(
 
     @ColumnInfo(name = "description")
     val description: String?,
-
-    @ColumnInfo(name = "trips")
-    val trips: List<Trip>?,
 
     @ColumnInfo(name = "password")
     val hashedPassword: String,

@@ -7,8 +7,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.mykumve.data.model.Trip
-import com.example.mykumve.util.DifficultyLevel
+import com.example.mykumve.data.model.TripInfo
 
 /**
  * DAO interface for trip-related database operations.
@@ -19,24 +18,19 @@ import com.example.mykumve.util.DifficultyLevel
 
 @Dao
 interface TripInfoDao {
-    @Query("SELECT * FROM trips ORDER BY id DESC")
-    fun getAllTrips(): LiveData<List<Trip>>
 
-    @Query("SELECT * FROM trips WHERE user_id = :userId ORDER BY id DESC")
-    fun getAllTripsForUser(userId: Int): LiveData<List<Trip>>
+    @Query("SELECT * FROM trip_info WHERE id = :id")
+    fun getTripInfoById(id: Int): LiveData<TripInfo>
 
-    @Query("SELECT * FROM trips WHERE id = :id")
-    fun getTripById(id: Int): Trip?
+    @Query("SELECT * FROM trip_info")
+    fun getAllTripInfo(): LiveData<List<TripInfo>>
 
-//    @Query("SELECT * FROM trips WHERE difficulty = :difficultyLevel")
-//    fun getTripsByDifficulty(difficultyLevel: Int): LiveData<List<Trip>>
-
-    @Insert(onConflict = OnConflictStrategy.ABORT)
-    fun insertTrip(trip: Trip): Long
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertTripInfo(tripInfo: TripInfo)
 
     @Update
-    fun updateTrip(trip: Trip)
+    fun updateTripInfo(tripInfo: TripInfo)
 
     @Delete
-    fun deleteTrip(vararg trip: Trip)
+    fun deleteTripInfo(tripInfo: TripInfo)
 }
