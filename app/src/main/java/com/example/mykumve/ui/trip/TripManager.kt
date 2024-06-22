@@ -53,12 +53,8 @@ class TripManager : Fragment() {
 
         if (UserManager.isLoggedIn()) {
             currentUser = UserManager.getUser()
-            // Use the user object as needed
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.welcome_user, currentUser?.firstName),
-                Toast.LENGTH_SHORT
-            ).show()
+
+
         } else {
             // Handle the case where the user is not logged in
             Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()

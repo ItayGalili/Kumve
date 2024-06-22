@@ -1,17 +1,22 @@
 package com.example.mykumve.ui.viewmodel
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mykumve.data.db.repository.UserRepository
 import com.example.mykumve.data.model.User
 import com.example.mykumve.util.EncryptionUtils
 import com.example.mykumve.util.UserManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class UserViewModel (
-    private val userRepository: UserRepository
-) : ViewModel() {
+class   UserViewModel (
+    application: Application,
+) : AndroidViewModel(application) {
 
+    private var userRepository: UserRepository = UserRepository(application)
     fun registerUser(
         firstName: String,
         surname: String?,
@@ -29,10 +34,19 @@ class UserViewModel (
                 val salt = EncryptionUtils.generateSalt()
                 val passwordHashed = EncryptionUtils.hashPassword(password, salt)
                 val newUser = User(firstName, surname, email, photo, description, passwordHashed, salt)
-                userRepository.insertUser(newUser)
-                UserManager.saveUser(newUser)
-                callback(true)
+                val result = userRepository.insertUser(newUser)
+                if (result) {
+                    UserManager.saveUser(newUser)
+                }
+                callback(result)
             }
         }
     }
+
+    suspend fun getUserByEmail(email: String): User? {
+        return withContext(Dispatchers.IO) {
+            userRepository.getUserByEmail(email)
+        }
+    }
+
 }
