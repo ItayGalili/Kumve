@@ -19,4 +19,7 @@
     <string name="difficulty_hard">Hard</string>
     <string name="welcome_user">Welcome, %1$s</string>
     <string name="please_log_in">Please log in</string>
+    <string name="registration_successful">Registration successful</string>
+    <string name="login_failed">Login failed</string>
+    <string name="login_successful">Login successful</string>
 </resources>

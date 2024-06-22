@@ -1,5 +1,6 @@
 package com.example.mykumve.data.db.local_db
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -16,8 +17,8 @@ import com.example.mykumve.data.model.User
  */
 @Dao
 interface UserDao {
-//    @Query("SELECT * FROM users ORDER BY id DESC")
-//    fun getAllUsers(): LiveData<List<User>>
+    @Query("SELECT * FROM users ORDER BY id DESC")
+    fun getAllUsers(): LiveData<List<User>>?
 
     @Query("SELECT * FROM users WHERE id = :id")
     fun getUserById(id: Int): User?

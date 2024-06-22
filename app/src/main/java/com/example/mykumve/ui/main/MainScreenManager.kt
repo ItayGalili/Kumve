@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -12,8 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mykumve.ui.trip.TripAdapter
 import com.example.mykumve.R
+import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.MainScreenBinding
 import com.example.mykumve.ui.viewmodel.TripViewModel
+import com.example.mykumve.util.UserManager
 
 class MainScreenManager: Fragment(){
 
@@ -21,6 +24,8 @@ class MainScreenManager: Fragment(){
     private val binding get() = _binding!!
     private val viewModel : TripViewModel by activityViewModels()
     private lateinit var tripAdapter: TripAdapter
+    private var currentUser: User? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,10 +50,26 @@ class MainScreenManager: Fragment(){
         tripAdapter = TripAdapter(emptyList(), viewModel)
         binding.mainRecyclerView.adapter = tripAdapter
         binding.mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        val userId = 0 // Todo change dynamically
-        viewModel.getTripsByUserId(userId).observe(viewLifecycleOwner) { trips ->
-            tripAdapter.trips = trips
-            tripAdapter.notifyDataSetChanged()
+
+        if (UserManager.isLoggedIn()) {
+            currentUser = UserManager.getUser()
+            currentUser?.let {
+                Toast.makeText( //todo only first time
+                    requireContext(),
+                    getString(R.string.welcome_user, it.firstName),
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                viewModel.getTripsByUserId(it.id)?.observe(viewLifecycleOwner) { trips ->
+                    tripAdapter.trips = trips
+                    tripAdapter.notifyDataSetChanged()
+                }
+            }
+
+        } else {
+            // Handle the case where the user is not logged in
+            Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_registerManager_to_loginManager)
         }
 
         ItemTouchHelper(object : ItemTouchHelper.Callback() {

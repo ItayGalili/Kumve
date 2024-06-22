@@ -1,20 +1,22 @@
 package com.example.mykumve.ui.viewmodel
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import com.example.mykumve.data.model.TripInfo
 import com.example.mykumve.data.db.repository.TripInfoRepository
 import com.example.mykumve.data.db.repository.TripRepository
 import com.example.mykumve.data.model.Trip
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
 
 class TripViewModel(
-    private val tripRepository: TripRepository,
-    private val tripInfoRepository: TripInfoRepository
-) : ViewModel() {
+    application: Application,
+) : AndroidViewModel(application) {
+    private var tripRepository: TripRepository = TripRepository(application)
+    private var tripInfoRepository: TripInfoRepository = TripInfoRepository(application)
 
     private val _trip = MutableLiveData<Trip>()
     val trip: LiveData<Trip> get() = _trip
@@ -27,26 +29,26 @@ class TripViewModel(
 
     fun getTripById(id: Int) {
         viewModelScope.launch {
-            _trip.postValue(tripRepository.getTripById(id).value)
+            _trip.postValue(tripRepository.getTripById(id)?.value)
         }
     }
 
     fun getTripInfoByTripId(tripId: Int) {
         viewModelScope.launch {
-            val trip = tripRepository.getTripById(tripId).value
+            val trip = tripRepository.getTripById(tripId)?.value
             trip?.tripInfoId?.let {
-                _tripInfo.postValue(tripInfoRepository.getTripInfoById(it).value)
+                _tripInfo.postValue(tripInfoRepository.getTripInfoById(it)?.value)
             }
         }
     }
 
     fun getTripInfoById(id: Int) {
         viewModelScope.launch {
-            _tripInfo.postValue(tripInfoRepository.getTripInfoById(id).value)
+            _tripInfo.postValue(tripInfoRepository.getTripInfoById(id)?.value)
         }
     }
 
-    fun getAllTrips(): LiveData<List<Trip>> {
+    fun getAllTrips(): LiveData<List<Trip>>? {
         return tripRepository.getAllTrips()
     }
 
@@ -86,7 +88,7 @@ class TripViewModel(
         }
     }
 
-    fun getTripsByUserId(userId: Int): LiveData<List<Trip>> {
+    fun getTripsByUserId(userId: Int): LiveData<List<Trip>>? {
         return tripRepository.getTripsByUserId(userId)
     }
 

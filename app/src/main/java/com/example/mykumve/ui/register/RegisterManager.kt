@@ -43,10 +43,8 @@ class RegisterManager : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = RegisterBinding.inflate(inflater, container, false)
-
-//        val view = inflater.inflate(R.layout.register, container, false)
 
         binding.RegisterBtn.setOnClickListener {
             val fullName = binding.name.text.toString()
@@ -60,10 +58,11 @@ class RegisterManager : Fragment() {
             val surname = if (nameParts.size > 1) nameParts.drop(1).joinToString(" ") else null
             userViewModel.registerUser(firstName, surname, email, password, photo, description) { success ->
                 if (success) {
-                    Toast.makeText(requireContext(), "Registration successful", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), R.string.registration_successful, Toast.LENGTH_SHORT).show()
                      findNavController().navigate(R.id.action_registerManager_to_loginManager)
                 } else {
-                    Toast.makeText(requireContext(), "User already exists", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
+                    // Todo descriptive error
                 }
             }
         }

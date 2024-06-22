@@ -28,8 +28,13 @@ class UserRepository(application: Application){
 
     fun addUser(user: User) = userDao?.insertUser(user)
 
-    fun insertUser(user: User) {
-        userDao?.updateUser(user)
+    fun insertUser(user: User): Boolean {
+        return try {
+            userDao?.insertUser(user)
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
     fun deleteUser(user: User) = userDao?.deleteUser(user)
 }

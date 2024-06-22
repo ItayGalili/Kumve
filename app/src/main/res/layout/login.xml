@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--todo add translation-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -30,6 +31,7 @@
             android:id="@+id/email_ad"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
             android:hint="Enter email adress"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -48,8 +50,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Enter password"
-
+            android:inputType="textPassword"
+            android:imeOptions="actionDone"
             />
+
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
