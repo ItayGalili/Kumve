@@ -1,14 +1,20 @@
 package com.example.mykumve.ui.register
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
+import com.example.mykumve.databinding.RegisterBinding
+import com.example.mykumve.ui.viewmodel.UserViewModel
 
 /**
  * Manages registration logic and operations.
@@ -20,30 +26,51 @@ import com.example.mykumve.R
 
 class RegisterManager : Fragment() {
 
-    private lateinit var registerManager: RegisterManagerHelper
+    private var _binding : RegisterBinding? = null
+    private val binding get() = _binding!!
+
+    private val userViewModel: UserViewModel by activityViewModels()
+
+    private var imageUri: Uri? = null
+    val pickImageLauncher : ActivityResultLauncher<Array<String>> =
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) {
+            binding.imagePersonRegister.setImageURI(it)
+            requireActivity().contentResolver.takePersistableUriPermission(it!!, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            imageUri = it
+        }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.register, container, false)
-        registerManager = RegisterManagerHelper(requireContext())
+        _binding = RegisterBinding.inflate(inflater, container, false)
 
-        view.findViewById<Button>(R.id.Register_Btn).setOnClickListener {
-            val username = view.findViewById<EditText>(R.id.name).text.toString()
-            val password = view.findViewById<EditText>(R.id.password_register).text.toString()
-            registerManager.registerUser(username, password) { success ->
+//        val view = inflater.inflate(R.layout.register, container, false)
+
+        binding.RegisterBtn.setOnClickListener {
+            val fullName = binding.name.text.toString()
+            val password = binding.passwordRegister.text.toString()
+            val email = binding.emailRegister.text.toString()
+            val description = binding.descriptionRegister.text.toString()
+            val photo = imageUri?.toString()
+
+            val nameParts = fullName.split(" ")
+            val firstName = nameParts.firstOrNull() ?: ""
+            val surname = if (nameParts.size > 1) nameParts.drop(1).joinToString(" ") else null
+            userViewModel.registerUser(firstName, surname, email, password, photo, description) { success ->
                 if (success) {
                     Toast.makeText(requireContext(), "Registration successful", Toast.LENGTH_SHORT).show()
-                    // Navigate to login screen
-                    // Assuming you have a NavController setup
-                    // findNavController().navigate(R.id.action_registerManager_to_loginManager)
+                     findNavController().navigate(R.id.action_registerManager_to_loginManager)
                 } else {
                     Toast.makeText(requireContext(), "User already exists", Toast.LENGTH_SHORT).show()
                 }
             }
         }
+        binding.imagePersonRegister.setOnClickListener {
+            pickImageLauncher.launch(arrayOf("image/*"))
+        }
 
-        return view
+        return binding.root
     }
 }

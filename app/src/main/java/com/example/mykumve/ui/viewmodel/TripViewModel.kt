@@ -85,4 +85,9 @@ class TripViewModel(
             tripInfoRepository.deleteTripInfo(tripInfo)
         }
     }
+
+    fun getTripsByUserId(userId: Int): LiveData<List<Trip>> {
+        return tripRepository.getTripsByUserId(userId)
+    }
+
 }

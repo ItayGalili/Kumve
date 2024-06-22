@@ -22,6 +22,9 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE id = :id")
     fun getUserById(id: Int): User?
 
+    @Query("SELECT * FROM users WHERE email = :email")
+    fun getUserByEmail(email: String): User?
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun insertUser(user: User): Long
 

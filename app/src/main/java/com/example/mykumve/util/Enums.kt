@@ -16,3 +16,9 @@ enum class DifficultyLevel(val id: Int, val stringResId: Int) {
         }
     }
 }
+
+data class Equipment(
+    val name: String,
+    val done: Boolean,
+    val userId: Int
+)
