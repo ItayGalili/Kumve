@@ -87,6 +87,8 @@ class MainScreenManager: Fragment(){
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                Toast.makeText(requireContext(), "adapterPosition=${viewHolder.adapterPosition}", Toast.LENGTH_SHORT).show()
+                viewModel.deleteTrip(tripAdapter.trips[viewHolder.adapterPosition])
                 tripAdapter.notifyItemRemoved(viewHolder.adapterPosition)
             }
 
