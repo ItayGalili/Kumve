@@ -20,13 +20,15 @@ class UserRepository(application: Application){
         userDao = db.userDao()
     }
 
-//    fun getAllUsers() = userDao?.getAllUsers()
     fun getUserById(id: Int) =
-        userDao?.getUserById(id)
+        userDao?.getUserById(id)//    fun getAllUsers() = userDao?.getAllUsers()
+
+    fun getUserByEmail(email: String) =
+        userDao?.getUserByEmail(email)
 
     fun addUser(user: User) = userDao?.insertUser(user)
 
-    fun updateUser(user: User) {
+    fun insertUser(user: User) {
         userDao?.updateUser(user)
     }
     fun deleteUser(user: User) = userDao?.deleteUser(user)

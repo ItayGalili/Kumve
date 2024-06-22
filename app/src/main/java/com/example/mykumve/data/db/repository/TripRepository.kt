@@ -41,5 +41,10 @@ class TripRepository(private val tripDao: TripDao) {
             tripDao.deleteTrip(trip)
         }
     }
+
+    fun getTripsByUserId(userId: Int): LiveData<List<Trip>> {
+        return tripDao.getTripsByUserId(userId)
+    }
+
 }
 

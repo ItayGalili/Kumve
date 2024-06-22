@@ -35,4 +35,8 @@ interface TripDao {
 
     @Delete
     fun deleteTrip(trip: Trip)
+
+    @Query("SELECT * FROM trips WHERE user_id = :userId")
+    fun getTripsByUserId(userId: Int): LiveData<List<Trip>>
+
 }

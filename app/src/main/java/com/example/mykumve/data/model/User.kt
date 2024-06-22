@@ -10,7 +10,10 @@ data class User(
     val firstName: String,
 
     @ColumnInfo(name = "surname")
-    val surname: String,
+    val surname: String?,
+
+    @ColumnInfo(name = "email")
+    val email: String,
 
     @ColumnInfo(name = "profile_photo_uri")
     val photo: String?,

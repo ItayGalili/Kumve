@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.example.mykumve.util.Equipment
 
 @Entity(tableName = "trips",
     foreignKeys = [ForeignKey(
@@ -29,7 +30,7 @@ data class Trip(
     @ColumnInfo(name = "gather_place") val gatherPlace: String?,
     @ColumnInfo(name = "notes") val notes: String?,
     @ColumnInfo(name = "participants") val participants: List<User>?,
-    @ColumnInfo(name = "equipment") val equipment: List<String>?,
+    @ColumnInfo(name = "equipment") val equipment: List<Equipment>?,
     @ColumnInfo(name = "user_id") val userId: Int,
     @ColumnInfo(name = "trip_info_id") val tripInfoId: Int? = null
 

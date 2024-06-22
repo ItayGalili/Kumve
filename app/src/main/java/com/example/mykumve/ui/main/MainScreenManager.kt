@@ -45,8 +45,8 @@ class MainScreenManager: Fragment(){
         tripAdapter = TripAdapter(emptyList(), viewModel)
         binding.mainRecyclerView.adapter = tripAdapter
         binding.mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        viewModel.getAllTrips().observe(viewLifecycleOwner) { trips ->
+        val userId = 0 // Todo change dynamically
+        viewModel.getTripsByUserId(userId).observe(viewLifecycleOwner) { trips ->
             tripAdapter.trips = trips
             tripAdapter.notifyDataSetChanged()
         }

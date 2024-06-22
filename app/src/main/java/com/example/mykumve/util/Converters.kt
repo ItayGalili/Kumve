@@ -66,4 +66,25 @@ class Converters {
     fun toDate(timestamp: Long?): Date? {
         return timestamp?.let { Date(it) }
     }
+
+    @TypeConverter
+    fun fromEquipmentList(equipments: List<Equipment>?): String? {
+        if (equipments == null) {
+            return null
+        }
+        val gson = Gson()
+        val type = object : TypeToken<List<Equipment>>() {}.type
+        return gson.toJson(equipments, type)
+    }
+
+    @TypeConverter
+    fun toEquipmentList(equipmentsString: String?): List<Equipment>? {
+        if (equipmentsString == null) {
+            return null
+        }
+        val gson = Gson()
+        val type = object : TypeToken<List<Equipment>>() {}.type
+        return gson.fromJson(equipmentsString, type)
+    }
+
 }
