@@ -1,5 +1,6 @@
 package com.example.mykumve.ui.trip
 
+import android.app.DatePickerDialog
 import com.example.mykumve.util.Converters
 import android.content.Intent
 import android.net.Uri
@@ -20,7 +21,12 @@ import com.example.mykumve.databinding.TravelManagerViewBinding
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.EncryptionUtils
 import com.example.mykumve.util.UserManager
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
+
+
 
 class TripManager : Fragment() {
 
@@ -59,6 +65,21 @@ class TripManager : Fragment() {
             // Handle the case where the user is not logged in
             Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()
             // You can navigate to the login screen or take appropriate action
+        }
+
+        binding.dateBtn.setOnClickListener {
+            val c = Calendar.getInstance()
+            val listener = DatePickerDialog.OnDateSetListener { dataPicker, year, month, dayOfMonth ->
+                    val calendar = Calendar.getInstance()
+                    calendar.set(Calendar.YEAR, year)
+                    calendar.set(Calendar.MONTH, month)
+                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+                    val dateFormat = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
+                    binding.datePick.text = dateFormat.format(calendar.time)
+                }
+            val dtd = DatePickerDialog(requireContext(), listener,c.get(Calendar.YEAR),c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))
+            dtd.show()
         }
 
         binding.doneBtn.setOnClickListener {

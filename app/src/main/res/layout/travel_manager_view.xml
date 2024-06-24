@@ -24,7 +24,8 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_gravity="center"
-        android:src="@android:drawable/ic_menu_upload" />
+        android:src="@android:drawable/ic_menu_upload"
+        android:scaleType="fitCenter"/>
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
@@ -58,6 +59,14 @@
 
             />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="@color/statusBarColor"
+        android:id="@+id/datePick"/>
+
 
     <LinearLayout
         android:layout_width="match_parent"
