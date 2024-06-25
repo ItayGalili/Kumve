@@ -22,4 +22,6 @@
     <string name="registration_successful">Registration successful</string>
     <string name="login_failed">Login failed</string>
     <string name="login_successful">Login successful</string>
+
+    <string name="my_api_key">AIzaSyAoBID_DvdOd0GjsetAzVJfS_SIk7Qad_I</string>
 </resources>
