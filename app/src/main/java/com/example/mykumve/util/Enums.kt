@@ -22,3 +22,13 @@ data class Equipment(
     val done: Boolean,
     val userId: Int
 )
+
+enum class TripInvitationStatus(val value: Int) {
+    PENDING(0),
+    APPROVED(1),
+    REJECTED(2);
+
+    companion object {
+        fun fromInt(value: Int) = TripInvitationStatus.values().first { it.value == value }
+    }
+}

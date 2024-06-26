@@ -3,9 +3,7 @@ package com.example.mykumve.data.db.repository
 import android.app.Application
 import com.example.mykumve.data.db.local_db.AppDatabase
 import com.example.mykumve.data.db.local_db.UserDao
-import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.User
-import com.example.mykumve.util.DifficultyLevel
 
 
 /**
@@ -32,7 +30,7 @@ class UserRepository(application: Application){
         return try {
             userDao?.insertUser(user)
             true
-        } catch (e: Exception) {
+        } catch (e: Exception) { // todo add log
             false
         }
     }

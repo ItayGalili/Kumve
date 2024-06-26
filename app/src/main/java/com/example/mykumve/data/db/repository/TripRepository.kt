@@ -4,7 +4,11 @@ import android.app.Application
 import com.example.mykumve.data.db.local_db.TripDao
 import com.example.mykumve.data.model.Trip
 import androidx.lifecycle.LiveData
+import com.example.mykumve.data.db.dao.TripInvitationDao
 import com.example.mykumve.data.db.local_db.AppDatabase
+import com.example.mykumve.data.db.local_db.UserDao
+import com.example.mykumve.data.model.TripInvitation
+import com.example.mykumve.util.TripInvitationStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -23,10 +27,15 @@ class TripRepository(application: Application): CoroutineScope {
         get() = Dispatchers.IO
 
     private var tripDao:TripDao? = null
+    private var userDao: UserDao? = null
+    private var tripInvitationDao: TripInvitationDao? = null
+
 
     init {
         val db = AppDatabase.getDatabase(application)
         tripDao = db.tripDao()
+        tripInvitationDao = db.tripInvitationDao()
+        userDao = db.userDao()
     }
 
     fun getAllTrips(): LiveData<List<Trip>>? {
@@ -58,6 +67,39 @@ class TripRepository(application: Application): CoroutineScope {
     fun getTripsByUserId(userId: Int): LiveData<List<Trip>>? {
         return tripDao?.getTripsByUserId(userId)
     }
+
+    suspend fun sendTripInvitation(invitation: TripInvitation): Boolean {
+        return try {
+            tripInvitationDao?.insertTripInvitation(invitation)
+            true
+        } catch (e: Exception) { // todo add log
+            false
+        }
+    }
+
+    suspend fun respondToTripInvitation(invitation: TripInvitation, status: TripInvitationStatus): Boolean {
+        return try {
+            invitation.status = status
+            tripInvitationDao?.updateTripInvitation(invitation)
+            if (status == TripInvitationStatus.APPROVED) {
+                val trip = tripDao?.getTripById(invitation.tripId)?.value
+                val user = userDao?.getUserById(invitation.userId)
+                if (trip != null && user != null) {
+                    val updatedParticipants = trip.participants?.toMutableList() ?: mutableListOf()
+                    updatedParticipants.add(user)
+                    tripDao?.updateTrip(trip)
+                }
+            }
+            true
+        } catch (e: Exception) { // todo add log
+            false
+        }
+    }
+
+    suspend fun getTripInvitationsByTripId(tripId: Int): List<TripInvitation>? {
+        return tripInvitationDao?.getTripInvitationsByTripId(tripId)
+    }
+
 
 }
 

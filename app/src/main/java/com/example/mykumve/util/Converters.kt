@@ -87,4 +87,15 @@ class Converters {
         return gson.fromJson(equipmentsString, type)
     }
 
+    @TypeConverter
+    fun fromTripInvitationStatus(value: Int): TripInvitationStatus {
+        return TripInvitationStatus.fromInt(value)
+    }
+
+    @TypeConverter
+    fun tripInvitationStatusToInt(status: TripInvitationStatus): Int {
+        return status.value
+    }
+
+
 }

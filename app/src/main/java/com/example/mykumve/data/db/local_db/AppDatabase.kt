@@ -6,6 +6,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.mykumve.data.db.dao.TripInvitationDao
 import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.TripInfo
 import com.example.mykumve.data.model.User
@@ -16,12 +17,13 @@ import com.example.mykumve.data.model.User
  *
  * TODO: Add any additional entities and their DAOs if necessary.
  */
-@Database(entities = [User::class, Trip::class, TripInfo::class], version = 1)
+@Database(entities = [User::class, Trip::class, TripInfo::class], version = 2)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun tripDao(): TripDao
     abstract fun tripInfoDao(): TripInfoDao
     abstract fun userDao(): UserDao
+    abstract fun tripInvitationDao(): TripInvitationDao
 
     companion object{
         @Volatile
