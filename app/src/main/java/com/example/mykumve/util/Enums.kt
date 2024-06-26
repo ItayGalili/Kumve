@@ -37,3 +37,7 @@ enum class ShareLevel(val value: Int) {
     }
 }
 
+data class Result(
+    val success: Boolean,
+    val reason: String
+)

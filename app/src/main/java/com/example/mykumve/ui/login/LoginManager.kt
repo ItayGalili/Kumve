@@ -14,7 +14,7 @@ import com.example.mykumve.databinding.LoginBinding
 import com.example.mykumve.ui.viewmodel.UserViewModel
 import com.example.mykumve.util.EncryptionUtils
 import com.example.mykumve.util.UserManager
-import kotlinx.coroutines.runBlocking
+import com.example.mykumve.util.Result
 
 class LoginManager : Fragment() {
 
@@ -29,18 +29,19 @@ class LoginManager : Fragment() {
         _binding = LoginBinding.inflate(inflater, container, false)
 
         binding.LoginBtn.setOnClickListener {
-            val username = binding.emailAd.text.toString()
+            val email = binding.emailAd.text.toString()
             val password = binding.password.text.toString()
 
-            runBlocking {
-                if (loginUser(username, password)) {
-                    Toast.makeText(requireContext(), R.string.login_successful, Toast.LENGTH_SHORT).show()
-
+            loginUser(email, password) { isLoggedInUser ->
+                if (isLoggedInUser.success) {
+                    Toast.makeText(requireContext(), R.string.login_successful, Toast.LENGTH_SHORT)
+                        .show()
                     // todo - make sure user can't get back to login page
                     // Navigate to main screen
                     findNavController().navigate(R.id.action_loginManager_to_mainScreenManager)
                 } else {
-                    Toast.makeText(requireContext(), R.string.login_failed, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), R.string.login_failed, Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }
@@ -62,20 +63,23 @@ class LoginManager : Fragment() {
         return binding.root
     }
 
-    private suspend fun loginUser(username: String, password: String): Boolean {
-        val user = userViewModel.getUserByEmail(username)
-        return if (user != null) {
-            val passwordHash = EncryptionUtils.hashPassword(password, user.salt)
-            if (passwordHash == user.hashedPassword) {
-                UserManager.saveUser(user)
-                true
+    private fun loginUser(email: String, password: String, callback: (Result) -> Unit) {
+        userViewModel.getUserByEmail(email)?.observe(viewLifecycleOwner) { user ->
+            val isLoggedInUser = if (user != null) {
+                val passwordHash = EncryptionUtils.hashPassword(password, user.salt)
+                if (passwordHash == user.hashedPassword) {
+                    UserManager.saveUser(user)
+                    Result(true, R.string.login_successful.toString())
+                } else {
+                    Result(false, R.string.login_failed.toString() + " incorrect password") // todo
+                }
             } else {
-                false
+                    Result(false, R.string.login_failed.toString() + " user not found") // todo
             }
-        } else {
-            false
+            callback(isLoggedInUser)
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

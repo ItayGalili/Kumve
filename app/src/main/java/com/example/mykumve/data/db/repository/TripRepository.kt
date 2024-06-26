@@ -11,6 +11,7 @@ import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.util.TripInvitationStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
@@ -46,20 +47,20 @@ class TripRepository(application: Application): CoroutineScope {
         return tripDao?.getTripById(id)
     }
 
-    suspend fun insertTrip(trip: Trip) {
-        withContext(Dispatchers.IO) {
+    fun insertTrip(trip: Trip) {
+        launch {
             tripDao?.insertTrip(trip)
         }
     }
 
-    suspend fun updateTrip(trip: Trip) {
-        withContext(Dispatchers.IO) {
+    fun updateTrip(trip: Trip) {
+        launch {
             tripDao?.updateTrip(trip)
         }
     }
 
-    suspend fun deleteTrip(trip: Trip) {
-        withContext(Dispatchers.IO) {
+    fun deleteTrip(trip: Trip) {
+        launch {
             tripDao?.deleteTrip(trip)
         }
     }
