@@ -42,8 +42,6 @@ android {
 
 dependencies {
     implementation ("com.google.android.gms:play-services-location:21.3.0")
-    implementation ("com.google.android.gms:play-services-base:21.3.0")
-    implementation ("com.google.android.gms:play-services-maps:21.3.0")
     implementation ("com.google.android.gms:play-services-places:17.1.0")
     implementation ("androidx.appcompat:appcompat:1.7.0")
 
