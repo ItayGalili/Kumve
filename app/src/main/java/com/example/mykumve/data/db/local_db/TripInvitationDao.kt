@@ -1,4 +1,4 @@
-package com.example.mykumve.data.db.dao
+package com.example.mykumve.data.db.local_db
 
 import androidx.room.Dao
 import androidx.room.Insert

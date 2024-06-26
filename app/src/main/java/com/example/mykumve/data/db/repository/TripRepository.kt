@@ -4,8 +4,8 @@ import android.app.Application
 import com.example.mykumve.data.db.local_db.TripDao
 import com.example.mykumve.data.model.Trip
 import androidx.lifecycle.LiveData
-import com.example.mykumve.data.db.dao.TripInvitationDao
 import com.example.mykumve.data.db.local_db.AppDatabase
+import com.example.mykumve.data.db.local_db.TripInvitationDao
 import com.example.mykumve.data.db.local_db.UserDao
 import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.util.TripInvitationStatus

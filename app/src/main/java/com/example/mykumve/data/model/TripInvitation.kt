@@ -7,11 +7,10 @@ import com.example.mykumve.util.Converters
 import com.example.mykumve.util.TripInvitationStatus
 
 @Entity(tableName = "trip_invitations")
-@TypeConverters(Converters::class)
 data class TripInvitation(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     var tripId: Int,
     var userId: Int,
-    var status: TripInvitationStatus = TripInvitationStatus.PENDING
+    @TypeConverters(Converters::class) var status: TripInvitationStatus = TripInvitationStatus.PENDING
 )

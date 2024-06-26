@@ -22,4 +22,22 @@
     <string name="registration_successful">Registration successful</string>
     <string name="login_failed">Login failed</string>
     <string name="login_successful">Login successful</string>
+    <string name="north">North</string>
+    <string name="upper_galilee">Upper Galilee, Finger of the Galilee and Golan</string>
+    <string name="western_galilee">Western Galilee</string>
+    <string name="haifa_and_carmel">Haifa and Carmel</string>
+    <string name="lower_galilee">Lower Galilee, Valleys and Gilboa</string>
+    <string name="center">Center</string>
+    <string name="sharon">Sharon</string>
+    <string name="shfela">Shfela</string>
+    <string name="samaria">Samaria</string>
+    <string name="coastal_plain_and_gush_dan">Coastal Plain and Gush Dan</string>
+    <string name="jerusalem_and_surroundings">Jerusalem and Surroundings</string>
+    <string name="jerusalem_hills_and_beit_shemesh">Jerusalem Hills and Beit Shemesh Area</string>
+    <string name="jerusalem">Jerusalem</string>
+    <string name="south">South</string>
+    <string name="dead_sea_and_judean_desert">Dead Sea and Judean Desert</string>
+    <string name="northern_negev">Northern Negev</string>
+    <string name="central_negev_and_craters">Central Negev and the Craters</string>
+    <string name="southern_negev_and_eilat_mountains">Southern Negev and Eilat Mountains</string>
 </resources>
