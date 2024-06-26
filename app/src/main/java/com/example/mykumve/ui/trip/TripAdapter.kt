@@ -3,6 +3,7 @@ package com.example.mykumve.ui.trip
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.mykumve.data.model.Trip
 import com.example.mykumve.databinding.TravelCardBinding
 import com.example.mykumve.ui.viewmodel.TripViewModel
@@ -17,7 +18,6 @@ class TripAdapter(var trips: List<Trip>, private val viewModel: TripViewModel) :
             binding.areaCard.text = "Dummy area"
             binding.dateCard.text = Converters().toDate(trip.gatherTime.toString().toLong())?.toFormattedString()
             binding.levelCard.text = "Dummy difficulty"
-            // TODO: load the image
         }
     }
 

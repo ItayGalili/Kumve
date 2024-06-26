@@ -82,6 +82,7 @@ class TripManager : Fragment() {
             dtd.show()
         }
 
+
         binding.doneBtn.setOnClickListener {
             // Check if currentUser is not null
             currentUser?.let { user ->
@@ -98,7 +99,8 @@ class TripManager : Fragment() {
                     participants = listOf(user),
                     equipment = null,
                     userId = user.id,
-                    tripInfoId = null
+                    tripInfoId = null,
+
                 )
 
                 // Add the trip to the viewModel
@@ -115,6 +117,7 @@ class TripManager : Fragment() {
 
         binding.tripImage.setOnClickListener {
             pickImageLauncher.launch(arrayOf("image/*"))
+
         }
         return binding.root
     }
