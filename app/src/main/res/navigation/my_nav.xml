@@ -53,6 +53,9 @@
             app:popExitAnim="@anim/to_left"
             app:popUpTo="@id/mainScreenManager"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_travelManager_to_equipmentFragment"
+            app:destination="@id/equipmentFragment" />
     </fragment>
     <fragment
         android:id="@+id/networkManager"
@@ -90,4 +93,9 @@
         android:name="com.example.mykumve.ui.trip.TripReviewManager"
         android:label="trip_review"
         tools:layout="@layout/trip_review" />
+    <fragment
+        android:id="@+id/equipmentFragment"
+        android:name="com.example.mykumve.ui.trip.EquipmentFragment"
+        android:label="equipment_list"
+        tools:layout="@layout/equipment_list" />
 </navigation>

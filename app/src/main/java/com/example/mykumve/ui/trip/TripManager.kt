@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
@@ -46,6 +47,7 @@ class TripManager : Fragment() {
             imageUri = it
         }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
     }
@@ -67,6 +69,7 @@ class TripManager : Fragment() {
             // You can navigate to the login screen or take appropriate action
         }
 
+        //date
         binding.dateBtn.setOnClickListener {
             val c = Calendar.getInstance()
             val listener = DatePickerDialog.OnDateSetListener { dataPicker, year, month, dayOfMonth ->
@@ -80,6 +83,16 @@ class TripManager : Fragment() {
                 }
             val dtd = DatePickerDialog(requireContext(), listener,c.get(Calendar.YEAR),c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))
             dtd.show()
+        }
+
+
+
+        //equipment list:
+        binding.listBtn.setOnClickListener {
+            val transaction: FragmentTransaction = parentFragmentManager.beginTransaction()
+            transaction.replace(R.id.travelManager, EquipmentFragment())
+            transaction.addToBackStack(null)
+            transaction.commit()
         }
 
 

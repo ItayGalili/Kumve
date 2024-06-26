@@ -66,7 +66,7 @@
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/list_card"
+                    android:id="@+id/listCardBtn"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_weight="1"
