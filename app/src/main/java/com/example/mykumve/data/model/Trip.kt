@@ -24,14 +24,17 @@ import com.example.mykumve.util.Equipment
 )
 @TypeConverters(Converters::class)
 data class Trip(
-    @PrimaryKey(autoGenerate = true) var id: Int = 0,
-    @ColumnInfo(name = "title") val title: String,
-    @ColumnInfo(name = "gather_time") val gatherTime: Long?,
-    @ColumnInfo(name = "gather_place") val gatherPlace: String?,
-    @ColumnInfo(name = "notes") val notes: String?,
-    @ColumnInfo(name = "participants") val participants: List<User>?,
-    @ColumnInfo(name = "equipment") val equipment: List<Equipment>?,
-    @ColumnInfo(name = "user_id") val userId: Int,
-    @ColumnInfo(name = "trip_info_id") val tripInfoId: Int? = null
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @ColumnInfo(name = "title") var title: String,
+    @ColumnInfo(name = "gather_time") var gatherTime: Long?,
+    @ColumnInfo(name = "participants") var participants: MutableList<User>?,
+    @ColumnInfo(name = "image") var image: String?,
+    @ColumnInfo(name = "equipment") var equipment: List<String>?,
+    @ColumnInfo(name = "user_id") var userId: Int,
+    @ColumnInfo(name = "route_id") var routeId: Int,
+    @ColumnInfo(name = "notes") var notes: List<String>?,
+    @ColumnInfo(name = "end_date") var endDate: Long?,
+    @ColumnInfo(name = "invitations") var invitations: MutableList<TripInvitation> = mutableListOf()
+
 
 )
