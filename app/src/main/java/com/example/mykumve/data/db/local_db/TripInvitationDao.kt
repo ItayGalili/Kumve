@@ -1,0 +1,19 @@
+package com.example.mykumve.data.db.local_db
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
+import com.example.mykumve.data.model.TripInvitation
+
+@Dao
+interface TripInvitationDao {
+    @Insert
+    suspend fun insertTripInvitation(invitation: TripInvitation): Long
+
+    @Update
+    suspend fun updateTripInvitation(invitation: TripInvitation)
+
+    @Query("SELECT * FROM trip_invitations WHERE tripId = :tripId")
+    suspend fun getTripInvitationsByTripId(tripId: Int): List<TripInvitation>
+}

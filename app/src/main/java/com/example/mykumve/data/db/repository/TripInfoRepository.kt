@@ -4,6 +4,7 @@ import android.app.Application
 import com.example.mykumve.data.db.local_db.TripInfoDao
 import androidx.lifecycle.LiveData
 import com.example.mykumve.data.db.local_db.AppDatabase
+import com.example.mykumve.data.db.local_db.AreaDao
 import com.example.mykumve.data.model.TripInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,10 +23,13 @@ class TripInfoRepository(application: Application): CoroutineScope {
         get() = Dispatchers.IO
 
     private var tripInfoDao: TripInfoDao? = null
+    private var areaDao: AreaDao? = null
+
 
     init {
         val db = AppDatabase.getDatabase(application)
         tripInfoDao = db.tripInfoDao()
+        areaDao = db.areaDao()
     }
 
 
@@ -54,6 +58,10 @@ class TripInfoRepository(application: Application): CoroutineScope {
             tripInfoDao?.deleteTripInfo(tripInfo)
         }
     }
+
+    suspend fun getAllAreas() = areaDao?.getAllAreas()
+    suspend fun getSubAreasByAreaId(areaId: Int) = areaDao?.getSubAreasByAreaId(areaId)
+
 }
 
 

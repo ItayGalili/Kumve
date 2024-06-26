@@ -22,7 +22,7 @@ class SocialNetworkManager : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = TravelNetworkBinding.inflate(inflater, container, false)
 
         binding.msNetworkBtn.setOnClickListener{

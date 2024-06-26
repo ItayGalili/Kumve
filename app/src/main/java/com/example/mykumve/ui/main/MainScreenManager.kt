@@ -18,13 +18,14 @@ import com.example.mykumve.databinding.MainScreenBinding
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.UserManager
 
-class MainScreenManager: Fragment(){
+class MainScreenManager : Fragment() {
 
-    private var _binding : MainScreenBinding? = null
+    private var _binding: MainScreenBinding? = null
     private val binding get() = _binding!!
-    private val viewModel : TripViewModel by activityViewModels()
+    private val viewModel: TripViewModel by activityViewModels()
     private lateinit var tripAdapter: TripAdapter
     private var currentUser: User? = null
+    private var _firstTimeShowingScreen = true
 
 
     override fun onCreateView(
@@ -32,18 +33,19 @@ class MainScreenManager: Fragment(){
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = MainScreenBinding.inflate(inflater,container,false)
+        _binding = MainScreenBinding.inflate(inflater, container, false)
 
-        binding.addBtn.setOnClickListener{
+        binding.addBtn.setOnClickListener {
             findNavController().navigate(R.id.action_mainScreenManager_to_travelManager)
         }
 
-        binding.partnersBtnMs.setOnClickListener{
+        binding.partnersBtnMs.setOnClickListener {
             findNavController().navigate(R.id.action_mainScreenManager_to_networkManager)
         }
 
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -54,11 +56,14 @@ class MainScreenManager: Fragment(){
         if (UserManager.isLoggedIn()) {
             currentUser = UserManager.getUser()
             currentUser?.let {
-                Toast.makeText( //todo only first time
-                    requireContext(),
-                    getString(R.string.welcome_user, it.firstName),
-                    Toast.LENGTH_SHORT
-                ).show()
+                if (_firstTimeShowingScreen) {
+                    Toast.makeText( //todo only first time
+                        requireContext(),
+                        getString(R.string.welcome_user, it.firstName),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    _firstTimeShowingScreen = false
+                }
 
                 viewModel.getTripsByUserId(it.id)?.observe(viewLifecycleOwner) { trips ->
                     tripAdapter.trips = trips
@@ -76,7 +81,10 @@ class MainScreenManager: Fragment(){
             override fun getMovementFlags(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder
-            ) = makeFlag(ItemTouchHelper.ACTION_STATE_SWIPE, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
+            ) = makeFlag(
+                ItemTouchHelper.ACTION_STATE_SWIPE,
+                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            )
 
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -87,7 +95,11 @@ class MainScreenManager: Fragment(){
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                Toast.makeText(requireContext(), "adapterPosition=${viewHolder.adapterPosition}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "adapterPosition=${viewHolder.adapterPosition}",
+                    Toast.LENGTH_SHORT
+                ).show()
                 viewModel.deleteTrip(tripAdapter.trips[viewHolder.adapterPosition])
                 tripAdapter.notifyItemRemoved(viewHolder.adapterPosition)
             }

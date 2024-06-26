@@ -21,6 +21,7 @@ import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.TravelManagerViewBinding
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.EncryptionUtils
+import com.example.mykumve.util.ShareLevel
 import com.example.mykumve.util.UserManager
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -99,21 +100,24 @@ class TripManager : Fragment() {
         binding.doneBtn.setOnClickListener {
             // Check if currentUser is not null
             currentUser?.let { user ->
-                val startDate: Date = Date(2024, 6, 1, 0, 9, 0)
+                val startDate: Date = Date(2024, 6, 1, 9, 0, 0)
+                val endDate: Date = Date(2024, 6, 1, 18, 0, 0)
                 // Convert startDate to a timestamp
                 val gatherTime = Converters().fromDate(startDate)
+                val endTime = Converters().fromDate(endDate)
 
                 // Create a new Trip object with the provided details
                 val trip = Trip(
                     title = binding.nameTrip.text.toString(),
                     gatherTime = gatherTime,
-                    gatherPlace = "",
-                    notes = binding.description.text.toString(),
-                    participants = listOf(user),
+                    endDate = endTime,
+                    notes = mutableListOf(binding.description.text.toString()),
+                    participants = mutableListOf(user),
                     equipment = null,
                     userId = user.id,
+                    image = null,
                     tripInfoId = null,
-
+                    shareLevel = ShareLevel.PUBLIC,
                 )
 
                 // Add the trip to the viewModel
