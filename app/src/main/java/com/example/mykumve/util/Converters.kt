@@ -1,6 +1,7 @@
 package com.example.mykumve.util
 
 import androidx.room.TypeConverter
+import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.data.model.Area
 import com.example.mykumve.data.data_classes.Point
 import com.example.mykumve.data.model.TripInvitation

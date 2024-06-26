@@ -2,6 +2,7 @@ package com.example.mykumve.ui.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mykumve.data.db.repository.UserRepository
@@ -47,6 +48,10 @@ class   UserViewModel (
         return withContext(Dispatchers.IO) {
             userRepository.getUserByEmail(email)
         }
+    }
+    fun getUserById(id: Int): LiveData<User>? {
+         // todo get should return live data
+            return userRepository.getUserById(id)
     }
 
 }

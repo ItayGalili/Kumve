@@ -1,6 +1,7 @@
 package com.example.mykumve.data.db.repository
 
 import android.app.Application
+import androidx.lifecycle.LiveData
 import com.example.mykumve.data.db.local_db.AppDatabase
 import com.example.mykumve.data.db.local_db.UserDao
 import com.example.mykumve.data.model.User
@@ -18,7 +19,7 @@ class UserRepository(application: Application){
         userDao = db.userDao()
     }
 
-    fun getUserById(id: Int) =
+    fun getUserById(id: Int) : LiveData<User>? =
         userDao?.getUserById(id)//    fun getAllUsers() = userDao?.getAllUsers()
 
     fun getUserByEmail(email: String) =

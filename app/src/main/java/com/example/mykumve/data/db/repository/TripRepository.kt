@@ -83,7 +83,7 @@ class TripRepository(application: Application): CoroutineScope {
             tripInvitationDao?.updateTripInvitation(invitation)
             if (status == TripInvitationStatus.APPROVED) {
                 val trip = tripDao?.getTripById(invitation.tripId)?.value
-                val user = userDao?.getUserById(invitation.userId)
+                val user = userDao?.getUserById(invitation.userId)?.value
                 if (trip != null && user != null) {
                     trip.participants?.add(user)
                     tripDao?.updateTrip(trip)

@@ -96,16 +96,22 @@ class TripViewModel(
 
     fun sendTripInvitation(tripId: Int, userId: Int, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val invitation = TripInvitation(tripId=tripId, userId = userId)
+            val invitation = TripInvitation(tripId = tripId, userId = userId)
             val result = tripRepository.sendTripInvitation(invitation)
             callback(result)
         }
     }
 
     // Method to respond to a trip invitation
-    fun respondToTripInvitation(tripId: Int, invitationId: Int, status: TripInvitationStatus, callback: (Boolean) -> Unit) {
+    fun respondToTripInvitation(
+        tripId: Int,
+        invitationId: Int,
+        status: TripInvitationStatus,
+        callback: (Boolean) -> Unit
+    ) {
         viewModelScope.launch {
-            val invitation = tripRepository.getTripInvitationsByTripId(tripId)?.value?.find { it.id == invitationId }
+            val invitation =
+                tripRepository.getTripInvitationsByTripId(tripId)?.value?.find { it.id == invitationId }
             if (invitation != null) {
                 invitation.status = status
                 val result = tripRepository.respondToTripInvitation(invitation)
@@ -125,8 +131,62 @@ class TripViewModel(
     fun hasPendingInvitations(userId: Int, tripId: Int, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             val invitations = tripRepository.getTripInvitationsByTripId(tripId)?.value
-            val hasPending = invitations?.any { it.userId == userId && it.status == TripInvitationStatus.PENDING } == true
+            val hasPending =
+                invitations?.any { it.userId == userId && it.status == TripInvitationStatus.PENDING } == true
             callback(hasPending)
         }
+    }
+
+
+    // CRUD methods for equipments
+    fun addEquipment(tripId: Int, equipment: String, callback: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val trip = tripRepository.getTripById(tripId)?.value
+            if (trip != null) {
+                trip.equipment = trip.equipment.orEmpty().toMutableList().apply { add(equipment) }
+                val result = tripRepository.updateTrip(trip)
+                callback(true) // todo refactor async and  return true result
+            } else {
+                callback(false)
+            }
+        }
+    }
+
+    fun removeEquipment(tripId: Int, equipment: String, callback: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val trip = tripRepository.getTripById(tripId)?.value
+            if (trip != null) {
+                trip.equipment =
+                    trip.equipment.orEmpty().toMutableList().apply { remove(equipment) }
+                val result = tripRepository.updateTrip(trip)
+                callback(true) // todo refactor async and  return true result
+            } else {
+                callback(false)
+            }
+        }
+    }
+
+    fun updateEquipment(
+        tripId: Int,
+        oldEquipment: String,
+        newEquipment: String,
+        callback: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
+            val trip = tripRepository.getTripById(tripId)?.value
+            if (trip != null) {
+                trip.equipment = trip.equipment.orEmpty().toMutableList().apply {
+                    val index = indexOf(oldEquipment)
+                    if (index != -1) {
+                        set(index, newEquipment)
+                    }
+                }
+                val result = tripRepository.updateTrip(trip)
+                callback(true) // todo refactor async and  return true result
+            } else {
+                callback(false)
+            }
+        }
+
     }
 }
