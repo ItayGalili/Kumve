@@ -121,5 +121,12 @@ class TripViewModel(
         return tripRepository.getTripInvitationsByTripId(tripId)
     }
 
-
+    // Method to check if a user has pending invitations for a specific trip
+    fun hasPendingInvitations(userId: Int, tripId: Int, callback: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val invitations = tripRepository.getTripInvitationsByTripId(tripId)?.value
+            val hasPending = invitations?.any { it.userId == userId && it.status == TripInvitationStatus.PENDING } == true
+            callback(hasPending)
+        }
+    }
 }
