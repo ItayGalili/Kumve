@@ -26,6 +26,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/my_api_key"
             />
+        <uses-library
+            android:name="com.google.android.maps"
+            android:required="true" />
     </application>
 
 </manifest>
