@@ -17,11 +17,6 @@ enum class DifficultyLevel(val id: Int, val stringResId: Int) {
     }
 }
 
-data class Equipment(
-    val name: String,
-    val done: Boolean,
-    val userId: Int
-)
 
 enum class TripInvitationStatus(val value: Int) {
     PENDING(0),
@@ -42,3 +37,7 @@ enum class ShareLevel(val value: Int) {
     }
 }
 
+data class Result(
+    val success: Boolean,
+    val reason: String
+)

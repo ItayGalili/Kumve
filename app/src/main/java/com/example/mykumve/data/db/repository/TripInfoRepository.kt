@@ -8,6 +8,7 @@ import com.example.mykumve.data.db.local_db.AreaDao
 import com.example.mykumve.data.model.TripInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
@@ -41,20 +42,20 @@ class TripInfoRepository(application: Application): CoroutineScope {
         return tripInfoDao?.getTripInfoById(id)
     }
 
-    suspend fun insertTripInfo(tripInfo: TripInfo) {
-        withContext(Dispatchers.IO) {
+    fun insertTripInfo(tripInfo: TripInfo) {
+        launch {
             tripInfoDao?.insertTripInfo(tripInfo)
         }
     }
 
-    suspend fun updateTripInfo(tripInfo: TripInfo) {
-        withContext(Dispatchers.IO) {
+    fun updateTripInfo(tripInfo: TripInfo) {
+        launch {
             tripInfoDao?.updateTripInfo(tripInfo)
         }
     }
 
-    suspend fun deleteTripInfo(tripInfo: TripInfo) {
-        withContext(Dispatchers.IO) {
+    fun deleteTripInfo(tripInfo: TripInfo) {
+        launch {
             tripInfoDao?.deleteTripInfo(tripInfo)
         }
     }

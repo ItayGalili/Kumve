@@ -7,6 +7,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.util.ShareLevel
 
 @Entity(
@@ -34,7 +35,7 @@ data class Trip(
     @ColumnInfo(name = "gather_time") var gatherTime: Long?,
     @ColumnInfo(name = "participants") var participants: MutableList<User>?,
     @ColumnInfo(name = "image") var image: String?,
-    @ColumnInfo(name = "equipment") var equipment: MutableList<String>?,
+    @ColumnInfo(name = "equipment") var equipment: MutableList<Equipment>?,
     @ColumnInfo(name = "user_id") var userId: Int,
     @ColumnInfo(name = "trip_info_id") var tripInfoId: Int?,
     @ColumnInfo(name = "notes") var notes: MutableList<String>?,
