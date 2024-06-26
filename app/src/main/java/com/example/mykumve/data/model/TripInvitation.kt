@@ -11,7 +11,7 @@ import com.example.mykumve.util.TripInvitationStatus
 data class TripInvitation(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val tripId: Int,
-    val userId: Int,
+    var tripId: Int,
+    var userId: Int,
     var status: TripInvitationStatus = TripInvitationStatus.PENDING
 )
