@@ -90,10 +90,7 @@ class TripManager : Fragment() {
 
         //equipment list:
         binding.listBtn.setOnClickListener {
-            val transaction: FragmentTransaction = parentFragmentManager.beginTransaction()
-            transaction.replace(R.id.travelManager, EquipmentFragment())
-            transaction.addToBackStack(null)
-            transaction.commit()
+            findNavController().navigate(R.id.action_travelManager_to_equipmentFragment)
         }
 
 

@@ -6,68 +6,49 @@
     app:cardUseCompatPadding="true"
     app:contentPadding="10dp"
     app:cardCornerRadius="10dp"
-    android:background="@color/white"
-    android:backgroundTint="#94C80404">
+    android:id="@+id/eq_card">
+
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        >
 
-        <ImageButton
-            android:id="@+id/checkBox"
+
+        <CheckBox
+            android:id="@+id/equipmentResponsibility"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#DE6A6D"
-            android:src="@drawable/baseline_check_box_outline_blank_24"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#DE6A6D"
+            />
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
+            <EditText
                 android:id="@+id/equipmentName"
-                android:layout_width="250dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Equipment name"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="text"
+                android:background="#DE6A6D"
+
+                />
 
             <TextView
-                android:id="@+id/equipmentResponsibility"
-                android:layout_width="250dp"
+                android:id="@+id/nameRes"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text=""
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/deleteEquipmentBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="#DE6A6D"
-                android:scaleType="fitCenter"
-                android:src="@drawable/garbage" />
-
-            <ImageButton
-                android:id="@+id/editEquipment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="#DE6A6D"
-                android:scaleType="fitCenter"
-                android:src="@drawable/pencil" />
-
+                android:background="#DE6A6D"
+                />
         </LinearLayout>
 
     </LinearLayout>
