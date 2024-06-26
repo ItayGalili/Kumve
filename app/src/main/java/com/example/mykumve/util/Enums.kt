@@ -32,3 +32,13 @@ enum class TripInvitationStatus(val value: Int) {
         fun fromInt(value: Int) = TripInvitationStatus.values().first { it.value == value }
     }
 }
+
+enum class ShareLevel(val value: Int) {
+    PUBLIC(1),
+    PRIVATE(0);
+
+    companion object {
+        fun fromInt(value: Int) = ShareLevel.values().first { it.value == value }
+    }
+}
+

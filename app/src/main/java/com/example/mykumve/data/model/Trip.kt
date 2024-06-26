@@ -7,6 +7,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.example.mykumve.util.Equipment
+import com.example.mykumve.util.ShareLevel
 
 @Entity(tableName = "trips",
     foreignKeys = [ForeignKey(
@@ -34,7 +35,6 @@ data class Trip(
     @ColumnInfo(name = "route_id") var routeId: Int,
     @ColumnInfo(name = "notes") var notes: List<String>?,
     @ColumnInfo(name = "end_date") var endDate: Long?,
-    @ColumnInfo(name = "invitations") var invitations: MutableList<TripInvitation> = mutableListOf()
-
-
+    @ColumnInfo(name = "invitations") var invitations: MutableList<TripInvitation> = mutableListOf(),
+    @ColumnInfo(name = "share_level") var shareLevel: ShareLevel = ShareLevel.PUBLIC
 )

@@ -97,5 +97,14 @@ class Converters {
         return status.value
     }
 
+    @TypeConverter
+    fun fromShareLevel(value: Int): ShareLevel {
+        return ShareLevel.fromInt(value)
+    }
+
+    @TypeConverter
+    fun shareLevelToInt(level: ShareLevel): Int {
+        return level.value
+    }
 
 }
