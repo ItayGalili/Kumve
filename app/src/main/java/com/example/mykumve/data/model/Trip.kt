@@ -32,7 +32,7 @@ data class Trip(
     @ColumnInfo(name = "image") var image: String?,
     @ColumnInfo(name = "equipment") var equipment: List<String>?,
     @ColumnInfo(name = "user_id") var userId: Int,
-    @ColumnInfo(name = "route_id") var routeId: Int,
+    @ColumnInfo(name = "trip_info_id") var tripId: Int,
     @ColumnInfo(name = "notes") var notes: List<String>?,
     @ColumnInfo(name = "end_date") var endDate: Long?,
     @ColumnInfo(name = "invitations") var invitations: MutableList<TripInvitation> = mutableListOf(),
