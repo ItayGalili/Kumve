@@ -16,7 +16,7 @@ import com.example.mykumve.data.model.User
  *
  * TODO: Add any additional entities and their DAOs if necessary.
  */
-@Database(entities = [User::class, Trip::class, TripInfo::class], version = 1)
+@Database(entities = [User::class, Trip::class, TripInfo::class], version = 2)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun tripDao(): TripDao
@@ -30,7 +30,7 @@ abstract class AppDatabase : RoomDatabase() {
         fun getDatabase(context: Context) = instance ?: synchronized(this){
             Room.databaseBuilder(context.applicationContext, AppDatabase::class.java,
                 "kumve_db")
-                .allowMainThreadQueries().build()
+                .build()
         }
     }
 }

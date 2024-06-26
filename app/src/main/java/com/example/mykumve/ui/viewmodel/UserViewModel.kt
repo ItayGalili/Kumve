@@ -2,40 +2,42 @@ package com.example.mykumve.ui.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.mykumve.data.db.repository.UserRepository
 import com.example.mykumve.data.model.User
 import com.example.mykumve.util.EncryptionUtils
 import com.example.mykumve.util.UserManager
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.example.mykumve.util.Result
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+
 
 class   UserViewModel (
     application: Application,
 ) : AndroidViewModel(application) {
 
     private var userRepository: UserRepository = UserRepository(application)
-    fun registerUser(
+    suspend fun registerUser(
         firstName: String,
         surname: String?,
         email: String,
         password: String,
         photo: String?,
         description: String?,
-        callback: (Boolean) -> Unit
+        callback: (Result) -> Unit
     ) {
-        viewModelScope.launch {
-            val existingUser = userRepository.getUserByEmail(email)
+        viewModelScope.launch(Dispatchers.IO){
+            val existingUser = userRepository.getUserByEmail(email)?.value
             if (existingUser != null) {
-                callback(false)
+                callback(Result(false, "User already registered.")) // Todo string
             } else {
                 val salt = EncryptionUtils.generateSalt()
                 val passwordHashed = EncryptionUtils.hashPassword(password, salt)
                 val newUser = User(firstName, surname, email, photo, description, passwordHashed, salt)
-                val result = userRepository.insertUser(newUser)
-                if (result) {
+                val result = userRepository.insertUser(newUser).await()
+                if (result.success) {
                     UserManager.saveUser(newUser)
                 }
                 callback(result)
@@ -43,10 +45,8 @@ class   UserViewModel (
         }
     }
 
-    suspend fun getUserByEmail(email: String): User? {
-        return withContext(Dispatchers.IO) {
-            userRepository.getUserByEmail(email)
-        }
+    fun getUserByEmail(email: String): LiveData<User?>? {
+        return userRepository.getUserByEmail(email)
     }
 
 }

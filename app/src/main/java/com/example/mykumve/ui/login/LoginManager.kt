@@ -14,8 +14,6 @@ import com.example.mykumve.databinding.LoginBinding
 import com.example.mykumve.ui.viewmodel.UserViewModel
 import com.example.mykumve.util.EncryptionUtils
 import com.example.mykumve.util.UserManager
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class LoginManager : Fragment() {
 
@@ -33,8 +31,8 @@ class LoginManager : Fragment() {
             val username = binding.emailAd.text.toString()
             val password = binding.password.text.toString()
 
-            runBlocking {
-                if (loginUser(username, password)) {
+            val loggedInUser = loginUser(username, password)
+                if (loggedInUser) {
                     Toast.makeText(requireContext(), R.string.login_successful, Toast.LENGTH_SHORT).show()
 
                     // todo - make sure user can't get back to login page
@@ -43,7 +41,6 @@ class LoginManager : Fragment() {
                 } else {
                     Toast.makeText(requireContext(), R.string.login_failed, Toast.LENGTH_SHORT).show()
                 }
-            }
         }
 
         binding.password.setOnEditorActionListener { _, actionId, _ ->
@@ -63,8 +60,8 @@ class LoginManager : Fragment() {
         return binding.root
     }
 
-    private suspend fun loginUser(username: String, password: String): Boolean {
-        val user = userViewModel.getUserByEmail(username)
+    private fun loginUser(username: String, password: String): Boolean {
+        val user = userViewModel.getUserByEmail(username)?.value
         return if (user != null) {
             val passwordHash = EncryptionUtils.hashPassword(password, user.salt)
             if (passwordHash == user.hashedPassword) {

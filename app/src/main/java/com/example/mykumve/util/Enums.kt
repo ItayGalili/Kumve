@@ -22,3 +22,8 @@ data class Equipment(
     val done: Boolean,
     val userId: Int
 )
+
+data class Result(
+    val success: Boolean,
+    val reason: String
+)
