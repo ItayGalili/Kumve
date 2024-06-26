@@ -77,9 +77,9 @@ class TripRepository(application: Application): CoroutineScope {
         }
     }
 
-    suspend fun respondToTripInvitation(invitation: TripInvitation, status: TripInvitationStatus): Boolean {
+    suspend fun respondToTripInvitation(invitation: TripInvitation): Boolean {
         return try {
-            invitation.status = status
+            val status = invitation.status
             tripInvitationDao?.updateTripInvitation(invitation)
             if (status == TripInvitationStatus.APPROVED) {
                 val trip = tripDao?.getTripById(invitation.tripId)?.value
@@ -95,7 +95,7 @@ class TripRepository(application: Application): CoroutineScope {
         }
     }
 
-    suspend fun getTripInvitationsByTripId(tripId: Int): List<TripInvitation>? {
+    suspend fun getTripInvitationsByTripId(tripId: Int): LiveData<List<TripInvitation>>? {
         return tripInvitationDao?.getTripInvitationsByTripId(tripId)
     }
 

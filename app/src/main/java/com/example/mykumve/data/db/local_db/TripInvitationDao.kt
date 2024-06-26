@@ -1,5 +1,6 @@
 package com.example.mykumve.data.db.local_db
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -15,5 +16,5 @@ interface TripInvitationDao {
     suspend fun updateTripInvitation(invitation: TripInvitation)
 
     @Query("SELECT * FROM trip_invitations WHERE tripId = :tripId")
-    suspend fun getTripInvitationsByTripId(tripId: Int): List<TripInvitation>
+    suspend fun getTripInvitationsByTripId(tripId: Int): LiveData<List<TripInvitation>>
 }

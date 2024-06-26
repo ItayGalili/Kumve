@@ -9,6 +9,8 @@ import com.example.mykumve.data.model.Trip
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.mykumve.data.model.TripInvitation
+import com.example.mykumve.util.TripInvitationStatus
 import kotlinx.coroutines.launch
 
 
@@ -91,5 +93,33 @@ class TripViewModel(
     fun getTripsByUserId(userId: Int): LiveData<List<Trip>>? {
         return tripRepository.getTripsByUserId(userId)
     }
+
+    fun sendTripInvitation(tripId: Int, userId: Int, callback: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val invitation = TripInvitation(tripId=tripId, userId = userId)
+            val result = tripRepository.sendTripInvitation(invitation)
+            callback(result)
+        }
+    }
+
+    // Method to respond to a trip invitation
+    fun respondToTripInvitation(tripId: Int, invitationId: Int, status: TripInvitationStatus, callback: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val invitation = tripRepository.getTripInvitationsByTripId(tripId)?.value?.find { it.id == invitationId }
+            if (invitation != null) {
+                invitation.status = status
+                val result = tripRepository.respondToTripInvitation(invitation)
+                callback(result)
+            } else {
+                callback(false)
+            }
+        }
+    }
+
+    // Method to get trip invitations by trip ID
+    suspend fun getTripInvitationsByTripId(tripId: Int): LiveData<List<TripInvitation>>? {
+        return tripRepository.getTripInvitationsByTripId(tripId)
+    }
+
 
 }
