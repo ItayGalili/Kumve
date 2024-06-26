@@ -85,8 +85,7 @@ class TripRepository(application: Application): CoroutineScope {
                 val trip = tripDao?.getTripById(invitation.tripId)?.value
                 val user = userDao?.getUserById(invitation.userId)
                 if (trip != null && user != null) {
-                    val updatedParticipants = trip.participants?.toMutableList() ?: mutableListOf()
-                    updatedParticipants.add(user)
+                    trip.participants?.add(user)
                     tripDao?.updateTrip(trip)
                 }
             }
