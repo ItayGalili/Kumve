@@ -9,6 +9,7 @@ import com.example.mykumve.data.model.Trip
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.util.TripInvitationStatus
 import kotlinx.coroutines.launch
@@ -139,7 +140,7 @@ class TripViewModel(
 
 
     // CRUD methods for equipments
-    fun addEquipment(tripId: Int, equipment: String, callback: (Boolean) -> Unit) {
+    fun addEquipment(tripId: Int, equipment: Equipment, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             val trip = tripRepository.getTripById(tripId)?.value
             if (trip != null) {
@@ -152,7 +153,7 @@ class TripViewModel(
         }
     }
 
-    fun removeEquipment(tripId: Int, equipment: String, callback: (Boolean) -> Unit) {
+    fun removeEquipment(tripId: Int, equipment: Equipment, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             val trip = tripRepository.getTripById(tripId)?.value
             if (trip != null) {
@@ -168,8 +169,8 @@ class TripViewModel(
 
     fun updateEquipment(
         tripId: Int,
-        oldEquipment: String,
-        newEquipment: String,
+        oldEquipment: Equipment,
+        newEquipment: Equipment,
         callback: (Boolean) -> Unit
     ) {
         viewModelScope.launch {
