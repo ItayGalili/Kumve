@@ -13,8 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mykumve.ui.trip.TripAdapter
 import com.example.mykumve.R
+import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.MainScreenBinding
+import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.UserManager
 
@@ -22,7 +24,8 @@ class MainScreenManager : Fragment() {
 
     private var _binding: MainScreenBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: TripViewModel by activityViewModels()
+    private val tripViewModel: TripViewModel by activityViewModels()
+    private val sharedViewModel: SharedTripViewModel by activityViewModels()
     private lateinit var tripAdapter: TripAdapter
     private var currentUser: User? = null
     private var _firstTimeShowingScreen = true
@@ -43,13 +46,15 @@ class MainScreenManager : Fragment() {
             findNavController().navigate(R.id.action_mainScreenManager_to_networkManager)
         }
 
+        binding
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        tripAdapter = TripAdapter(emptyList(), viewModel)
+        tripAdapter = TripAdapter(emptyList(), sharedViewModel)
         binding.mainRecyclerView.adapter = tripAdapter
         binding.mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -65,7 +70,7 @@ class MainScreenManager : Fragment() {
                     _firstTimeShowingScreen = false
                 }
 
-                viewModel.getTripsByUserId(it.id)?.observe(viewLifecycleOwner) { trips ->
+                tripViewModel.getTripsByUserId(it.id)?.observe(viewLifecycleOwner) { trips ->
                     tripAdapter.trips = trips
                     tripAdapter.notifyDataSetChanged()
                 }
@@ -100,7 +105,7 @@ class MainScreenManager : Fragment() {
                     "adapterPosition=${viewHolder.adapterPosition}",
                     Toast.LENGTH_SHORT
                 ).show()
-                viewModel.deleteTrip(tripAdapter.trips[viewHolder.adapterPosition])
+                tripViewModel.deleteTrip(tripAdapter.trips[viewHolder.adapterPosition])
                 tripAdapter.notifyItemRemoved(viewHolder.adapterPosition)
             }
 
