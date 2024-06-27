@@ -23,6 +23,9 @@
         <action
             android:id="@+id/action_mainScreenManager_to_tripReviewManager2"
             app:destination="@id/tripReviewManager" />
+        <action
+            android:id="@+id/action_mainScreenManager_to_equipmentFragment"
+            app:destination="@id/equipmentFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerManager"
@@ -97,5 +100,9 @@
         android:id="@+id/equipmentFragment"
         android:name="com.example.mykumve.ui.trip.EquipmentFragment"
         android:label="equipment_list"
-        tools:layout="@layout/equipment_list" />
+        tools:layout="@layout/equipment_list" >
+        <action
+            android:id="@+id/action_equipmentFragment_to_travelManager"
+            app:destination="@id/travelManager" />
+    </fragment>
 </navigation>

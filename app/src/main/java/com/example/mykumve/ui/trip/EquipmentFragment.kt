@@ -8,9 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mykumve.R
 import com.example.mykumve.databinding.EquipmentListBinding
 import com.example.mykumve.databinding.EquipmentCardBinding
 import com.google.gson.Gson
@@ -50,6 +52,8 @@ class EquipmentFragment : Fragment() {
 
         binding.closeEquipmentBtn.setOnClickListener {
             saveData()
+            findNavController().navigate(R.id.action_equipmentFragment_to_travelManager)
+
         }
     }
 
