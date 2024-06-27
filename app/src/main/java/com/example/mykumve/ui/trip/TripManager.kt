@@ -12,16 +12,13 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
 import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.TravelManagerViewBinding
-import com.example.mykumve.ui.map.MapFragment
 import com.example.mykumve.ui.viewmodel.TripViewModel
-import com.example.mykumve.util.EncryptionUtils
 import com.example.mykumve.util.ShareLevel
 import com.example.mykumve.util.UserManager
 import java.text.SimpleDateFormat
