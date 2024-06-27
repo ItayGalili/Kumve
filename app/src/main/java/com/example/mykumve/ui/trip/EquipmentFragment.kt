@@ -4,17 +4,22 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import com.example.mykumve.util.UserManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mykumve.R
+import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.databinding.EquipmentListBinding
 import com.example.mykumve.databinding.EquipmentCardBinding
+import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
@@ -26,13 +31,15 @@ class EquipmentFragment : Fragment() {
     private lateinit var adapter: EquipmentAdapter
     private lateinit var sharedPreferences: SharedPreferences
     private val gson = Gson()
+    private val sharedTripViewModel: SharedTripViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = EquipmentListBinding.inflate(inflater, container, false)
-        sharedPreferences = requireContext().getSharedPreferences("equipment_prefs", Context.MODE_PRIVATE)
+        sharedPreferences =
+            requireContext().getSharedPreferences("equipment_prefs", Context.MODE_PRIVATE)
         return binding.root
     }
 
@@ -52,13 +59,15 @@ class EquipmentFragment : Fragment() {
 
         binding.closeEquipmentBtn.setOnClickListener {
             saveData()
+            sharedTripViewModel.updateEquipment(adapter.getEquipmentList())  // Update equipment list in the view model
             findNavController().navigate(R.id.action_equipmentFragment_to_travelManager)
 
         }
     }
 
     private fun addNewEquipment() {
-        val newEquipment = Equipment("New Equipment", "")
+
+        val newEquipment = Equipment("New Equipment ${adapter.itemCount + 1}", false,  null) //todo
         adapter.addEquipment(newEquipment)
     }
 
@@ -85,19 +94,18 @@ class EquipmentFragment : Fragment() {
     }
 }
 
-data class Equipment(val name: String, val responsibility: String)
-
 class EquipmentAdapter(private val equipmentList: MutableList<Equipment>) :
     RecyclerView.Adapter<EquipmentAdapter.EquipmentViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EquipmentViewHolder {
-        val binding = EquipmentCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            EquipmentCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return EquipmentViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: EquipmentViewHolder, position: Int) {
         val equipment = equipmentList[position]
-        holder.bind(equipment)
+        holder.bind(equipment, this)
     }
 
     override fun getItemCount() = equipmentList.size
@@ -116,31 +124,46 @@ class EquipmentAdapter(private val equipmentList: MutableList<Equipment>) :
         return equipmentList
     }
 
-    class EquipmentViewHolder(private val binding: EquipmentCardBinding) : RecyclerView.ViewHolder(binding.root) {
+    fun updateEquipment(position: Int, updatedEquipment: Equipment) {
+        equipmentList[position] = updatedEquipment
+        notifyItemChanged(position)
+    }
 
-        fun bind(equipment: Equipment) {
-            //binding.equipmentName.text = equipment.name
-            binding.equipmentResponsibility.text = equipment.responsibility
+    class EquipmentViewHolder(private val binding: EquipmentCardBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-            binding.equipmentResponsibility.setOnClickListener {
-                if (binding.equipmentResponsibility.isChecked) {
-                    binding.equipmentResponsibility.isChecked = true
-                    binding.nameRes.text = "itay"
-                    binding.equipmentResponsibility.setBackgroundColor(Color.parseColor("#8BC34A"))
-                    binding.equipmentName.setBackgroundColor(Color.parseColor("#8BC34A"))
-                    binding.nameRes.setBackgroundColor(Color.parseColor("#8BC34A"))
-                } else {
-                    binding.equipmentResponsibility.setBackgroundColor(Color.parseColor("#DE6A6D"))
-                    binding.equipmentName.setBackgroundColor(Color.parseColor("#DE6A6D"))
-                    binding.nameRes.setBackgroundColor(Color.parseColor("#DE6A6D"))
-                    binding.nameRes.text = ""
+        fun bind(equipment: Equipment, adapter: EquipmentAdapter) {
+            UserManager.getUser()?.let {
+                val userId = it.id
+                val userFullName = if (equipment.done) "${it.firstName} ${it.surname}" else ""
+                binding.equipmentName.text = Editable.Factory.getInstance().newEditable(equipment.name)
+                binding.nameRes.text = userFullName
+                binding.equipmentResponsibility.isChecked = equipment.done
+
+                binding.equipmentResponsibility.setOnClickListener {
+                    val newDoneStatus = binding.equipmentResponsibility.isChecked
+
+                    if (newDoneStatus) {
+                        binding.equipmentResponsibility.setBackgroundColor(Color.parseColor("#8BC34A"))
+                        binding.equipmentName.setBackgroundColor(Color.parseColor("#8BC34A"))
+                        binding.nameRes.setBackgroundColor(Color.parseColor("#8BC34A"))
+                        binding.nameRes.text = userFullName
+                    } else {
+                        binding.equipmentResponsibility.setBackgroundColor(Color.parseColor("#DE6A6D"))
+                        binding.equipmentName.setBackgroundColor(Color.parseColor("#DE6A6D"))
+                        binding.nameRes.setBackgroundColor(Color.parseColor("#DE6A6D"))
+                        binding.nameRes.text = ""
+                    }
+                    var updatedEquipment = equipment.copy(binding.equipmentName.text.toString(), newDoneStatus, if (newDoneStatus) userId else null)
+                    adapter.updateEquipment(adapterPosition, updatedEquipment)
                 }
             }
         }
     }
 }
 
-class SwipeToDeleteCallback(private val adapter: EquipmentAdapter) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+class SwipeToDeleteCallback(private val adapter: EquipmentAdapter) :
+    ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
 
     override fun onMove(
         recyclerView: RecyclerView,

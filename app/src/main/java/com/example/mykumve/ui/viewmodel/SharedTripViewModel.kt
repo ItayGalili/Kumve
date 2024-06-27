@@ -17,7 +17,7 @@ class SharedTripViewModel : ViewModel() {
         _selectedTrip.value = trip
     }
 
-    fun updateEquipment(equipment: List<Equipment>) {
+    fun updateEquipment(equipment: MutableList<Equipment>) {
         _equipmentList.value = equipment
     }
 }
