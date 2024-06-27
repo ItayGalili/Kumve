@@ -3,6 +3,7 @@ package com.example.mykumve.ui.register
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,7 +59,11 @@ class RegisterManager : Fragment(), CoroutineScope {
         _binding = RegisterBinding.inflate(inflater, container, false)
 
         binding.RegisterBtn.setOnClickListener {
-            launch { registerUser(it) }
+            launch {
+                if (validateInput()) {
+                    registerUser(it)
+                }
+            }
         }
         binding.imagePersonRegister.setOnClickListener {
             pickImageLauncher.launch(arrayOf("image/*"))
@@ -99,7 +104,35 @@ class RegisterManager : Fragment(), CoroutineScope {
                 }
             }
         }
-
     }
 
+
+    private fun validateInput(): Boolean {
+        val fullName = binding.name.text.toString()
+        val password = binding.passwordRegister.text.toString()
+        val email = binding.emailRegister.text.toString()
+
+        if (fullName.isBlank() || fullName.length < 3) {
+            showToast(getString(R.string.error_empty_name))
+            return false
+        }
+
+        if (email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            showToast(getString(R.string.error_invalid_email))
+            return false
+        }
+
+        if (password.isBlank() || password.length < 6) {
+            showToast(getString(R.string.error_invalid_password))
+            return false
+        }
+
+        return true
+    }
+
+    private fun showToast(message: String) {
+        launch(Dispatchers.Main) {
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
+    }
 }
