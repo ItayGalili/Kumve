@@ -7,14 +7,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mykumve.R
+import com.example.mykumve.data.data_classes.Equipment
+import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.EquipmentListBinding
 import com.example.mykumve.databinding.EquipmentCardBinding
+import com.example.mykumve.util.UserManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
@@ -22,17 +26,27 @@ import java.lang.reflect.Type
 class EquipmentFragment : Fragment() {
 
     private var _binding: EquipmentListBinding? = null
+    private var currentUser: User? = null
+
     private val binding get() = _binding!!
-    private lateinit var adapter: EquipmentAdapter
+//    private lateinit var adapter: EquipmentAdapter
     private lateinit var sharedPreferences: SharedPreferences
     private val gson = Gson()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = EquipmentListBinding.inflate(inflater, container, false)
-        sharedPreferences = requireContext().getSharedPreferences("equipment_prefs", Context.MODE_PRIVATE)
+        sharedPreferences = requireContext().getSharedPreferences("equipment_prefs", Context.MODE_PRIVATE) //????
+        if (UserManager.isLoggedIn()) {
+            currentUser = UserManager.getUser()
+
+
+        } else {
+            // Handle the case where the user is not logged in
+            Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()
+        }
         return binding.root
     }
 
@@ -58,7 +72,7 @@ class EquipmentFragment : Fragment() {
     }
 
     private fun addNewEquipment() {
-        val newEquipment = Equipment("New Equipment", "")
+        val newEquipment = Equipment("New Equipment", false, 0)
         adapter.addEquipment(newEquipment)
     }
 
@@ -84,8 +98,6 @@ class EquipmentFragment : Fragment() {
         _binding = null
     }
 }
-
-data class Equipment(val name: String, val responsibility: String)
 
 class EquipmentAdapter(private val equipmentList: MutableList<Equipment>) :
     RecyclerView.Adapter<EquipmentAdapter.EquipmentViewHolder>() {
