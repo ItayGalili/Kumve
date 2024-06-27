@@ -42,8 +42,22 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    sourceSets {
+        getByName("main") {
+            assets.srcDirs("src/main/assets")
+        }
+    }
+
 }
 
+tasks.register<Copy>("copyLocalProperties") {
+    from("${project.rootDir}/local.properties")
+    into("${projectDir}/src/main/assets")
+}
+
+tasks.named("preBuild") {
+    dependsOn("copyLocalProperties")
+}
 
 dependencies {
     implementation ("com.github.bumptech.glide:glide:4.16.0")
