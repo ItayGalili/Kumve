@@ -20,9 +20,6 @@ import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.databinding.EquipmentListBinding
 import com.example.mykumve.databinding.EquipmentCardBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import java.lang.reflect.Type
 
 class EquipmentFragment : Fragment() {
 
@@ -30,7 +27,6 @@ class EquipmentFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var adapter: EquipmentAdapter
     private lateinit var sharedPreferences: SharedPreferences
-    private val gson = Gson()
     private val sharedTripViewModel: SharedTripViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -59,9 +55,8 @@ class EquipmentFragment : Fragment() {
 
         binding.closeEquipmentBtn.setOnClickListener {
             saveData()
-            sharedTripViewModel.updateEquipment(adapter.getEquipmentList())  // Update equipment list in the view model
-            findNavController().navigate(R.id.action_equipmentFragment_to_travelManager)
-
+//            sharedTripViewModel.updateEquipment(adapter.getEquipmentList())  // Update equipment list in the view model
+            findNavController().navigate(R.id.action_equipmentFragment_to_travelManager) //todo bug- should return to the page you came from
         }
     }
 
@@ -72,20 +67,11 @@ class EquipmentFragment : Fragment() {
     }
 
     private fun saveData() {
-        val editor = sharedPreferences.edit()
-        val json = gson.toJson(adapter.getEquipmentList())
-        editor.putString("equipment_list", json)
-        editor.apply()
+        sharedTripViewModel.updateEquipment(adapter.getEquipmentList())
     }
 
     private fun loadData(): MutableList<Equipment> {
-        val json = sharedPreferences.getString("equipment_list", null)
-        return if (json != null) {
-            val type: Type = object : TypeToken<MutableList<Equipment>>() {}.type
-            gson.fromJson(json, type)
-        } else {
-            mutableListOf()
-        }
+        return sharedTripViewModel.equipmentList.value?.toMutableList() ?: mutableListOf()  // Changed line
     }
 
     override fun onDestroyView() {

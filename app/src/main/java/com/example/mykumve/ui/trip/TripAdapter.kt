@@ -18,6 +18,17 @@ class TripAdapter(
     private val sharedViewModel: SharedTripViewModel
 ) : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
 
+    init {
+        sharedViewModel.equipmentList.observeForever { equipmentList ->
+            equipmentList?.let {
+                val tripIndex = trips.indexOfFirst { it.id == sharedViewModel.selectedTrip.value?.id }
+                if (tripIndex != -1) {
+                    trips[tripIndex].equipment = it.toMutableList()
+                    notifyItemChanged(tripIndex)
+                }
+            }
+        }
+    }
     class TripViewHolder(private val binding: TravelCardBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(trip: Trip, sharedViewModel: SharedTripViewModel) {
             binding.tripTitle.text = trip.title
@@ -29,7 +40,6 @@ class TripAdapter(
             binding.listCardBtn.setOnClickListener {
                 sharedViewModel.selectTrip(trip)
                 it.findNavController().navigate(R.id.action_mainScreenManager_to_equipmentFragment)
-
             }
         }
     }
