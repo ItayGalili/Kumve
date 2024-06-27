@@ -13,6 +13,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
@@ -73,18 +74,7 @@ class TripManager : Fragment() {
 
         //date
         binding.dateBtn.setOnClickListener {
-            val c = Calendar.getInstance()
-            val listener = DatePickerDialog.OnDateSetListener { dataPicker, year, month, dayOfMonth ->
-                    val calendar = Calendar.getInstance()
-                    calendar.set(Calendar.YEAR, year)
-                    calendar.set(Calendar.MONTH, month)
-                    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-
-                    val dateFormat = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
-                    binding.datePick.text = dateFormat.format(calendar.time)
-                }
-            val dtd = DatePickerDialog(requireContext(), listener,c.get(Calendar.YEAR),c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))
-            dtd.show()
+            showCalendar(it)
         }
 
         //equipment list:
@@ -96,33 +86,7 @@ class TripManager : Fragment() {
             // Check if currentUser is not null
             currentUser?.let { user ->
                 sharedViewModel.equipmentList.observe(viewLifecycleOwner, Observer { equipmentList ->
-
-
-                val startDate: Date = Date(2024, 6, 1, 9, 0, 0)
-                val endDate: Date = Date(2024, 6, 1, 18, 0, 0)
-                // Convert startDate to a timestamp
-                val gatherTime = Converters().fromDate(startDate)
-                val endTime = Converters().fromDate(endDate)
-                val equipments = equipmentList?.toMutableList()  // Changed line to convert List<Equipment> to MutableList<Equipment>
-                // Create a new Trip object with the provided details
-                val trip = Trip(
-                    title = binding.nameTrip.text.toString(),
-                    gatherTime = gatherTime,
-                    endDate = endTime,
-                    notes = mutableListOf(binding.description.text.toString()),
-                    participants = mutableListOf(user),
-                    equipment = equipments,
-                    userId = user.id,
-                    image = null,
-                    tripInfoId = null,
-                    shareLevel = ShareLevel.PUBLIC,
-                )
-
-                // Add the trip to the viewModel
-                tripViewModel.addTrip(trip)
-
-                // Navigate to the main screen
-                findNavController().navigate(R.id.action_travelManager_to_mainScreenManager)
+                addTrip(it, user, equipmentList)
             })
             } ?: run {
                 // Handle the case where the user is not logged in or currentUser is null
@@ -136,6 +100,49 @@ class TripManager : Fragment() {
 
         }
         return binding.root
+    }
+
+    private fun showCalendar(button: View?) {
+        val c = Calendar.getInstance()
+        val listener = DatePickerDialog.OnDateSetListener { dataPicker, year, month, dayOfMonth ->
+            val calendar = Calendar.getInstance()
+            calendar.set(Calendar.YEAR, year)
+            calendar.set(Calendar.MONTH, month)
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+            val dateFormat = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
+            binding.datePick.text = dateFormat.format(calendar.time)
+        }
+        val dtd = DatePickerDialog(requireContext(), listener,c.get(Calendar.YEAR),c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))
+        dtd.show()
+    }
+
+    private fun addTrip(button: View?, user: User, equipmentList: List<Equipment>?) {
+        val startDate: Date = Date(2024, 6, 1, 9, 0, 0)
+        val endDate: Date = Date(2024, 6, 1, 18, 0, 0)
+        // Convert startDate to a timestamp
+        val gatherTime = Converters().fromDate(startDate)
+        val endTime = Converters().fromDate(endDate)
+        val equipments = equipmentList?.toMutableList()  // Changed line to convert List<Equipment> to MutableList<Equipment>
+        // Create a new Trip object with the provided details
+        val trip = Trip(
+            title = binding.nameTrip.text.toString(),
+            gatherTime = gatherTime,
+            endDate = endTime,
+            notes = mutableListOf(binding.description.text.toString()),
+            participants = mutableListOf(user),
+            equipment = equipments,
+            userId = user.id,
+            image = null,
+            tripInfoId = null,
+            shareLevel = ShareLevel.PUBLIC,
+        )
+
+        // Add the trip to the viewModel
+        tripViewModel.addTrip(trip)
+
+        // Navigate to the main screen
+        findNavController().navigate(R.id.action_travelManager_to_mainScreenManager)
     }
 
     override fun onDestroyView() {
