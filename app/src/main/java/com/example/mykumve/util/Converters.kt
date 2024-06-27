@@ -1,6 +1,10 @@
 package com.example.mykumve.util
 
 import androidx.room.TypeConverter
+import com.example.mykumve.data.data_classes.Equipment
+import com.example.mykumve.data.model.Area
+import com.example.mykumve.data.data_classes.Point
+import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.data.model.User
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -85,6 +89,52 @@ class Converters {
         val gson = Gson()
         val type = object : TypeToken<List<Equipment>>() {}.type
         return gson.fromJson(equipmentsString, type)
+    }
+
+    @TypeConverter
+    fun fromTripInvitationList(value: List<TripInvitation>?): String {
+        val type = object : TypeToken<List<TripInvitation>>() {}.type
+        return Gson().toJson(value, type)
+    }
+
+    @TypeConverter
+    fun toTripInvitationList(value: String): List<TripInvitation>? {
+        val type = object : TypeToken<List<TripInvitation>>() {}.type
+        return Gson().fromJson(value, type)
+    }
+
+    @TypeConverter
+    fun fromShareLevel(value: Int): ShareLevel {
+        return ShareLevel.fromInt(value)
+    }
+
+    @TypeConverter
+    fun shareLevelToInt(level: ShareLevel): Int {
+        return level.value
+    }
+
+    @TypeConverter
+    fun fromPointList(value: List<Point>?): String {
+        val type = object : TypeToken<List<Point>>() {}.type
+        return Gson().toJson(value, type)
+    }
+
+    @TypeConverter
+    fun toPointList(value: String): List<Point>? {
+        val type = object : TypeToken<List<Point>>() {}.type
+        return Gson().fromJson(value, type)
+    }
+
+    @TypeConverter
+    fun fromAreaList(value: List<Area>?): String {
+        val type = object : TypeToken<List<Area>>() {}.type
+        return Gson().toJson(value, type)
+    }
+
+    @TypeConverter
+    fun toAreaList(value: String): List<Area>? {
+        val type = object : TypeToken<List<Area>>() {}.type
+        return Gson().fromJson(value, type)
     }
 
 }

@@ -1,7 +1,5 @@
 package com.example.mykumve.ui.trip
 
-
-
 import android.app.DatePickerDialog
 import com.example.mykumve.util.Converters
 import android.content.Intent
@@ -14,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
@@ -23,6 +22,7 @@ import com.example.mykumve.databinding.TravelManagerViewBinding
 import com.example.mykumve.ui.map.MapFragment
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.EncryptionUtils
+import com.example.mykumve.util.ShareLevel
 import com.example.mykumve.util.UserManager
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -48,6 +48,7 @@ class TripManager : Fragment() {
             )
             imageUri = it
         }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -76,6 +77,7 @@ class TripManager : Fragment() {
 
 
 
+        //date
         binding.dateBtn.setOnClickListener {
             val c = Calendar.getInstance()
             val listener = DatePickerDialog.OnDateSetListener { dataPicker, year, month, dayOfMonth ->
@@ -91,23 +93,35 @@ class TripManager : Fragment() {
             dtd.show()
         }
 
+
+
+        //equipment list:
+        binding.listBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_travelManager_to_equipmentFragment)
+        }
+
+
         binding.doneBtn.setOnClickListener {
             // Check if currentUser is not null
             currentUser?.let { user ->
-                val startDate: Date = Date(2024, 6, 1, 0, 9, 0)
+                val startDate: Date = Date(2024, 6, 1, 9, 0, 0)
+                val endDate: Date = Date(2024, 6, 1, 18, 0, 0)
                 // Convert startDate to a timestamp
                 val gatherTime = Converters().fromDate(startDate)
+                val endTime = Converters().fromDate(endDate)
 
                 // Create a new Trip object with the provided details
                 val trip = Trip(
                     title = binding.nameTrip.text.toString(),
                     gatherTime = gatherTime,
-                    gatherPlace = "",
-                    notes = binding.description.text.toString(),
-                    participants = listOf(user),
+                    endDate = endTime,
+                    notes = mutableListOf(binding.description.text.toString()),
+                    participants = mutableListOf(user),
                     equipment = null,
                     userId = user.id,
-                    tripInfoId = null
+                    image = null,
+                    tripInfoId = null,
+                    shareLevel = ShareLevel.PUBLIC,
                 )
 
                 // Add the trip to the viewModel
@@ -124,6 +138,7 @@ class TripManager : Fragment() {
 
         binding.tripImage.setOnClickListener {
             pickImageLauncher.launch(arrayOf("image/*"))
+
         }
         return binding.root
     }

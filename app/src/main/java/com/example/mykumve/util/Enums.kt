@@ -17,8 +17,27 @@ enum class DifficultyLevel(val id: Int, val stringResId: Int) {
     }
 }
 
-data class Equipment(
-    val name: String,
-    val done: Boolean,
-    val userId: Int
+
+enum class TripInvitationStatus(val value: Int) {
+    PENDING(0),
+    APPROVED(1),
+    REJECTED(2);
+
+    companion object {
+        fun fromInt(value: Int) = TripInvitationStatus.values().first { it.value == value }
+    }
+}
+
+enum class ShareLevel(val value: Int) {
+    PUBLIC(1),
+    PRIVATE(0);
+
+    companion object {
+        fun fromInt(value: Int) = ShareLevel.values().first { it.value == value }
+    }
+}
+
+data class Result(
+    val success: Boolean,
+    val reason: String
 )

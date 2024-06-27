@@ -5,7 +5,6 @@
     android:id="@+id/my_nav"
     app:startDestination="@id/loginManager">
 
-
     <fragment
         android:id="@+id/mainScreenManager"
         android:name="com.example.mykumve.ui.main.MainScreenManager"
@@ -24,6 +23,9 @@
         <action
             android:id="@+id/action_mainScreenManager_to_tripReviewManager2"
             app:destination="@id/tripReviewManager" />
+        <action
+            android:id="@+id/action_mainScreenManager_to_equipmentFragment"
+            app:destination="@id/equipmentFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerManager"
@@ -54,6 +56,9 @@
             app:popExitAnim="@anim/to_left"
             app:popUpTo="@id/mainScreenManager"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_travelManager_to_equipmentFragment"
+            app:destination="@id/equipmentFragment" />
         <action
             android:id="@+id/action_travelManager_to_mapFragmentManager"
             app:destination="@id/mapFragmentManager"
@@ -101,6 +106,15 @@
         android:name="com.example.mykumve.ui.trip.TripReviewManager"
         android:label="trip_review"
         tools:layout="@layout/trip_review" />
+    <fragment
+        android:id="@+id/equipmentFragment"
+        android:name="com.example.mykumve.ui.trip.EquipmentFragment"
+        android:label="equipment_list"
+        tools:layout="@layout/equipment_list" >
+        <action
+            android:id="@+id/action_equipmentFragment_to_travelManager"
+            app:destination="@id/travelManager" />
+    </fragment>
     <fragment
         android:id="@+id/mapFragmentManager"
         android:name="com.example.mykumve.ui.map.MapFragment"

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MyKumve</string>
+    <string name="difficulty_unset">לא מוגדר</string>
+    <string name="difficulty_easy">קל</string>
+    <string name="difficulty_medium">בינוני</string>
+    <string name="difficulty_hard">קשה</string>
+    <string name="welcome_user">ברוך הבא, %1$s</string>
+    <string name="please_log_in">התחבר בבקשה</string>
+    <string name="registration_successful">ההרשמה הצליחה</string>
+    <string name="login_failed">ההתחברות נכשלה</string>
+    <string name="login_successful">ההתחברות הצליחה</string>
+    <string name="north">צפון</string>
+    <string name="upper_galilee">גליל עליון, אצבע הגליל והגולן</string>
+    <string name="western_galilee">גליל מערבי</string>
+    <string name="haifa_and_carmel">חיפה והכרמל</string>
+    <string name="lower_galilee">גליל תחתון, עמקים וגלבוע</string>
+    <string name="center">מרכז</string>
+    <string name="sharon">השרון</string>
+    <string name="shfela">השפלה</string>
+    <string name="samaria">שומרון</string>
+    <string name="coastal_plain_and_gush_dan">מישור החוף וגוש דן</string>
+    <string name="jerusalem_and_surroundings">והסביבה ירושלים</string>
+    <string name="jerusalem_hills_and_beit_shemesh">הרי ירושלים ואזור בית שמש</string>
+    <string name="jerusalem">ירושלים</string>
+    <string name="south">דרום</string>
+    <string name="dead_sea_and_judean_desert">ים המלח ומדבר יהודה</string>
+    <string name="northern_negev">צפון הנגב</string>
+    <string name="central_negev_and_craters">מרכז הנגב והמכתשים</string>
+    <string name="southern_negev_and_eilat_mountains">דרום הנגב והרי אילת</string>
+</resources>

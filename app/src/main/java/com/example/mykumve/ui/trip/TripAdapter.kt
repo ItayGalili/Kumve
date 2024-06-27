@@ -2,7 +2,12 @@ package com.example.mykumve.ui.trip
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.mykumve.R
 import com.example.mykumve.data.model.Trip
 import com.example.mykumve.databinding.TravelCardBinding
 import com.example.mykumve.ui.viewmodel.TripViewModel
@@ -17,13 +22,20 @@ class TripAdapter(var trips: List<Trip>, private val viewModel: TripViewModel) :
             binding.areaCard.text = "Dummy area"
             binding.dateCard.text = Converters().toDate(trip.gatherTime.toString().toLong())?.toFormattedString()
             binding.levelCard.text = "Dummy difficulty"
-            // TODO: load the image
+
+
+            binding.listCardBtn.setOnClickListener {
+                it.findNavController().navigate(R.id.action_mainScreenManager_to_equipmentFragment)
+
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TripViewHolder {
         val binding = TravelCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return TripViewHolder(binding)
+
+
     }
 
     override fun getItemCount() = trips.size
