@@ -23,7 +23,7 @@
     <string name="login_failed">Login failed</string>
     <string name="login_successful">Login successful</string>
 
-    <string name="my_api_key">AIzaSyAcw7e-thPmomd9hs6h9HuQgq3x114MGww</string>
+    <string name="my_api_key" translatable="false">AIzaSyAcw7e-thPmomd9hs6h9HuQgq3x114MGww</string>
     <string name="north">North</string>
     <string name="upper_galilee">Upper Galilee, Finger of the Galilee and Golan</string>
     <string name="western_galilee">Western Galilee</string>
@@ -42,4 +42,7 @@
     <string name="northern_negev">Northern Negev</string>
     <string name="central_negev_and_craters">Central Negev and the Craters</string>
     <string name="southern_negev_and_eilat_mountains">Southern Negev and Eilat Mountains</string>
+    <string name="welcome_when_my_trips_empty">Your Trips List is empty...\n\nStart planning your trip - click the plus icon\n\n
+You can also explore others trips and join!\n</string>
+
 </resources>
