@@ -33,7 +33,7 @@ class TripAdapter(
         fun bind(trip: Trip, sharedViewModel: SharedTripViewModel) {
             binding.tripTitle.text = trip.title
             binding.areaCard.text = "Dummy area"
-            binding.dateCard.text = Converters().toDate(trip.gatherTime.toString().toLong())?.toFormattedString()
+            binding.dateCard.text = Converters().toDate(trip.gatherTime?.toString()?.toLong())?.toFormattedString()
             binding.levelCard.text = "Dummy difficulty"
 
 

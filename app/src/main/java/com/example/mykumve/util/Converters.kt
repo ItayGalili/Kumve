@@ -8,7 +8,10 @@ import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.data.model.User
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 class Converters {
 
@@ -62,8 +65,15 @@ class Converters {
         return gson.fromJson(stringsString, type)
     }
 
-    fun fromDate(date: Date?): Long? {
-        return date?.time
+    fun stringToDate(dateString: String): Long? {
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return try {
+            val date: Date = dateFormat.parse(dateString)
+            date.time
+        } catch (e: ParseException) {
+            e.printStackTrace()
+            null
+        }
     }
 
     @TypeConverter

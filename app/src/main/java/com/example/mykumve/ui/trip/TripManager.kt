@@ -38,6 +38,7 @@ class TripManager : Fragment() {
     private val tripViewModel: TripViewModel by activityViewModels()
     private val sharedViewModel: SharedTripViewModel by activityViewModels()
     private var currentUser: User? = null
+    private var selectedDate: String? = null  // Add this variable to store the selected date
 
     private var imageUri: Uri? = null
     val pickImageLauncher: ActivityResultLauncher<Array<String>> =
@@ -109,30 +110,37 @@ class TripManager : Fragment() {
             calendar.set(Calendar.MONTH, month)
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
-            val dateFormat = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
-            binding.datePick.text = dateFormat.format(calendar.time)
+            val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val dateString = dateFormat.format(calendar.time)
+            binding.datePick.text = dateString
+            selectedDate = dateString  // Store the selected date
         }
-        val dtd = DatePickerDialog(requireContext(), listener,c.get(Calendar.YEAR),c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))
+        val dtd = DatePickerDialog(requireContext(), listener, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))
         dtd.show()
     }
 
     private fun addTrip(button: View?, user: User, equipmentList: List<Equipment>?) {
-        val startDate: Date = Date(2024, 6, 1, 9, 0, 0)
-        val endDate: Date = Date(2024, 6, 1, 18, 0, 0)
+        val title = binding.nameTrip.text.toString()
+        if (title.isBlank()) {
+            Toast.makeText(requireContext(), "Title is required", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         // Convert startDate to a timestamp
-        val gatherTime = Converters().fromDate(startDate)
-        val endTime = Converters().fromDate(endDate)
+        val gatherTime = Converters().stringToDate(selectedDate.toString())
+        val endTime =  null
         val equipments = equipmentList?.toMutableList()  // Changed line to convert List<Equipment> to MutableList<Equipment>
+        val image = null
         // Create a new Trip object with the provided details
         val trip = Trip(
-            title = binding.nameTrip.text.toString(),
+            title = title,
             gatherTime = gatherTime,
             endDate = endTime,
             notes = mutableListOf(binding.description.text.toString()),
             participants = mutableListOf(user),
             equipment = equipments,
             userId = user.id,
-            image = null,
+            image = image,
             tripInfoId = null,
             shareLevel = ShareLevel.PUBLIC,
         )
