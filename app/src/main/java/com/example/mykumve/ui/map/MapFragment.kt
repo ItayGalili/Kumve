@@ -26,6 +26,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 
 
 class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -101,6 +102,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         }
     }
 
+
     override fun onMarkerClick(marker: Marker): Boolean {
         val markerId = marker.id
         val index = markerMap[markerId]
@@ -115,7 +117,21 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
 
     private fun addMarker(position: LatLng) {
         points.add(position)
-        val marker = mMap.addMarker(MarkerOptions().position(position).title("Point ${points.size}"))
+
+        // Determine marker color
+        val markerColor = if (points.size == 1) {
+            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE) // First marker color (blue)
+        } else {
+            BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW) // Default color for other markers
+        }
+
+        // Add marker with custom color
+        val marker = mMap.addMarker(
+            MarkerOptions()
+                .position(position)
+                .title("Point ${points.size}")
+                .icon(markerColor)
+        )
 
         // Store marker ID and corresponding index in points list
         if (marker != null) {
@@ -132,7 +148,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
     private fun drawPolyline() {
         if (points.size >= 2) {
             val polylineOptions = PolylineOptions()
-                .color(Color.BLUE)
+                .color(Color.BLACK)
                 .width(5f)
 
             for (point in points) {
@@ -146,7 +162,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
     private fun redrawPolyline() {
         if (points.size >= 2) {
             val polylineOptions = PolylineOptions()
-                .color(Color.BLUE)
+                .color(Color.BLACK)
                 .width(5f)
 
             for (point in points) {
