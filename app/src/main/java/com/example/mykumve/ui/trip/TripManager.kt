@@ -1,5 +1,7 @@
 package com.example.mykumve.ui.trip
 
+
+
 import android.app.DatePickerDialog
 import com.example.mykumve.util.Converters
 import android.content.Intent
@@ -18,6 +20,7 @@ import com.example.mykumve.R
 import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.TravelManagerViewBinding
+import com.example.mykumve.ui.map.MapFragment
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.EncryptionUtils
 import com.example.mykumve.util.UserManager
@@ -66,6 +69,12 @@ class TripManager : Fragment() {
             Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()
             // You can navigate to the login screen or take appropriate action
         }
+
+        binding.mapBtn.setOnClickListener{
+            findNavController().navigate(R.id.action_travelManager_to_mapFragmentManager)
+        }
+
+
 
         binding.dateBtn.setOnClickListener {
             val c = Calendar.getInstance()
