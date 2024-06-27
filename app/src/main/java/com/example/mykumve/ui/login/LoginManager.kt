@@ -29,6 +29,7 @@ class LoginManager : Fragment() {
     ): View {
         _binding = LoginBinding.inflate(inflater, container, false)
 
+
         binding.LoginBtn.setOnClickListener {
             val username = binding.emailAd.text.toString()
             val password = binding.password.text.toString()
