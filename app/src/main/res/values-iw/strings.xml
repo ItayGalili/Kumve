@@ -28,7 +28,7 @@
     <string name="northern_negev">צפון הנגב</string>
     <string name="central_negev_and_craters">מרכז הנגב והמכתשים</string>
     <string name="southern_negev_and_eilat_mountains">דרום הנגב והרי אילת</string>
-    <string name="welcome_when_my_trips_empty">רשימת הטיולים שלך ריקה... אפשר להתחיל על ידי לחיצה על הפלוס!</string>
+    <string name="welcome_when_my_trips_empty">רשימת הטיולים שלך ריקה, אפשר להתחיל על ידי לחיצה על הפלוס או להצטרף לטיול קיים!</string>
     <string name="error_empty_name">השם חייב להכיל 3 אותיות לפחות</string>
     <string name="error_invalid_email">אימייל לא תקין</string>
     <string name="error_invalid_password">הסיסמא חייבת להכיל 6 תוים לפחות</string>

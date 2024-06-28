@@ -46,6 +46,8 @@ class MainScreenManager : Fragment() {
             findNavController().navigate(R.id.action_mainScreenManager_to_networkManager)
         }
 
+
+
         binding
 
         return binding.root
@@ -53,7 +55,6 @@ class MainScreenManager : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         tripAdapter = TripAdapter(emptyList(), sharedViewModel)
         binding.mainRecyclerView.adapter = tripAdapter
         binding.mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -73,6 +74,14 @@ class MainScreenManager : Fragment() {
                 tripViewModel.getTripsByUserId(it.id)?.observe(viewLifecycleOwner) { trips ->
                     tripAdapter.trips = trips
                     tripAdapter.notifyDataSetChanged()
+                    var welcome_msg=binding.informationWhileEmpty
+                    if (tripAdapter.itemCount >0) {
+                        welcome_msg.alpha=0f
+                    }
+                    else{
+                        welcome_msg.alpha=1f
+                    }
+
                 }
             }
 
@@ -107,9 +116,13 @@ class MainScreenManager : Fragment() {
                 ).show()
                 tripViewModel.deleteTrip(tripAdapter.trips[viewHolder.adapterPosition])
                 tripAdapter.notifyItemRemoved(viewHolder.adapterPosition)
+
+
             }
 
         }).attachToRecyclerView(binding.mainRecyclerView)
+
+
     }
 
     override fun onDestroyView() {
