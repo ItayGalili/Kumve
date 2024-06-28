@@ -24,7 +24,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColorHint="#C49649"
-        app:hintTextColor="@color/TextColor"
+        app:hintTextColor="#C49649"
+        app:boxStrokeColor="#BBA886"
         >
 
         <com.google.android.material.textfield.TextInputEditText
@@ -32,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
-            android:hint="Enter email adress"
+            android:hint="Enter email address"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -41,9 +42,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColorHint="#C49649"
-        app:hintTextColor="@color/statusBarColor"
+        app:hintTextColor="#C49649"
         android:layout_marginTop="10dp"
         app:endIconMode="password_toggle"
+        app:boxStrokeColor="#BBA886"
         >
 
         <com.google.android.material.textfield.TextInputEditText
