@@ -43,8 +43,7 @@
     <string name="southern_negev_and_eilat_mountains">Southern Negev and Eilat Mountains</string>
     <string name="welcome_when_my_trips_empty">Your Trips List is empty...\n\nStart planning your trip - click the plus icon\n\n
 You can also explore others trips and join!\n</string>
-    <string name="my_api_key" translatable="false">AIzaSyAcw7e-thPmomd9hs6h9HuQgq3x114MGww</string>
-
+    <string name="api_key_placeholder" translatable="false">YOUR_API_KEY_HERE</string>
     <string name="error_empty_name">Name must be at least 3 characters</string>
     <string name="error_invalid_email">Invalid email address</string>
     <string name="error_invalid_password">Password must be at least 6 characters</string>

@@ -1,5 +1,6 @@
 package com.example.mykumve.ui.map
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,9 +11,7 @@ import android.graphics.Color
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import com.android.volley.BuildConfig
+import com.example.mykumve.util.LocalProperties
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -32,6 +31,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 
 class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
+    lateinit var assets: Any
     private lateinit var mMap: GoogleMap
     private val points = mutableListOf<LatLng>()
     private var polyline: Polyline? = null
@@ -51,7 +51,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         super.onViewCreated(view, savedInstanceState)
 
         // Initialize Places SDK
-        Places.initialize(requireContext(),getString(R.string.my_api_key))
+        val apiKey=LocalProperties.getApiKey(requireContext())
+        Places.initialize(requireContext(),apiKey)
 
         // Initialize Autocomplete fragment
         autocompleteFragment = childFragmentManager.findFragmentById(R.id.autocomplete_fragment)

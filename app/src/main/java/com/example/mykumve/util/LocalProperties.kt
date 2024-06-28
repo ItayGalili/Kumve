@@ -1,7 +1,8 @@
 package com.example.mykumve.util
 
-import android.content.Context
+import com.example.mykumve.ui.map.MapFragment
 import java.util.Properties
+import android.content.Context
 
 object LocalProperties {
     fun getApiKey(context: Context): String {
