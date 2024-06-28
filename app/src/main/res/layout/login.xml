@@ -8,14 +8,14 @@
     android:orientation="vertical"
     android:padding="20dp"
     tools:context=".ui.login.LoginManager"
-    android:background="#FEFEFE"
+    android:background="#FFFAF0"
     >
 
     <ImageView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="0.1"
-        android:padding="10dp"
+        android:padding="100dp"
         android:src="@drawable/icon" />
 
 
@@ -43,6 +43,7 @@
         android:textColorHint="#C49649"
         app:hintTextColor="@color/statusBarColor"
         android:layout_marginTop="10dp"
+        app:endIconMode="password_toggle"
         >
 
         <com.google.android.material.textfield.TextInputEditText
@@ -52,28 +53,31 @@
             android:hint="Enter password"
             android:inputType="textPassword"
             android:imeOptions="actionDone"
+
             />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/Login_Btn"
-        android:layout_width="wrap_content"
+        android:layout_width="322dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:gravity="center"
         android:backgroundTint="#C49649"
-        android:text="   Login  "
-        android:layout_gravity="center"/>
+        android:gravity="center"
+        android:text="Login"
+        android:textSize="20sp" />
 
     <Button
         android:id="@+id/Register_Btn"
-        android:layout_width="wrap_content"
+        android:layout_width="319dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:gravity="center"
         android:backgroundTint="#C49649"
+        android:gravity="center"
         android:text="Register"
-        android:layout_gravity="center"/>
+        android:textSize="20sp" />
 
 </LinearLayout>
