@@ -12,6 +12,7 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.android.volley.BuildConfig
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -50,7 +51,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         super.onViewCreated(view, savedInstanceState)
 
         // Initialize Places SDK
-        Places.initialize(requireContext(), getString(R.string.my_api_key))
+        Places.initialize(requireContext(),getString(R.string.my_api_key))
 
         // Initialize Autocomplete fragment
         autocompleteFragment = childFragmentManager.findFragmentById(R.id.autocomplete_fragment)
