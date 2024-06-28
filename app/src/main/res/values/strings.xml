@@ -45,4 +45,7 @@
 You can also explore others trips and join!\n</string>
     <string name="my_api_key" translatable="false">AIzaSyAcw7e-thPmomd9hs6h9HuQgq3x114MGww</string>
 
+    <string name="error_empty_name">Name must be at least 3 characters</string>
+    <string name="error_invalid_email">Invalid email address</string>
+    <string name="error_invalid_password">Password must be at least 6 characters</string>
 </resources>

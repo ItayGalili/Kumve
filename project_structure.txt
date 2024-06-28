@@ -1,0 +1,144 @@
+/Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/java/com/example/mykumve
+/Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/java/com/example/mykumve
+├── data
+│   ├── data_classes
+│   │   ├── Equipment.kt
+│   │   └── Point.kt
+│   ├── db
+│   │   ├── local_db
+│   │   │   ├── AppDatabase.kt
+│   │   │   ├── AreaDao.kt
+│   │   │   ├── TripDao.kt
+│   │   │   ├── TripInfoDao.kt
+│   │   │   ├── TripInvitationDao.kt
+│   │   │   └── UserDao.kt
+│   │   └── repository
+│   │       ├── TripInfoRepository.kt
+│   │       ├── TripRepository.kt
+│   │       └── UserRepository.kt
+│   └── model
+│       ├── Area.kt
+│       ├── SubArea.kt
+│       ├── Trip.kt
+│       ├── TripInfo.kt
+│       ├── TripInvitation.kt
+│       └── User.kt
+├── network
+│   └── NetworkManager.kt
+├── ui
+│   ├── SocialNetworkManager.kt
+│   ├── login
+│   │   └── LoginManager.kt
+│   ├── main
+│   │   ├── MainActivity.kt
+│   │   └── MainScreenManager.kt
+│   ├── map
+│   │   └── MapFragment.kt
+│   ├── register
+│   │   └── RegisterManager.kt
+│   ├── trip
+│   │   ├── EquipmentFragment.kt
+│   │   ├── TripAdapter.kt
+│   │   ├── TripCreationFragment.kt
+│   │   ├── TripDetailFragment.kt
+│   │   ├── TripManager.kt
+│   │   └── TripReviewManager.kt
+│   └── viewmodel
+│       ├── SharedTripViewModel.kt
+│       ├── TripViewModel.kt
+│       └── UserViewModel.kt
+└── util
+    ├── Converters.kt
+    ├── EncryptionUtils.kt
+    ├── Enums.kt
+    ├── SharedPreferencesUtils.kt
+    ├── UserManager.kt
+    └── Utility.kt
+
+16 directories, 39 files
+
+/Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/res
+/Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/res
+├── anim
+│   ├── from_left.xml
+│   ├── from_right.xml
+│   ├── to_left.xml
+│   └── to_right.xml
+├── drawable
+│   ├── baseline_add_24.xml
+│   ├── baseline_add_location_24.xml
+│   ├── baseline_backpack_24.xml
+│   ├── baseline_check_box_24.xml
+│   ├── baseline_check_box_outline_blank_24.xml
+│   ├── baseline_delete_24.xml
+│   ├── clock.png
+│   ├── fart.jpeg
+│   ├── flower.png
+│   ├── ic_launcher_background.xml
+│   ├── icon.png
+│   ├── list.png
+│   ├── macro_4327877.png
+│   ├── main.png
+│   ├── map.jpeg
+│   ├── network.png
+│   ├── partners.png
+│   ├── pencil.png
+│   └── tin.png
+├── drawable-v24
+│   └── ic_launcher_foreground.xml
+├── layout
+│   ├── activity_main.xml
+│   ├── equipment_card.xml
+│   ├── equipment_list.xml
+│   ├── login.xml
+│   ├── main_screen.xml
+│   ├── partners_list.xml
+│   ├── register.xml
+│   ├── travel_card.xml
+│   ├── travel_manager_view.xml
+│   ├── travel_network.xml
+│   └── trip_review.xml
+├── mipmap-anydpi-v26
+│   ├── ic_launcher.xml
+│   └── ic_launcher_round.xml
+├── mipmap-hdpi
+│   ├── ic_launcher.webp
+│   └── ic_launcher_round.webp
+├── mipmap-mdpi
+│   ├── ic_launcher.webp
+│   └── ic_launcher_round.webp
+├── mipmap-xhdpi
+│   ├── ic_launcher.webp
+│   └── ic_launcher_round.webp
+├── mipmap-xxhdpi
+│   ├── ic_launcher.webp
+│   └── ic_launcher_round.webp
+├── mipmap-xxxhdpi
+│   ├── ic_launcher.webp
+│   └── ic_launcher_round.webp
+├── navigation
+│   └── my_nav.xml
+├── values
+│   ├── colors.xml
+│   ├── ids.xml
+│   ├── strings.xml
+│   ├── styles.xml
+│   └── themes.xml
+├── values-iw
+│   └── strings.xml
+├── values-night
+│   └── themes.xml
+└── xml
+    ├── backup_rules.xml
+    └── data_extraction_rules.xml
+
+16 directories, 57 files
+
+
+(
+  echo "/Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/java/com/example/mykumve" &&
+  tree /Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/java/com/example/mykumve &&
+  echo "" &&
+  echo "/Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/res" &&
+  tree /Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/res
+) > project_structure.txt

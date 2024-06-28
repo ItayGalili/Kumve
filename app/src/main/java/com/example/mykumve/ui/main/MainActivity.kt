@@ -7,6 +7,7 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import com.example.mykumve.R
+import com.example.mykumve.util.LocalProperties
 import com.example.mykumve.util.UserManager
 
 
