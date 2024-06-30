@@ -38,7 +38,9 @@
             android:id="@+id/name_trip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Choose a name for the trip" />
+            android:hint="Choose a name for the trip"
+            android:textColorHint="#B1DBFE"
+            />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
