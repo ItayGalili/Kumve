@@ -16,15 +16,9 @@
         android:textColor="@color/statusBarColor"
         android:textSize="30sp"
         android:layout_marginTop="10dp"
-        android:text="Create and update your trip" />
+        android:text="Creat your trip - step 1" />
 
-    <ImageButton
-        android:id="@+id/tripImage"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center"
-        android:scaleType="fitCenter"
-        android:src="@android:drawable/ic_menu_upload" />
+
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
@@ -32,6 +26,7 @@
         android:layout_height="wrap_content"
         android:textColorHint="#C49649"
         app:hintTextColor="@color/statusBarColor"
+        android:layout_marginTop="20dp"
         >
 
         <com.google.android.material.textfield.TextInputEditText
@@ -49,7 +44,6 @@
         android:layout_height="wrap_content"
         android:textColorHint="#C49649"
         app:hintTextColor="@color/statusBarColor"
-
         >
 
         <com.google.android.material.textfield.TextInputEditText
@@ -61,112 +55,154 @@
             />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <ImageButton
+        android:id="@+id/tripImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:scaleType="fitCenter"
+        android:src="@android:drawable/ic_menu_upload"
+        android:layout_marginTop="20dp"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:textColor="@color/statusBarColor"
-        android:id="@+id/datePick"/>
+        android:text="Upload a photo for your trip"
+        android:gravity="center"/>
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:layout_marginTop="20dp">
 
-        <ImageButton
-            android:id="@+id/date_btn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@drawable/clock"
-            android:backgroundTint="@color/white"
-            android:scaleType="fitCenter"/>
+            android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/list_btn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_weight="1"
-            android:src="@drawable/list"
-            android:backgroundTint="@color/white"
-            android:scaleType="fitCenter"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
 
-        <ImageButton
-            android:id="@+id/Partners_btn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_weight="1"
-            android:src="@drawable/partners"
-            android:backgroundTint="@color/white"
-            android:scaleType="fitCenter" />
+                <TextView
+                    android:id="@+id/dateStertPick"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="start date:" />
 
-        <ImageButton
-            android:id="@+id/map_btn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+                <ImageButton
+                    android:id="@+id/dateStartBtn"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/white"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/calendar" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="start date:"
+                    android:id="@+id/dateEndPick"/>
+
+                <ImageButton
+                    android:id="@+id/dateEndBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/white"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/calendar" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:backgroundTint="@color/white"
-            android:scaleType="fitCenter"
-            android:src="@drawable/map" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="TextView" />
+
+            <ImageButton
+                android:id="@+id/list_btn"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"
+                android:scaleType="fitCenter"
+                android:src="@drawable/list" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="TextView" />
+
+            <ImageButton
+                android:id="@+id/Partners_btn"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"
+                android:scaleType="fitCenter"
+                android:src="@drawable/partners" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="TextView" />
+
+            <ImageButton
+                android:id="@+id/map_btn"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"
+                android:scaleType="fitCenter"
+                android:src="@drawable/map" />
+        </LinearLayout>
+
     </LinearLayout>
-
-
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Level of difficulty in trips"
-        android:textSize="20sp"
-        android:layout_marginTop="10dp"
-        android:textColor="@color/statusBarColor"
-        />
-
-    <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/level"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/easy"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="easy"
-            android:textColor="#8E7749"
-            android:textSize="20sp" />
-
-        <RadioButton
-            android:id="@+id/medium"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="medium"
-            android:textColor="#8E7749"
-            android:textSize="20sp" />
-
-        <RadioButton
-            android:id="@+id/hard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="hard"
-            android:textColor="#8E7749"
-            android:textSize="20sp" />
-    </RadioGroup>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Choose a travel area:"
-        android:textSize="20sp"/>
-
-    <Spinner
-        android:id="@+id/location_trip_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:spinnerMode="dropdown" />
 
 
     <Button

@@ -79,10 +79,13 @@ class TripManager : Fragment() {
         }
 
         //date
-        binding.dateBtn.setOnClickListener {
-            showCalendar(it)
+        binding.dateStartBtn.setOnClickListener {
+            showCalendar(it, 0)
         }
 
+        binding.dateEndBtn.setOnClickListener {
+            showCalendar(it, 1)
+        }
         //equipment list:
         binding.listBtn.setOnClickListener {
             findNavController().navigate(R.id.action_travelManager_to_equipmentFragment)
@@ -113,7 +116,7 @@ class TripManager : Fragment() {
         return binding.root
     }
 
-    private fun showCalendar(button: View?) {
+    private fun showCalendar(button: View?, plag : Int) {
         val c = Calendar.getInstance()
         val listener = DatePickerDialog.OnDateSetListener { dataPicker, year, month, dayOfMonth ->
             val calendar = Calendar.getInstance()
@@ -123,12 +126,16 @@ class TripManager : Fragment() {
 
             val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             val dateString = dateFormat.format(calendar.time)
-            binding.datePick.text = dateString
+            if (plag == 0) binding.dateStertPick.text = ("from: $dateString ,")
+            if (plag == 1) binding.dateEndPick.text = ("to: $dateString")
+
             selectedDate = dateString  // Store the selected date
         }
         val dtd = DatePickerDialog(requireContext(), listener, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))
         dtd.show()
     }
+
+
 
     // todo - move to next fragment (page) of add info to trip (trip info)
     private fun addTrip(button: View?, user: User, equipmentList: List<Equipment>?) {

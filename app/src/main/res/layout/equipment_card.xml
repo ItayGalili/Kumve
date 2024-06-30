@@ -7,7 +7,7 @@
     app:contentPadding="10dp"
     app:cardCornerRadius="10dp"
     android:id="@+id/eq_card"
-    android:backgroundTint="@color/no">
+    >
 
 
     <LinearLayout
