@@ -50,6 +50,9 @@ class RegisterManager : Fragment(), CoroutineScope {
             )
             imageUri = it
         }
+    fun getImageUri(): Uri? {
+        return imageUri
+    }
 
 
     override fun onCreateView(

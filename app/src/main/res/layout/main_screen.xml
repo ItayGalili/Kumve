@@ -29,6 +29,19 @@
         android:backgroundTint="#B1DBFE"
 
         />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/profile_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/my_profile"
+        android:layout_margin="16dp"
+
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:ignore="MissingConstraints"
+        android:backgroundTint="#90EFA4"
+
+        />
 
     <LinearLayout
         android:id="@+id/linearLayout2"

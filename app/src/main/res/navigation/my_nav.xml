@@ -14,6 +14,9 @@
             android:id="@+id/action_mainScreenManager_to_networkManager"
             app:destination="@id/networkManager" />
         <action
+            android:id="@+id/action_mainScreenManager_to_my_profile_page"
+            app:destination="@id/my_profile" />
+        <action
             android:id="@+id/action_mainScreenManager_to_travelManager"
             app:destination="@id/travelManager"
             app:enterAnim="@anim/from_right"
@@ -122,6 +125,19 @@
         tools:layout="@layout/map">
 
     </fragment>
+
+    <fragment
+        android:id="@+id/my_profile"
+        android:name="com.example.mykumve.ui.main.MyProfile"
+        android:label="my_profile_page"
+        tools:layout="@layout/my_profile_page" >
+        <action
+            android:id="@+id/action_my_profile_page_to_mainScreenManager"
+            app:destination="@id/mainScreenManager" />
+
+    </fragment>
+
+
 
 
 </navigation>
