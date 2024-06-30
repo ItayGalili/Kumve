@@ -4,4 +4,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="statusBarColor">#C49649</color>
     <color name="TextColor">#513D1B</color>
+    <color name="back">#000000</color>
+    <color name="no">#E87F82</color>
+    <color name="btn">#FF9800</color>
+
 </resources>

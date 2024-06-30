@@ -82,6 +82,11 @@ class TripManager : Fragment() {
             findNavController().navigate(R.id.action_travelManager_to_equipmentFragment)
         }
 
+        //Partner list
+        binding.PartnersBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_travelManager_to_partnerListFragment)
+        }
+
         binding.doneBtn.setOnClickListener {
             // Check if currentUser is not null
             currentUser?.let { user ->

@@ -26,6 +26,9 @@
         <action
             android:id="@+id/action_mainScreenManager_to_equipmentFragment"
             app:destination="@id/equipmentFragment" />
+        <action
+            android:id="@+id/action_mainScreenManager_to_partnerListFragment"
+            app:destination="@id/partnerListFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerManager"
@@ -59,6 +62,9 @@
         <action
             android:id="@+id/action_travelManager_to_equipmentFragment"
             app:destination="@id/equipmentFragment" />
+        <action
+            android:id="@+id/action_travelManager_to_partnerListFragment"
+            app:destination="@id/partnerListFragment" />
     </fragment>
     <fragment
         android:id="@+id/networkManager"
@@ -105,4 +111,9 @@
             android:id="@+id/action_equipmentFragment_to_travelManager"
             app:destination="@id/travelManager" />
     </fragment>
+    <fragment
+        android:id="@+id/partnerListFragment"
+        android:name="com.example.mykumve.ui.trip.PartnerListFragment"
+        android:label="fragment_partner_list"
+        tools:layout="@layout/fragment_partner_list" />
 </navigation>
