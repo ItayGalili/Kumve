@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -40,6 +41,7 @@ class TripManager : Fragment() {
     private var currentUser: User? = null
     private var selectedDate: String? = null  // Add this variable to store the selected date
 
+
     private var imageUri: Uri? = null
     val pickImageLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) {
@@ -71,6 +73,12 @@ class TripManager : Fragment() {
             Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()
             // You can navigate to the login screen or take appropriate action
         }
+
+        binding.mapBtn.setOnClickListener{
+            findNavController().navigate(R.id.action_travelManager_to_mapFragmentManager)
+        }
+
+
 
         //date
         binding.dateBtn.setOnClickListener {
@@ -124,6 +132,7 @@ class TripManager : Fragment() {
         dtd.show()
     }
 
+    // todo - move to next fragment (page) of add info to trip (trip info)
     private fun addTrip(button: View?, user: User, equipmentList: List<Equipment>?) {
         val title = binding.nameTrip.text.toString()
         if (title.isBlank()) {

@@ -10,7 +10,10 @@ import com.example.mykumve.R
 import com.example.mykumve.util.LocalProperties
 import com.example.mykumve.util.UserManager
 
+
+
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -24,6 +27,7 @@ class MainActivity : AppCompatActivity() {
             window.statusBarColor = ContextCompat.getColor(this, R.color.statusBarColor)
 
         }
+
     }
 
     private fun initializeComponents(){

@@ -1,7 +1,11 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
+
+
 }
 
 android {
@@ -10,6 +14,7 @@ android {
 
     buildFeatures{
         viewBinding = true
+        buildConfig=true
     }
 
     viewBinding{
@@ -24,6 +29,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+
     }
 
     buildTypes {
@@ -61,6 +68,11 @@ tasks.named("preBuild") {
 
 dependencies {
     implementation ("com.github.bumptech.glide:glide:4.16.0")
+    implementation ("com.google.android.gms:play-services-maps:18.1.0")
+    implementation ("com.google.android.libraries.places:places:3.1.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    implementation ("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("com.google.code.gson:gson:2.11.0") // Make sure to use the latest version
