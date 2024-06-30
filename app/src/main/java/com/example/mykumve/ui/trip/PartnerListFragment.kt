@@ -22,9 +22,9 @@ class PartnerListFragment:Fragment() {
 
     private var _binding: FragmentPartnerListBinding? = null
     private val binding get() = _binding!!
-    private lateinit var adapter: PartnerAdapter
-    private lateinit var sharedPreferences: SharedPreferences
-    private val sharedTripViewModel: SharedTripViewModel by activityViewModels()
+    //private lateinit var adapter: PartnerAdapter
+    //private lateinit var sharedPreferences: SharedPreferences
+    //private val sharedTripViewModel: SharedTripViewModel by activityViewModels()
 
 
     override fun onCreateView(
@@ -81,7 +81,7 @@ class PartnerListFragment:Fragment() {
         _binding = null
     }
 }
-
+/*
 class PartnerAdapter(private val PartnerList: MutableList<Partner>) :
     RecyclerView.Adapter<PartnerAdapter.PartnerViewHolder>() {
 

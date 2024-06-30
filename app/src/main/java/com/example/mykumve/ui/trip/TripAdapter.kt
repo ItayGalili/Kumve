@@ -44,7 +44,7 @@ class TripAdapter(
 
             binding.partnersCard.setOnClickListener {
                 sharedViewModel.selectTrip(trip)
-                it.findNavController().navigate(R.id.action_mainScreenManager_to_partnerListFragment)
+                it.findNavController().navigate(R.id.action_travelManager_to_partnerListFragment)
             }
         }
     }

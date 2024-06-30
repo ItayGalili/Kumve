@@ -42,7 +42,7 @@ class MainScreenManager : Fragment() {
             findNavController().navigate(R.id.action_mainScreenManager_to_travelManager)
         }
         binding.profileBtn.setOnClickListener(){
-            findNavController().navigate(R.id.action_mainScreenManager_to_my_profile_page)
+            findNavController().navigate(R.id.action_mainScreenManager_to_myProfile)
         }
 
         binding.partnersBtnMs.setOnClickListener {

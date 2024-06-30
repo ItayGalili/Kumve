@@ -26,6 +26,9 @@
         <action
             android:id="@+id/action_mainScreenManager_to_equipmentFragment"
             app:destination="@id/equipmentFragment" />
+        <action
+            android:id="@+id/action_mainScreenManager_to_myProfile"
+            app:destination="@id/myProfile" />
     </fragment>
     <fragment
         android:id="@+id/registerManager"
@@ -59,6 +62,12 @@
         <action
             android:id="@+id/action_travelManager_to_equipmentFragment"
             app:destination="@id/equipmentFragment" />
+        <action
+            android:id="@+id/action_travelManager_to_partnerListFragment"
+            app:destination="@id/partnerListFragment" />
+        <action
+            android:id="@+id/action_travelManager_to_mapFragmentManager"
+            app:destination="@id/mapFragment3" />
     </fragment>
     <fragment
         android:id="@+id/networkManager"
@@ -105,4 +114,19 @@
             android:id="@+id/action_equipmentFragment_to_travelManager"
             app:destination="@id/travelManager" />
     </fragment>
+    <fragment
+        android:id="@+id/myProfile"
+        android:name="com.example.mykumve.ui.main.MyProfile"
+        android:label="my_profile_page"
+        tools:layout="@layout/my_profile_page" />
+    <fragment
+        android:id="@+id/partnerListFragment"
+        android:name="com.example.mykumve.ui.trip.PartnerListFragment"
+        android:label="fragment_partner_list"
+        tools:layout="@layout/fragment_partner_list" />
+    <fragment
+        android:id="@+id/mapFragment3"
+        android:name="com.example.mykumve.ui.map.MapFragment"
+        android:label="map"
+        tools:layout="@layout/map" />
 </navigation>

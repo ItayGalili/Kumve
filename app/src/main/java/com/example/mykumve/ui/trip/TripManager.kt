@@ -78,8 +78,6 @@ class TripManager : Fragment() {
             findNavController().navigate(R.id.action_travelManager_to_mapFragmentManager)
         }
 
-
-
         //date
         binding.dateBtn.setOnClickListener {
             showCalendar(it)
