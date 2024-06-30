@@ -127,6 +127,7 @@ class TripManager : Fragment() {
         dtd.show()
     }
 
+    // todo - move to next fragment (page) of add info to trip (trip info)
     private fun addTrip(button: View?, user: User, equipmentList: List<Equipment>?) {
         val title = binding.nameTrip.text.toString()
         if (title.isBlank()) {
