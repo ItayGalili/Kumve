@@ -9,6 +9,8 @@ import com.example.mykumve.util.UserManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -61,13 +63,29 @@ class EquipmentFragment : Fragment() {
     }
 
     private fun addNewEquipment() {
+        val lastPosition = adapter.itemCount - 1
+        val lastViewHolder = binding.recyclerView2.findViewHolderForAdapterPosition(lastPosition) as? EquipmentAdapter.EquipmentViewHolder
 
-        val newEquipment = Equipment("New Equipment ${adapter.itemCount + 1}", false,  null) //todo
-        adapter.addEquipment(newEquipment)
+        lastViewHolder?.binding?.equipmentName?.let {
+            val equipmentName = it.text.toString()
+            val updatedEquipment = adapter.getEquipmentList()[lastPosition].copy(name = equipmentName)
+            adapter.updateEquipment(lastPosition, updatedEquipment)
+            it.clearFocus()
+            val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(it.windowToken, 0)
+        }
+
+        if (adapter.getEquipmentList().isNotEmpty() && adapter.getEquipmentList().lastOrNull()?.name.isNullOrEmpty()) {
+            Toast.makeText(context, "Please fill the last equipment item before adding a new one.", Toast.LENGTH_SHORT).show()
+        } else {
+            val newEquipment = Equipment("", false,  null)
+            adapter.addEquipment(newEquipment)
+        }
     }
 
     private fun saveData() {
-        sharedTripViewModel.updateEquipment(adapter.getEquipmentList())
+        val filteredList = adapter.getEquipmentList().filter { it.name.isNotEmpty() }.toMutableList() //don't save empty items
+        sharedTripViewModel.updateEquipment(filteredList)
     }
 
     private fun loadData(): MutableList<Equipment> {
@@ -115,19 +133,33 @@ class EquipmentAdapter(private val equipmentList: MutableList<Equipment>) :
         notifyItemChanged(position)
     }
 
-    class EquipmentViewHolder(private val binding: EquipmentCardBinding) :
+    class EquipmentViewHolder(internal val binding: EquipmentCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(equipment: Equipment, adapter: EquipmentAdapter) {
             UserManager.getUser()?.let {
                 val userId = it.id
+                val equipmentName = Editable.Factory.getInstance().newEditable(equipment.name)
+                if (equipmentName.isBlank()) binding.equipmentName.hint = "New Equipment ${adapter.itemCount}"
+
                 val userFullName = if (equipment.done) "${it.firstName} ${it.surname}" else ""
-                binding.equipmentName.text = Editable.Factory.getInstance().newEditable(equipment.name)
+                binding.equipmentName.text = equipmentName
                 binding.nameRes.text = userFullName
                 binding.equipmentResponsibility.isChecked = equipment.done
 
+                // Reset the background color based on the done status
+                if (equipment.done) {
+                    binding.equipmentResponsibility.setBackgroundColor(Color.parseColor("#8BC34A"))
+                    binding.equipmentName.setBackgroundColor(Color.parseColor("#8BC34A"))
+                    binding.nameRes.setBackgroundColor(Color.parseColor("#8BC34A"))
+                } else {
+                    binding.equipmentResponsibility.setBackgroundColor(Color.parseColor("#DE6A6D"))
+                    binding.equipmentName.setBackgroundColor(Color.parseColor("#DE6A6D"))
+                    binding.nameRes.setBackgroundColor(Color.parseColor("#DE6A6D"))
+                }
+
                 binding.equipmentResponsibility.setOnClickListener {
-                    val newDoneStatus = binding.equipmentResponsibility.isChecked
+                    val newDoneStatus = !equipment.done
 
                     if (newDoneStatus) {
                         binding.equipmentResponsibility.setBackgroundColor(Color.parseColor("#8BC34A"))
@@ -140,11 +172,16 @@ class EquipmentAdapter(private val equipmentList: MutableList<Equipment>) :
                         binding.nameRes.setBackgroundColor(Color.parseColor("#DE6A6D"))
                         binding.nameRes.text = ""
                     }
-                    var updatedEquipment = equipment.copy(binding.equipmentName.text.toString(), newDoneStatus, if (newDoneStatus) userId else null)
+                    val updatedEquipment = equipment.copy(
+                        name = binding.equipmentName.text.toString(),
+                        done = newDoneStatus,
+                        userId = if (newDoneStatus) userId else null
+                    )
                     adapter.updateEquipment(adapterPosition, updatedEquipment)
                 }
             }
         }
+
     }
 }
 
