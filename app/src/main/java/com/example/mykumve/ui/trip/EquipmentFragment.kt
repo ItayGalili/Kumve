@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +23,7 @@ import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.databinding.EquipmentListBinding
 import com.example.mykumve.databinding.EquipmentCardBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
+import kotlinx.coroutines.launch
 
 class EquipmentFragment : Fragment() {
 
@@ -36,6 +38,7 @@ class EquipmentFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = EquipmentListBinding.inflate(inflater, container, false)
+        sharedTripViewModel.initTripViewModel(this) // Initialize TripViewModel
         sharedPreferences =
             requireContext().getSharedPreferences("equipment_prefs", Context.MODE_PRIVATE)
         return binding.root
@@ -65,7 +68,11 @@ class EquipmentFragment : Fragment() {
                 }
             }
         }
+        loadTripData()
 
+    }
+
+    private fun loadTripData() {
         if (sharedTripViewModel.isNewTrip) {
             if (sharedTripViewModel.equipmentList.value == null) {
                 sharedTripViewModel.updateEquipment(mutableListOf())
@@ -104,10 +111,8 @@ class EquipmentFragment : Fragment() {
 
 
     private fun saveData() {
-        if(sharedTripViewModel.isNewTrip){
-            val filteredList = adapter.getEquipmentList().filter { it.name.isNotEmpty() }.toMutableList() //don't save empty items
-            sharedTripViewModel.updateEquipment(filteredList)
-        } // todo save exiting trip
+        val filteredList = adapter.getEquipmentList().filter { it.name.isNotEmpty() }.toMutableList() //don't save empty items
+        sharedTripViewModel.updateEquipment(filteredList)
     }
 
     private fun loadData(): MutableList<Equipment> {

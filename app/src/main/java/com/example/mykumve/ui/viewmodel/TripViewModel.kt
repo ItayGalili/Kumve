@@ -12,7 +12,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.util.TripInvitationStatus
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 
 class TripViewModel(
@@ -68,9 +70,7 @@ class TripViewModel(
     }
 
     fun updateTrip(trip: Trip) {
-        viewModelScope.launch {
-            tripRepository.updateTrip(trip)
-        }
+        tripRepository.updateTrip(trip)
     }
 
     fun updateTripInfo(tripInfo: TripInfo) {
