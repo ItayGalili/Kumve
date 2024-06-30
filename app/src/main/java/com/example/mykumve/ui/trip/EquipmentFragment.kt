@@ -56,13 +56,32 @@ class EquipmentFragment : Fragment() {
         }
 
         binding.closeEquipmentBtn.setOnClickListener {
-            saveData()
-//            sharedTripViewModel.updateEquipment(adapter.getEquipmentList())  // Update equipment list in the view model
-            findNavController().navigate(R.id.action_equipmentFragment_to_travelManager) //todo bug- should return to the page you came from
+            if (saveCurrentEditedItem()) {
+                saveData()
+                if (sharedTripViewModel.isNewTrip) {
+                    findNavController().navigate(R.id.action_equipmentFragment_to_travelManager)
+                } else {
+                    findNavController().navigate(R.id.action_equipmentFragment_to_mainScreenManager)
+                }
+            }
+        }
+
+        if (sharedTripViewModel.isNewTrip) {
+            if (sharedTripViewModel.equipmentList.value == null) {
+                sharedTripViewModel.updateEquipment(mutableListOf())
+            }
         }
     }
 
+
     private fun addNewEquipment() {
+        if (saveCurrentEditedItem()) {
+            val newEquipment = Equipment("", false, null)
+            adapter.addEquipment(newEquipment)
+        }
+    }
+
+    private fun saveCurrentEditedItem(): Boolean {
         val lastPosition = adapter.itemCount - 1
         val lastViewHolder = binding.recyclerView2.findViewHolderForAdapterPosition(lastPosition) as? EquipmentAdapter.EquipmentViewHolder
 
@@ -75,21 +94,28 @@ class EquipmentFragment : Fragment() {
             imm.hideSoftInputFromWindow(it.windowToken, 0)
         }
 
-        if (adapter.getEquipmentList().isNotEmpty() && adapter.getEquipmentList().lastOrNull()?.name.isNullOrEmpty()) {
-            Toast.makeText(context, "Please fill the last equipment item before adding a new one.", Toast.LENGTH_SHORT).show()
+        return if (adapter.getEquipmentList().isNotEmpty() && adapter.getEquipmentList().lastOrNull()?.name.isNullOrEmpty()) {
+            Toast.makeText(context, "Please fill the last equipment item..", Toast.LENGTH_SHORT).show()
+            false
         } else {
-            val newEquipment = Equipment("", false,  null)
-            adapter.addEquipment(newEquipment)
+            true
         }
     }
 
+
     private fun saveData() {
-        val filteredList = adapter.getEquipmentList().filter { it.name.isNotEmpty() }.toMutableList() //don't save empty items
-        sharedTripViewModel.updateEquipment(filteredList)
+        if(sharedTripViewModel.isNewTrip){
+            val filteredList = adapter.getEquipmentList().filter { it.name.isNotEmpty() }.toMutableList() //don't save empty items
+            sharedTripViewModel.updateEquipment(filteredList)
+        } // todo save exiting trip
     }
 
     private fun loadData(): MutableList<Equipment> {
-        return sharedTripViewModel.equipmentList.value?.toMutableList() ?: mutableListOf()  // Changed line
+        return if (sharedTripViewModel.isNewTrip) {
+            sharedTripViewModel.equipmentList.value?.toMutableList() ?: mutableListOf()
+        } else {
+            sharedTripViewModel.selectedTrip.value?.equipment?.toMutableList() ?: mutableListOf()
+        }
     }
 
     override fun onDestroyView() {
