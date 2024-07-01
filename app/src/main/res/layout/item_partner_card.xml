@@ -6,7 +6,8 @@
     app:cardUseCompatPadding="true"
     app:contentPadding="10dp"
     app:cardCornerRadius="10dp"
-    android:id="@+id/pr_card">
+    android:id="@+id/pr_card"
+    >
 
 
     <LinearLayout
@@ -45,6 +46,10 @@
                 android:layout_weight="1"
                 android:orientation="horizontal">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""/>
                 <Button
                     android:id="@+id/ComeBtn"
                     android:layout_width="match_parent"

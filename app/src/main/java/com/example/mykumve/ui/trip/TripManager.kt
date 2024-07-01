@@ -149,7 +149,7 @@ class TripManager : Fragment() {
         val gatherTime = Converters().stringToDate(selectedDate.toString())
         val endTime =  null
         val equipments = equipmentList?.toMutableList()  // Changed line to convert List<Equipment> to MutableList<Equipment>
-        val image = null
+        val image = imageUri?.toString()
         // Create a new Trip object with the provided details
         val trip = Trip(
             title = title,

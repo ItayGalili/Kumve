@@ -7,6 +7,7 @@
     app:contentPadding="10dp"
     app:cardCornerRadius="10dp"
     android:id="@+id/eq_card"
+    android:backgroundTint="@color/statusBarColor"
     >
 
 
@@ -22,7 +23,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/no"
             />
 
         <LinearLayout
@@ -38,7 +38,6 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:inputType="text"
-                android:background="@color/no"
                 />
 
             <TextView
@@ -47,7 +46,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text=""
-                android:background="@color/no"
                 />
         </LinearLayout>
 

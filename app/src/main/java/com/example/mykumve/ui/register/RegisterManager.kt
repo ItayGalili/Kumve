@@ -79,7 +79,7 @@ class RegisterManager : Fragment(), CoroutineScope {
         val fullName = binding.name.text.toString()
         val password = binding.passwordRegister.text.toString()
         val email = binding.emailRegister.text.toString()
-        val description = binding.descriptionRegister.text.toString()
+        val phone = binding.PhoneRegister.text.toString()
         val photo = imageUri?.toString()
 
         val nameParts = fullName.split(" ")
@@ -91,7 +91,7 @@ class RegisterManager : Fragment(), CoroutineScope {
             email,
             password,
             photo,
-            description
+            phone
         ) { result ->
             launch(Dispatchers.Main) {
                 if (result.success) {
@@ -114,6 +114,7 @@ class RegisterManager : Fragment(), CoroutineScope {
         val fullName = binding.name.text.toString()
         val password = binding.passwordRegister.text.toString()
         val email = binding.emailRegister.text.toString()
+        val phone = binding.PhoneRegister.text.toString()
 
         if (fullName.isBlank() || fullName.length < 3) {
             showToast(getString(R.string.error_empty_name))
@@ -130,9 +131,18 @@ class RegisterManager : Fragment(), CoroutineScope {
             return false
         }
 
+        if (phone.isBlank() || !isValidPhoneNumber(phone)) {
+            showToast(getString(R.string.error_invalid_phone))
+            return false
+        }
+
         return true
     }
 
+    private fun isValidPhoneNumber(phone: String): Boolean {
+        val phoneRegex = Regex("^[+]?[0-9]{10,13}$|^[0-9]{10}$")
+        return phoneRegex.matches(phone)
+    }
     private fun showToast(message: String) {
         launch(Dispatchers.Main) {
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()

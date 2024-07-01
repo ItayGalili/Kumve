@@ -148,28 +148,14 @@ class EquipmentAdapter(private val equipmentList: MutableList<Equipment>) :
                 binding.equipmentResponsibility.isChecked = equipment.done
 
                 // Reset the background color based on the done status
-                if (equipment.done) {
-                    binding.equipmentResponsibility.setBackgroundColor(Color.parseColor("#8BC34A"))
-                    binding.equipmentName.setBackgroundColor(Color.parseColor("#8BC34A"))
-                    binding.nameRes.setBackgroundColor(Color.parseColor("#8BC34A"))
-                } else {
-                    binding.equipmentResponsibility.setBackgroundColor(Color.parseColor("#DE6A6D"))
-                    binding.equipmentName.setBackgroundColor(Color.parseColor("#DE6A6D"))
-                    binding.nameRes.setBackgroundColor(Color.parseColor("#DE6A6D"))
-                }
+
 
                 binding.equipmentResponsibility.setOnClickListener {
                     val newDoneStatus = !equipment.done
 
                     if (newDoneStatus) {
-                        binding.equipmentResponsibility.setBackgroundColor(Color.parseColor("#8BC34A"))
-                        binding.equipmentName.setBackgroundColor(Color.parseColor("#8BC34A"))
-                        binding.nameRes.setBackgroundColor(Color.parseColor("#8BC34A"))
                         binding.nameRes.text = userFullName
                     } else {
-                        binding.equipmentResponsibility.setBackgroundColor(Color.parseColor("#DE6A6D"))
-                        binding.equipmentName.setBackgroundColor(Color.parseColor("#DE6A6D"))
-                        binding.nameRes.setBackgroundColor(Color.parseColor("#DE6A6D"))
                         binding.nameRes.text = ""
                     }
                     val updatedEquipment = equipment.copy(

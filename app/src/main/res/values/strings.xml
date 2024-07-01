@@ -47,4 +47,5 @@ You can also explore trips and join them!\n</string>
     <string name="error_empty_name">Name must be at least 3 characters</string>
     <string name="error_invalid_email">Invalid email address</string>
     <string name="error_invalid_password">Password must be at least 6 characters</string>
+    <string name="error_invalid_phone">error_invalid_phone</string>
 </resources>
