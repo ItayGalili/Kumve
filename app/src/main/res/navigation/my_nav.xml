@@ -113,6 +113,9 @@
         <action
             android:id="@+id/action_equipmentFragment_to_travelManager"
             app:destination="@id/travelManager" />
+        <action
+            android:id="@+id/action_equipmentFragment_to_mainScreenManager"
+            app:destination="@id/mainScreenManager" />
     </fragment>
     <fragment
         android:id="@+id/myProfile"

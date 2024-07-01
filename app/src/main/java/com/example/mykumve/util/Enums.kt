@@ -41,3 +41,7 @@ data class Result(
     val success: Boolean,
     val reason: String
 )
+
+enum class NavigationArgs(val key: String) {
+    IS_CREATING_NEW_TRIP("isCreatingNewTrip")
+}

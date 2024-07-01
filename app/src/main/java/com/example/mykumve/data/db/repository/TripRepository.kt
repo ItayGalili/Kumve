@@ -11,6 +11,7 @@ import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.util.TripInvitationStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
@@ -53,10 +54,8 @@ class TripRepository(application: Application): CoroutineScope {
         }
     }
 
-    fun updateTrip(trip: Trip) {
-        launch {
-            tripDao?.updateTrip(trip)
-        }
+    fun updateTrip(trip: Trip)  {
+        tripDao?.updateTrip(trip)
     }
 
     fun deleteTrip(trip: Trip) {

@@ -23,11 +23,11 @@ import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.TravelManagerViewBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
+import com.example.mykumve.util.NavigationArgs
 import com.example.mykumve.util.ShareLevel
 import com.example.mykumve.util.UserManager
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 
@@ -56,6 +56,13 @@ class TripManager : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Logic to determine if it's a new trip creation
+        val isCreatingNewTrip = arguments?.getBoolean(NavigationArgs.IS_CREATING_NEW_TRIP.key, false) ?: false
+
+        if (isCreatingNewTrip) {
+            sharedViewModel.resetNewTripState()
+        }
+
     }
 
     override fun onCreateView(
