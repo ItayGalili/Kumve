@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.trip.EquipmentFragment">
+    tools:context=".ui.trip.EquipmentFragment"
+    android:background="@color/white">
 
     <TextView
         android:id="@+id/textView2"
@@ -13,7 +14,7 @@
         android:gravity="center"
         android:text="equipment list trip"
         android:textColor="@color/black"
-        android:textSize="15sp" />
+        android:textSize="30sp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView2"
@@ -29,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:backgroundTint="#EFE0BA"
+        android:backgroundTint="@color/statusBarColor"
         android:src="@drawable/baseline_add_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,8 +41,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:backgroundTint="#EFE0BA"
-        android:text="close"
+        android:backgroundTint="@color/statusBarColor"
+        android:text="save"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

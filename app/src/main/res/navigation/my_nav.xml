@@ -14,9 +14,6 @@
             android:id="@+id/action_mainScreenManager_to_networkManager"
             app:destination="@id/networkManager" />
         <action
-            android:id="@+id/action_mainScreenManager_to_my_profile_page"
-            app:destination="@id/my_profile" />
-        <action
             android:id="@+id/action_mainScreenManager_to_travelManager"
             app:destination="@id/travelManager"
             app:enterAnim="@anim/from_right"
@@ -29,6 +26,9 @@
         <action
             android:id="@+id/action_mainScreenManager_to_equipmentFragment"
             app:destination="@id/equipmentFragment" />
+        <action
+            android:id="@+id/action_mainScreenManager_to_myProfile"
+            app:destination="@id/myProfile" />
     </fragment>
     <fragment
         android:id="@+id/registerManager"
@@ -63,15 +63,11 @@
             android:id="@+id/action_travelManager_to_equipmentFragment"
             app:destination="@id/equipmentFragment" />
         <action
+            android:id="@+id/action_travelManager_to_partnerListFragment"
+            app:destination="@id/partnerListFragment" />
+        <action
             android:id="@+id/action_travelManager_to_mapFragmentManager"
-            app:destination="@id/mapFragmentManager"
-            app:enterAnim="@anim/from_left"
-            app:exitAnim="@anim/to_right"
-            app:popEnterAnim="@anim/from_right"
-            app:popExitAnim="@anim/to_left"
-            app:popUpTo="@id/mapFragmentManager"
-            app:popUpToInclusive="true"
-            />
+            app:destination="@id/mapFragment3" />
     </fragment>
     <fragment
         android:id="@+id/networkManager"
@@ -117,27 +113,23 @@
         <action
             android:id="@+id/action_equipmentFragment_to_travelManager"
             app:destination="@id/travelManager" />
+        <action
+            android:id="@+id/action_equipmentFragment_to_mainScreenManager"
+            app:destination="@id/mainScreenManager" />
     </fragment>
     <fragment
-        android:id="@+id/mapFragmentManager"
-        android:name="com.example.mykumve.ui.map.MapFragment"
-        android:label="MapFragment"
-        tools:layout="@layout/map">
-
-    </fragment>
-
-    <fragment
-        android:id="@+id/my_profile"
+        android:id="@+id/myProfile"
         android:name="com.example.mykumve.ui.main.MyProfile"
         android:label="my_profile_page"
-        tools:layout="@layout/my_profile_page" >
-        <action
-            android:id="@+id/action_my_profile_page_to_mainScreenManager"
-            app:destination="@id/mainScreenManager" />
-
-    </fragment>
-
-
-
-
+        tools:layout="@layout/my_profile_page" />
+    <fragment
+        android:id="@+id/partnerListFragment"
+        android:name="com.example.mykumve.ui.trip.PartnerListFragment"
+        android:label="fragment_partner_list"
+        tools:layout="@layout/fragment_partner_list" />
+    <fragment
+        android:id="@+id/mapFragment3"
+        android:name="com.example.mykumve.ui.map.MapFragment"
+        android:label="map"
+        tools:layout="@layout/map" />
 </navigation>

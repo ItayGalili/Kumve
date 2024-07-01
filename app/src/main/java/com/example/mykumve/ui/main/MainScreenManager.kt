@@ -19,11 +19,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mykumve.ui.trip.TripAdapter
 import com.example.mykumve.R
-import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.MainScreenBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
+import com.example.mykumve.util.NavigationArgs
 import com.example.mykumve.util.UserManager
 
 class MainScreenManager : Fragment() {
@@ -47,10 +47,13 @@ class MainScreenManager : Fragment() {
         _binding = MainScreenBinding.inflate(inflater, container, false)
 
         binding.addBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_mainScreenManager_to_travelManager)
+            val bundle = Bundle().apply {
+                putBoolean(NavigationArgs.IS_CREATING_NEW_TRIP.key, true)
+            }
+            findNavController().navigate(R.id.action_mainScreenManager_to_travelManager, bundle)
         }
         binding.profileBtn.setOnClickListener(){
-            findNavController().navigate(R.id.action_mainScreenManager_to_my_profile_page)
+            findNavController().navigate(R.id.action_mainScreenManager_to_myProfile)
         }
 
         binding.partnersBtnMs.setOnClickListener {

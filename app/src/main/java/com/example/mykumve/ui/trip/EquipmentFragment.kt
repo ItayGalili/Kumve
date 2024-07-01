@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +23,7 @@ import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.databinding.EquipmentListBinding
 import com.example.mykumve.databinding.EquipmentCardBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
+import kotlinx.coroutines.launch
 
 class EquipmentFragment : Fragment() {
 
@@ -36,6 +38,7 @@ class EquipmentFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = EquipmentListBinding.inflate(inflater, container, false)
+        sharedTripViewModel.initTripViewModel(this) // Initialize TripViewModel
         sharedPreferences =
             requireContext().getSharedPreferences("equipment_prefs", Context.MODE_PRIVATE)
         return binding.root
@@ -56,13 +59,36 @@ class EquipmentFragment : Fragment() {
         }
 
         binding.closeEquipmentBtn.setOnClickListener {
-            saveData()
-//            sharedTripViewModel.updateEquipment(adapter.getEquipmentList())  // Update equipment list in the view model
-            findNavController().navigate(R.id.action_equipmentFragment_to_travelManager) //todo bug- should return to the page you came from
+            if (saveCurrentEditedItem()) {
+                saveData()
+                if (sharedTripViewModel.isNewTrip) {
+                    findNavController().navigate(R.id.action_equipmentFragment_to_travelManager)
+                } else {
+                    findNavController().navigate(R.id.action_equipmentFragment_to_mainScreenManager)
+                }
+            }
+        }
+        loadTripData()
+
+    }
+
+    private fun loadTripData() {
+        if (sharedTripViewModel.isNewTrip) {
+            if (sharedTripViewModel.equipmentList.value == null) {
+                sharedTripViewModel.updateEquipment(mutableListOf())
+            }
         }
     }
 
+
     private fun addNewEquipment() {
+        if (saveCurrentEditedItem()) {
+            val newEquipment = Equipment("", false, null)
+            adapter.addEquipment(newEquipment)
+        }
+    }
+
+    private fun saveCurrentEditedItem(): Boolean {
         val lastPosition = adapter.itemCount - 1
         val lastViewHolder = binding.recyclerView2.findViewHolderForAdapterPosition(lastPosition) as? EquipmentAdapter.EquipmentViewHolder
 
@@ -75,13 +101,14 @@ class EquipmentFragment : Fragment() {
             imm.hideSoftInputFromWindow(it.windowToken, 0)
         }
 
-        if (adapter.getEquipmentList().isNotEmpty() && adapter.getEquipmentList().lastOrNull()?.name.isNullOrEmpty()) {
-            Toast.makeText(context, "Please fill the last equipment item before adding a new one.", Toast.LENGTH_SHORT).show()
+        return if (adapter.getEquipmentList().isNotEmpty() && adapter.getEquipmentList().lastOrNull()?.name.isNullOrEmpty()) {
+            Toast.makeText(context, "Please fill the last equipment item..", Toast.LENGTH_SHORT).show()
+            false
         } else {
-            val newEquipment = Equipment("", false,  null)
-            adapter.addEquipment(newEquipment)
+            true
         }
     }
+
 
     private fun saveData() {
         val filteredList = adapter.getEquipmentList().filter { it.name.isNotEmpty() }.toMutableList() //don't save empty items
@@ -89,7 +116,11 @@ class EquipmentFragment : Fragment() {
     }
 
     private fun loadData(): MutableList<Equipment> {
-        return sharedTripViewModel.equipmentList.value?.toMutableList() ?: mutableListOf()  // Changed line
+        return if (sharedTripViewModel.isNewTrip) {
+            sharedTripViewModel.equipmentList.value?.toMutableList() ?: mutableListOf()
+        } else {
+            sharedTripViewModel.selectedTrip.value?.equipment?.toMutableList() ?: mutableListOf()
+        }
     }
 
     override fun onDestroyView() {
@@ -148,28 +179,14 @@ class EquipmentAdapter(private val equipmentList: MutableList<Equipment>) :
                 binding.equipmentResponsibility.isChecked = equipment.done
 
                 // Reset the background color based on the done status
-                if (equipment.done) {
-                    binding.equipmentResponsibility.setBackgroundColor(Color.parseColor("#8BC34A"))
-                    binding.equipmentName.setBackgroundColor(Color.parseColor("#8BC34A"))
-                    binding.nameRes.setBackgroundColor(Color.parseColor("#8BC34A"))
-                } else {
-                    binding.equipmentResponsibility.setBackgroundColor(Color.parseColor("#DE6A6D"))
-                    binding.equipmentName.setBackgroundColor(Color.parseColor("#DE6A6D"))
-                    binding.nameRes.setBackgroundColor(Color.parseColor("#DE6A6D"))
-                }
+
 
                 binding.equipmentResponsibility.setOnClickListener {
                     val newDoneStatus = !equipment.done
 
                     if (newDoneStatus) {
-                        binding.equipmentResponsibility.setBackgroundColor(Color.parseColor("#8BC34A"))
-                        binding.equipmentName.setBackgroundColor(Color.parseColor("#8BC34A"))
-                        binding.nameRes.setBackgroundColor(Color.parseColor("#8BC34A"))
                         binding.nameRes.text = userFullName
                     } else {
-                        binding.equipmentResponsibility.setBackgroundColor(Color.parseColor("#DE6A6D"))
-                        binding.equipmentName.setBackgroundColor(Color.parseColor("#DE6A6D"))
-                        binding.nameRes.setBackgroundColor(Color.parseColor("#DE6A6D"))
                         binding.nameRes.text = ""
                     }
                     val updatedEquipment = equipment.copy(

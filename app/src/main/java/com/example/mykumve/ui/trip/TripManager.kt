@@ -26,11 +26,11 @@ import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.TravelManagerViewBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
+import com.example.mykumve.util.NavigationArgs
 import com.example.mykumve.util.ShareLevel
 import com.example.mykumve.util.UserManager
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 
@@ -59,6 +59,13 @@ class TripManager : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Logic to determine if it's a new trip creation
+        val isCreatingNewTrip = arguments?.getBoolean(NavigationArgs.IS_CREATING_NEW_TRIP.key, false) ?: false
+
+        if (isCreatingNewTrip) {
+            sharedViewModel.resetNewTripState()
+        }
+
     }
 
     override fun onCreateView(
@@ -81,16 +88,22 @@ class TripManager : Fragment() {
             findNavController().navigate(R.id.action_travelManager_to_mapFragmentManager)
         }
 
-
-
         //date
-        binding.dateBtn.setOnClickListener {
-            showCalendar(it)
+        binding.dateStartBtn.setOnClickListener {
+            showCalendar(it, 0)
         }
 
+        binding.dateEndBtn.setOnClickListener {
+            showCalendar(it, 1)
+        }
         //equipment list:
         binding.listBtn.setOnClickListener {
             findNavController().navigate(R.id.action_travelManager_to_equipmentFragment)
+        }
+
+        //Partner list
+        binding.PartnersBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_travelManager_to_partnerListFragment)
         }
 
         binding.doneBtn.setOnClickListener {
@@ -113,7 +126,7 @@ class TripManager : Fragment() {
         return binding.root
     }
 
-    private fun showCalendar(button: View?) {
+    private fun showCalendar(button: View?, plag : Int) {
         val c = Calendar.getInstance()
         val listener = DatePickerDialog.OnDateSetListener { dataPicker, year, month, dayOfMonth ->
             val calendar = Calendar.getInstance()
@@ -123,12 +136,16 @@ class TripManager : Fragment() {
 
             val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             val dateString = dateFormat.format(calendar.time)
-            binding.datePick.text = dateString
+            if (plag == 0) binding.dateStertPick.text = ("from: $dateString ,")
+            if (plag == 1) binding.dateEndPick.text = ("to: $dateString")
+
             selectedDate = dateString  // Store the selected date
         }
         val dtd = DatePickerDialog(requireContext(), listener, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))
         dtd.show()
     }
+
+
 
     // todo - move to next fragment (page) of add info to trip (trip info)
     private fun addTrip(button: View?, user: User, equipmentList: List<Equipment>?) {
@@ -142,7 +159,7 @@ class TripManager : Fragment() {
         val gatherTime = Converters().stringToDate(selectedDate.toString())
         val endTime =  null
         val equipments = equipmentList?.toMutableList()  // Changed line to convert List<Equipment> to MutableList<Equipment>
-        val image = null
+        val image = imageUri?.toString()
         // Create a new Trip object with the provided details
         val trip = Trip(
             title = title,
