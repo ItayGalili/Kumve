@@ -2,11 +2,17 @@ package com.example.mykumve.ui.main
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +28,7 @@ import com.example.mykumve.util.UserManager
 
 class MainScreenManager : Fragment() {
 
+    private lateinit var toolbar: Toolbar
     private var _binding: MainScreenBinding? = null
     private val binding get() = _binding!!
     private val tripViewModel: TripViewModel by activityViewModels()
@@ -29,6 +36,7 @@ class MainScreenManager : Fragment() {
     private lateinit var tripAdapter: TripAdapter
     private var currentUser: User? = null
     private var _firstTimeShowingScreen = true
+
 
 
     override fun onCreateView(
@@ -86,6 +94,7 @@ class MainScreenManager : Fragment() {
                     }
 
                 }
+
             }
 
         } else {

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:title="My Profile"
+        android:id="@+id/my_profile"
+        android:icon="@drawable/account_circle"
+        app:showAsAction="always">
+    </item>
+    <item
+        android:title="My Alerts"
+        android:id="@+id/my_alerts"
+        app:showAsAction="always"
+        android:icon="@drawable/my_alerts">
+    </item>
+    <item
+        android:title="Log Out"
+        android:id="@+id/log_out"
+        app:showAsAction="always"
+        android:icon="@drawable/log_out">
+    </item>
+
+</menu>

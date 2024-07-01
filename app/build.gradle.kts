@@ -72,6 +72,8 @@ dependencies {
     implementation ("com.google.android.libraries.places:places:3.1.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
     implementation ("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
@@ -92,5 +94,6 @@ dependencies {
     testImplementation("org.mockito:mockito-core:3.11.2")
     testImplementation("org.mockito:mockito-inline:3.11.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0")
+
 
 }
