@@ -11,6 +11,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -48,6 +49,7 @@ class TripManager : Fragment() {
     private var imageUri: Uri? = null
     val pickImageLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) {
+            binding.tripImage.scaleType = ImageView.ScaleType.CENTER_CROP
             binding.tripImage.setImageURI(it)
             requireActivity().contentResolver.takePersistableUriPermission(
                 it!!,
@@ -83,11 +85,11 @@ class TripManager : Fragment() {
             Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()
             // You can navigate to the login screen or take appropriate action
         }
-
+    /*
         binding.mapBtn.setOnClickListener{
             findNavController().navigate(R.id.action_travelManager_to_mapFragmentManager)
         }
-
+*/
         //date
         binding.dateStartBtn.setOnClickListener {
             showCalendar(it, 0)

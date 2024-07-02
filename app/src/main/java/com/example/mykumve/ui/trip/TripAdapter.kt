@@ -1,11 +1,13 @@
 package com.example.mykumve.ui.trip
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.mykumve.R
 import com.example.mykumve.data.model.Trip
 import com.example.mykumve.databinding.TravelCardBinding
@@ -39,6 +41,9 @@ class TripAdapter(
             binding.dateCard.text = Converters().toDate(trip.gatherTime?.toString()?.toLong())?.toFormattedString()
             binding.levelCard.text = "Dummy difficulty"
 
+            //image up lode:
+            Glide.with(binding.root).load(trip.image).circleCrop()
+                .into(binding.itemImage)
 
             binding.listCardBtn.setOnClickListener {
                 sharedViewModel.selectTrip(trip)

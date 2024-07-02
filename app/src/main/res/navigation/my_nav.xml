@@ -68,6 +68,9 @@
         <action
             android:id="@+id/action_travelManager_to_mapFragmentManager"
             app:destination="@id/mapFragment3" />
+        <action
+            android:id="@+id/action_travelManager_to_routeManager"
+            app:destination="@id/routeManager" />
     </fragment>
     <fragment
         android:id="@+id/networkManager"
@@ -132,4 +135,9 @@
         android:name="com.example.mykumve.ui.map.MapFragment"
         android:label="map"
         tools:layout="@layout/map" />
+    <fragment
+        android:id="@+id/routeManager"
+        android:name="com.example.mykumve.ui.trip.RouteManager"
+        android:label="route_manager"
+        tools:layout="@layout/route_manager" />
 </navigation>

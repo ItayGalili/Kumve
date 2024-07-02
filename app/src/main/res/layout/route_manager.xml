@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.trip.TripManager"
+    tools:context=".ui.trip.RouteManager"
     android:background="@color/white"
     >
 
@@ -19,23 +19,6 @@
         android:text="Creat your trip - general Information" />
 
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/tripImage"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:scaleType="centerCrop"
-        android:src="@android:drawable/ic_menu_upload"
-        app:shapeAppearanceOverlay="@style/RoundImage" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textColor="@color/statusBarColor"
-        android:text="Upload a photo for your trip"
-        android:gravity="center"/>
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
@@ -72,7 +55,22 @@
             />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <ImageButton
+        android:id="@+id/tripImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:scaleType="fitCenter"
+        android:src="@android:drawable/ic_menu_upload"
+        android:layout_marginTop="20dp"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="@color/statusBarColor"
+        android:text="Upload a photo for your trip"
+        android:gravity="center"/>
 
 
     <LinearLayout
@@ -85,7 +83,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -97,33 +95,18 @@
                 <TextView
                     android:id="@+id/dateStertPick"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="start date:" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                <ImageButton
+                    android:id="@+id/dateStartBtn"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <ImageButton
-                        android:id="@+id/dateStartBtn"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/white"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/calendar" />
-
-                    <TextView
-                        android:id="@+id/textView4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="TextView" />
-                </LinearLayout>
-
+                    android:backgroundTint="@color/white"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/calendar" />
             </LinearLayout>
 
             <LinearLayout
@@ -139,29 +122,14 @@
                     android:text="End date:"
                     android:id="@+id/dateEndPick"/>
 
-                <LinearLayout
+                <ImageButton
+                    android:id="@+id/dateEndBtn"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="60dp"
                     android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <ImageButton
-                        android:id="@+id/dateEndBtn"
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/white"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/calendar" />
-
-                    <TextView
-                        android:id="@+id/textView8"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="TextView" />
-                </LinearLayout>
-
+                    android:backgroundTint="@color/white"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/calendar" />
             </LinearLayout>
         </LinearLayout>
 
@@ -211,7 +179,28 @@
                 android:src="@drawable/partners" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="TextView" />
+
+            <ImageButton
+                android:id="@+id/map_btn"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"
+                android:scaleType="fitCenter"
+                android:src="@drawable/map" />
+        </LinearLayout>
 
     </LinearLayout>
 
