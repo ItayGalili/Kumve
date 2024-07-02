@@ -27,8 +27,9 @@ import com.example.mykumve.util.NavigationArgs
 import com.example.mykumve.util.UserManager
 
 class MainScreenManager : Fragment() {
-
+    //toolbar
     private lateinit var toolbar: Toolbar
+    //toolbar
     private var _binding: MainScreenBinding? = null
     private val binding get() = _binding!!
     private val tripViewModel: TripViewModel by activityViewModels()
@@ -38,12 +39,12 @@ class MainScreenManager : Fragment() {
     private var _firstTimeShowingScreen = true
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         _binding = MainScreenBinding.inflate(inflater, container, false)
 
         binding.addBtn.setOnClickListener {
@@ -52,15 +53,10 @@ class MainScreenManager : Fragment() {
             }
             findNavController().navigate(R.id.action_mainScreenManager_to_travelManager, bundle)
         }
-        binding.profileBtn.setOnClickListener(){
-            findNavController().navigate(R.id.action_mainScreenManager_to_myProfile)
-        }
 
         binding.partnersBtnMs.setOnClickListener {
             findNavController().navigate(R.id.action_mainScreenManager_to_networkManager)
         }
-
-
 
         binding
 
@@ -72,6 +68,14 @@ class MainScreenManager : Fragment() {
         tripAdapter = TripAdapter(emptyList(), sharedViewModel)
         binding.mainRecyclerView.adapter = tripAdapter
         binding.mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        //toolbar
+        toolbar = view.findViewById(R.id.toolbar)
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+        // Ensure menu items are displayed in the Toolbar
+        setHasOptionsMenu(true)
+        //toolbar
+
 
         if (UserManager.isLoggedIn()) {
             currentUser = UserManager.getUser()
@@ -136,9 +140,34 @@ class MainScreenManager : Fragment() {
             }
 
         }).attachToRecyclerView(binding.mainRecyclerView)
-
-
     }
+
+    //toolbar
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.my_profile -> {
+                findNavController().navigate(R.id.action_mainScreenManager_to_myProfile)
+                return true
+            }
+            R.id.my_alerts -> {
+                // Handle My Alerts action
+                // Example: findNavController().navigate(R.id.action_mainScreenManager_to_myAlerts)
+                return true
+            }
+            R.id.log_out -> {
+                //daniel please create a logic for logging out
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+    //toolbar
+
 
     override fun onDestroyView() {
         super.onDestroyView()
