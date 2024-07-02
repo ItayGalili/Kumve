@@ -25,7 +25,7 @@ class SocialNetworkManager : Fragment() {
     ): View {
         _binding = TravelNetworkBinding.inflate(inflater, container, false)
 
-        binding.msNetworkBtn.setOnClickListener{
+        binding.msBtn.setOnClickListener{
             findNavController().navigate(R.id.action_networkManager_to_mainScreenManager)
         }
 

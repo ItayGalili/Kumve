@@ -6,8 +6,7 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFAF0">
-
+    android:background="#EFDBB8">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/mainRecyclerView"

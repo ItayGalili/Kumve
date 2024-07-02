@@ -1,11 +1,18 @@
 package com.example.mykumve.ui.main
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Build
+import android.view.Menu
+import android.view.MenuItem
 import android.view.Window
 import android.view.WindowManager
+import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.mykumve.R
 import com.example.mykumve.util.LocalProperties
 import com.example.mykumve.util.UserManager
@@ -13,11 +20,18 @@ import com.example.mykumve.util.UserManager
 
 
 class MainActivity : AppCompatActivity() {
-
+    private val viewModel by viewModels<MainViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        installSplashScreen().apply {
+            setKeepOnScreenCondition{
+                !viewModel.isReady.value
+            }
 
+        }
+
+
+        setContentView(R.layout.activity_main)
         initializeComponents()
 
         //Changing the color of the status bar
@@ -29,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
 
     private fun initializeComponents(){
         // Initialize UserManager
