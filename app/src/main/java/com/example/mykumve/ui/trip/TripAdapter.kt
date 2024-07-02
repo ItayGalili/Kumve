@@ -42,8 +42,13 @@ class TripAdapter(
             binding.levelCard.text = "Dummy difficulty"
 
             //image up lode:
-            Glide.with(binding.root).load(trip.image).circleCrop()
-                .into(binding.itemImage)
+            if (trip.image != null) {
+                Glide.with(binding.root).load(trip.image).circleCrop()
+                    .into(binding.itemImage)
+            } else {
+                Glide.with(binding.root).load(R.drawable.hills).circleCrop()
+                    .into(binding.itemImage)
+            }
 
             binding.listCardBtn.setOnClickListener {
                 sharedViewModel.selectTrip(trip)

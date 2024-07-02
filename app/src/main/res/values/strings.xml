@@ -17,6 +17,7 @@
     <string name="difficulty_easy">Easy</string>
     <string name="difficulty_medium">Medium</string>
     <string name="difficulty_hard">Hard</string>
+
     <string name="welcome_user">Welcome, %1$s</string>
     <string name="please_log_in">Please log in</string>
     <string name="registration_successful">Registration successful</string>
@@ -41,11 +42,40 @@
     <string name="northern_negev">Northern Negev</string>
     <string name="central_negev_and_craters">Central Negev and the Craters</string>
     <string name="southern_negev_and_eilat_mountains">Southern Negev and Eilat Mountains</string>
-    <string name="welcome_when_my_trips_empty">Your Trips List is empty\n\nStart planning your trip - click the plus icon\n\n
-You can also explore trips and join them!\n</string>
+
+    <string name="welcome_when_my_trips_empty">Your Trips List is empty\n\nStart planning your trip - click the plus icon\n\nYou can also explore trips and join them!\n</string>
     <string name="error_empty_name">Name must be at least 3 characters</string>
     <string name="error_invalid_email">Invalid email address</string>
     <string name="error_invalid_password">Password must be at least 6 characters</string>
+
     <string name="error_invalid_phone">Please enter a valid phone number with 10 digits or 10–13 digits prefixed with a plus sign (+)</string>
     <string name="api_key_placeholder" translatable="false">YOUR_API_KEY_HERE</string>
+
+    <string-array name="difficulty_options">
+        <item>@string/difficulty_unset</item>
+        <item>@string/difficulty_easy</item>
+        <item>@string/difficulty_medium</item>
+        <item>@string/difficulty_hard</item>
+    </string-array>
+
+    <string-array name="area_options">
+        <item>@string/north</item>
+        <item>@string/upper_galilee</item>
+        <item>@string/western_galilee</item>
+        <item>@string/haifa_and_carmel</item>
+        <item>@string/lower_galilee</item>
+        <item>@string/center</item>
+        <item>@string/sharon</item>
+        <item>@string/shfela</item>
+        <item>@string/samaria</item>
+        <item>@string/coastal_plain_and_gush_dan</item>
+        <item>@string/jerusalem_and_surroundings</item>
+        <item>@string/jerusalem_hills_and_beit_shemesh</item>
+        <item>@string/jerusalem</item>
+        <item>@string/south</item>
+        <item>@string/dead_sea_and_judean_desert</item>
+        <item>@string/northern_negev</item>
+        <item>@string/central_negev_and_craters</item>
+        <item>@string/southern_negev_and_eilat_mountains</item>
+    </string-array>
 </resources>
