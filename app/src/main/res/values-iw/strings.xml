@@ -32,4 +32,6 @@
     <string name="error_empty_name">השם חייב להכיל 3 אותיות לפחות</string>
     <string name="error_invalid_email">אימייל לא תקין</string>
     <string name="error_invalid_password">הסיסמא חייבת להכיל 6 תוים לפחות</string>
+    <string name="error_invalid_phone">הטלפון צריך להיות בעל 10 ספרות או קידומת מדינה (עם הסימן + לפניו)</string>
+
 </resources>

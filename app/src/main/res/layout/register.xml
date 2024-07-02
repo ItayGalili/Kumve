@@ -57,8 +57,6 @@
         android:layout_height="wrap_content"
         android:textColorHint="#C49649"
         app:hintTextColor="@color/statusBarColor"
-        app:helperTextEnabled="true"
-        app:helperText="password must be at least 6 characters"
         app:helperTextTextColor="#BD1414">
 
         >
