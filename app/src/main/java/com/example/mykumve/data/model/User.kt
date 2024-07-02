@@ -1,5 +1,6 @@
 package com.example.mykumve.data.model
 
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -19,7 +20,7 @@ data class User(
     val photo: String?,
 
     @ColumnInfo(name = "description")
-    val description: String?,
+    val phone: String?,
 
     @ColumnInfo(name = "password")
     val hashedPassword: String,

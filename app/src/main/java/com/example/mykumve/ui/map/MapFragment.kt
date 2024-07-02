@@ -1,6 +1,5 @@
 package com.example.mykumve.ui.map
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.mykumve.R
 import android.graphics.Color
+import android.util.Log
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -102,6 +102,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         mMap.setOnMapClickListener { latLng ->
             addMarker(latLng)
         }
+
     }
 
 
