@@ -15,12 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mykumve.databinding.FragmentPartnerListBinding
 import com.example.mykumve.data.model.User
 import com.example.mykumve.ui.trip.adapter.PartnerListAdapter
-import com.example.mykumve.UserViewModel
 
 class PartnerListFragment : Fragment() {
 
     private lateinit var binding: FragmentPartnerListBinding
-    private lateinit var userViewModel: UserViewModel
     private lateinit var adapter: PartnerListAdapter
 
     private var selectedUser: User? = null
@@ -30,12 +28,8 @@ class PartnerListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentPartnerListBinding.inflate(inflater, container, false)
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
 
         setupRecyclerView()
-        setupSpinner()
-        setupAddPartnerButton()
-        setupClosePartnerButton()
 
         return binding.root
     }
@@ -58,47 +52,9 @@ class PartnerListFragment : Fragment() {
                 val position = viewHolder.adapterPosition
                 val user = adapter.getUserAtPosition(position)
                 adapter.removeUserAtPosition(position)
-                userViewModel.deleteUser(user)
             }
         })
         itemTouchHelper.attachToRecyclerView(binding.recyclerView2)
     }
 
-    private fun setupSpinner() {
-        userViewModel.getAllUsers()?.observe(viewLifecycleOwner, Observer { users ->
-            val userNames = users.map { it.firstName }
-            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, userNames)
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.spinner.adapter = adapter
-
-            binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                    selectedUser = users[position]
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>) {
-                    selectedUser = null
-                }
-            }
-        })
-    }
-
-    private fun setupAddPartnerButton() {
-        binding.addPartner.setOnClickListener {
-            selectedUser?.let {
-                adapter.addUser(it)
-            }
-        }
-    }
-
-    private fun setupClosePartnerButton() {
-        binding.closePartnerBtn.setOnClickListener {
-            // שמירת הנתונים שנבחרו
-            val selectedUsers = adapter.getAllUsers()
-            userViewModel.saveSelectedUsers(selectedUsers)
-
-            // סגירת הפרגמנט
-            parentFragmentManager.popBackStack()
-        }
-    }
 }

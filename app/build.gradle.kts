@@ -94,6 +94,7 @@ dependencies {
     testImplementation("org.mockito:mockito-core:3.11.2")
     testImplementation("org.mockito:mockito-inline:3.11.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0")
+    implementation ("com.google.android.material:material:1.4.0")
 
 
 }

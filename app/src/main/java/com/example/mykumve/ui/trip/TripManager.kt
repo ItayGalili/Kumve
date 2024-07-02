@@ -1,17 +1,14 @@
 package com.example.mykumve.ui.trip
 
 import android.app.DatePickerDialog
-import com.example.mykumve.util.Converters
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,14 +23,13 @@ import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.TravelManagerViewBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
+import com.example.mykumve.util.Converters
 import com.example.mykumve.util.NavigationArgs
 import com.example.mykumve.util.ShareLevel
 import com.example.mykumve.util.UserManager
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-
-
 
 class TripManager : Fragment() {
 
@@ -42,12 +38,14 @@ class TripManager : Fragment() {
     private val tripViewModel: TripViewModel by activityViewModels()
     private val sharedViewModel: SharedTripViewModel by activityViewModels()
     private var currentUser: User? = null
-    private var selectedDate: String? = null  // Add this variable to store the selected date
 
-
+    private var startDate: Calendar? = null
+    private var endDate: Calendar? = null
     private var imageUri: Uri? = null
+
     val pickImageLauncher: ActivityResultLauncher<Array<String>> =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) {
+            binding.tripImage.scaleType = ImageView.ScaleType.CENTER_CROP
             binding.tripImage.setImageURI(it)
             requireActivity().contentResolver.takePersistableUriPermission(
                 it!!,
@@ -55,7 +53,6 @@ class TripManager : Fragment() {
             )
             imageUri = it
         }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -84,18 +81,15 @@ class TripManager : Fragment() {
             // You can navigate to the login screen or take appropriate action
         }
 
-        binding.mapBtn.setOnClickListener{
-            findNavController().navigate(R.id.action_travelManager_to_mapFragmentManager)
-        }
-
         //date
         binding.dateStartBtn.setOnClickListener {
-            showCalendar(it, 0)
+            showDateTimePicker(true)
         }
 
         binding.dateEndBtn.setOnClickListener {
-            showCalendar(it, 1)
+            showDateTimePicker(false)
         }
+
         //equipment list:
         binding.listBtn.setOnClickListener {
             findNavController().navigate(R.id.action_travelManager_to_equipmentFragment)
@@ -106,12 +100,12 @@ class TripManager : Fragment() {
             findNavController().navigate(R.id.action_travelManager_to_partnerListFragment)
         }
 
-        binding.doneBtn.setOnClickListener {
+        binding.NextBtn.setOnClickListener {
             // Check if currentUser is not null
             currentUser?.let { user ->
                 sharedViewModel.equipmentList.observe(viewLifecycleOwner, Observer { equipmentList ->
-                addTrip(it, user, equipmentList)
-            })
+                    addTrip(it, user, equipmentList)
+                })
             } ?: run {
                 // Handle the case where the user is not logged in or currentUser is null
                 Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()
@@ -126,26 +120,42 @@ class TripManager : Fragment() {
         return binding.root
     }
 
-    private fun showCalendar(button: View?, plag : Int) {
+    private fun showDateTimePicker(isStartDate: Boolean) {
         val c = Calendar.getInstance()
-        val listener = DatePickerDialog.OnDateSetListener { dataPicker, year, month, dayOfMonth ->
-            val calendar = Calendar.getInstance()
-            calendar.set(Calendar.YEAR, year)
-            calendar.set(Calendar.MONTH, month)
-            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+        val dateListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+            val timeListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+                val calendar = Calendar.getInstance()
+                calendar.set(year, month, dayOfMonth, hourOfDay, minute)
 
-            val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-            val dateString = dateFormat.format(calendar.time)
-            if (plag == 0) binding.dateStertPick.text = ("from: $dateString ,")
-            if (plag == 1) binding.dateEndPick.text = ("to: $dateString")
-
-            selectedDate = dateString  // Store the selected date
+                if (isStartDate) {
+                    if (calendar.before(Calendar.getInstance())) {
+                        Toast.makeText(requireContext(), "Start date cannot be before current date", Toast.LENGTH_SHORT).show()
+                        return@OnTimeSetListener
+                    }
+                    startDate = calendar
+                    binding.StartView.text = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(calendar.time)
+                } else {
+                    if (startDate == null) {
+                        Toast.makeText(requireContext(), "Please select a start date first", Toast.LENGTH_SHORT).show()
+                        return@OnTimeSetListener
+                    }
+                    if (calendar.before(startDate)) {
+                        Toast.makeText(requireContext(), "End date cannot be before start date", Toast.LENGTH_SHORT).show()
+                        return@OnTimeSetListener
+                    }
+                    val diff = calendar.timeInMillis - startDate!!.timeInMillis
+                    if (diff < 3600000) {
+                        Toast.makeText(requireContext(), "End date must be at least 1 hour after start date", Toast.LENGTH_SHORT).show()
+                        return@OnTimeSetListener
+                    }
+                    endDate = calendar
+                    binding.EndView.text = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(calendar.time)
+                }
+            }
+            TimePickerDialog(requireContext(), timeListener, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true).show()
         }
-        val dtd = DatePickerDialog(requireContext(), listener, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))
-        dtd.show()
+        DatePickerDialog(requireContext(), dateListener, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show()
     }
-
-
 
     // todo - move to next fragment (page) of add info to trip (trip info)
     private fun addTrip(button: View?, user: User, equipmentList: List<Equipment>?) {
@@ -156,10 +166,11 @@ class TripManager : Fragment() {
         }
 
         // Convert startDate to a timestamp
-        val gatherTime = Converters().stringToDate(selectedDate.toString())
-        val endTime =  null
+        val gatherTime = startDate?.timeInMillis
+        val endTime = endDate?.timeInMillis
         val equipments = equipmentList?.toMutableList()  // Changed line to convert List<Equipment> to MutableList<Equipment>
         val image = imageUri?.toString()
+
         // Create a new Trip object with the provided details
         val trip = Trip(
             title = title,
@@ -178,9 +189,8 @@ class TripManager : Fragment() {
         tripViewModel.addTrip(trip)
 
         // Navigate to the main screen
-        findNavController().navigate(R.id.action_travelManager_to_mainScreenManager)
+        findNavController().navigate(R.id.action_travelManager_to_routeManager)
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
