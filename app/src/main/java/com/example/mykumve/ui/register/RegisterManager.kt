@@ -3,10 +3,13 @@ package com.example.mykumve.ui.register
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -55,11 +58,16 @@ class RegisterManager : Fragment(), CoroutineScope {
     }
 
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = RegisterBinding.inflate(inflater, container, false)
+        setupFieldValidation(binding.name, 3, getString(R.string.error_empty_name))
+        setupFieldValidation(binding.passwordRegister, 6, getString(R.string.error_invalid_password))
+        setupFieldValidation(binding.emailRegister, 6, getString(R.string.error_invalid_email))
+        setupFieldValidation(binding.PhoneRegister, 10, getString(R.string.error_invalid_phone))
 
         binding.RegisterBtn.setOnClickListener {
             launch {
@@ -117,22 +125,18 @@ class RegisterManager : Fragment(), CoroutineScope {
         val phone = binding.PhoneRegister.text.toString()
 
         if (fullName.isBlank() || fullName.length < 3) {
-            showToast(getString(R.string.error_empty_name))
             return false
         }
 
         if (email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            showToast(getString(R.string.error_invalid_email))
             return false
         }
 
         if (password.isBlank() || password.length < 6) {
-            showToast(getString(R.string.error_invalid_password))
             return false
         }
 
         if (phone.isBlank() || !isValidPhoneNumber(phone)) {
-            showToast(getString(R.string.error_invalid_phone))
             return false
         }
 
@@ -143,6 +147,43 @@ class RegisterManager : Fragment(), CoroutineScope {
         val phoneRegex = Regex("^[+]?[0-9]{10,13}$|^[0-9]{10}$")
         return phoneRegex.matches(phone)
     }
+
+    private fun setupFieldValidation(editText: EditText, minLength: Int, errorMessage: String) {
+        var hasShownError = false
+
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (count > before) {
+                    if ((s?.length ?: 0) >= minLength) {
+                        editText.error = null
+                        hasShownError = false
+                    }
+                } else if (hasShownError) {
+                    if ((s?.length ?: 0) < minLength) {
+                        editText.error = errorMessage
+                    }
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        editText.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                if (editText.text.length < minLength) {
+                    editText.error = errorMessage
+                    hasShownError = true
+                } else {
+                    editText.error = null
+                    hasShownError = false
+                }
+            }
+        }
+    }
+
+
     private fun showToast(message: String) {
         launch(Dispatchers.Main) {
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
