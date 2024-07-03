@@ -81,7 +81,7 @@ class MainScreenManager : Fragment() {
             currentUser = UserManager.getUser()
             currentUser?.let {
                 if (_firstTimeShowingScreen) {
-                    Toast.makeText( //todo only first time
+                    Toast.makeText( // todo remove - only for debug
                         requireContext(),
                         getString(R.string.welcome_user, it.firstName),
                         Toast.LENGTH_SHORT
@@ -144,8 +144,8 @@ class MainScreenManager : Fragment() {
 
     //toolbar
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.main_menu, menu)
         super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.main_menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

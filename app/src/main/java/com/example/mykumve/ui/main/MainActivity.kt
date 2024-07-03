@@ -8,7 +8,11 @@ import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.fragment.app.commit
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.example.mykumve.R
+import com.example.mykumve.ui.login.LoginManager
 import com.example.mykumve.util.UserManager
 
 
@@ -23,8 +27,6 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
-
-
         setContentView(R.layout.activity_main)
         initializeComponents()
 
@@ -33,7 +35,17 @@ class MainActivity : AppCompatActivity() {
             val window: Window = window
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             window.statusBarColor = ContextCompat.getColor(this, R.color.statusBarColor)
+        }
 
+        // Check if the user is logged in and navigate accordingly
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+
+
+        if (UserManager.isLoggedIn()) {
+            navController.navigate(R.id.mainScreenManager)
+        } else {
+            navController.navigate(R.id.loginManager)
         }
 
     }
