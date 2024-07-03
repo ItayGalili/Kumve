@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.mykumve.R
 import android.graphics.Color
-import android.util.Log
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.Toast
