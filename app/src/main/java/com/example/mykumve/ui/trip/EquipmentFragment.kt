@@ -2,7 +2,6 @@ package com.example.mykumve.ui.trip
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import com.example.mykumve.util.UserManager
@@ -13,7 +12,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,7 +21,6 @@ import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.databinding.EquipmentListBinding
 import com.example.mykumve.databinding.EquipmentCardBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
-import kotlinx.coroutines.launch
 
 class EquipmentFragment : Fragment() {
 
@@ -80,11 +77,15 @@ class EquipmentFragment : Fragment() {
         }
     }
 
-
     private fun addNewEquipment() {
         if (saveCurrentEditedItem()) {
             val newEquipment = Equipment("", false, null)
-            adapter.addEquipment(newEquipment)
+            val position = adapter.addEquipment(newEquipment)
+            binding.recyclerView2.post {
+                binding.recyclerView2.scrollToPosition(position) // Scroll to the new item
+                val lastViewHolder = binding.recyclerView2.findViewHolderForAdapterPosition(position) as? EquipmentAdapter.EquipmentViewHolder
+                lastViewHolder?.binding?.equipmentName?.requestFocus()
+            }
         }
     }
 
@@ -145,9 +146,11 @@ class EquipmentAdapter(private val equipmentList: MutableList<Equipment>) :
 
     override fun getItemCount() = equipmentList.size
 
-    fun addEquipment(equipment: Equipment) {
+    fun addEquipment(equipment: Equipment): Int {
         equipmentList.add(equipment)
+        val position = equipmentList.size - 1
         notifyItemInserted(equipmentList.size - 1)
+        return position
     }
 
     fun removeEquipment(position: Int) {

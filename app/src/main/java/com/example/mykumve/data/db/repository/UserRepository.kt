@@ -58,4 +58,20 @@ class UserRepository(application: Application): CoroutineScope {
             result // Return the result
         }
     }
+
+    suspend fun updateUser(user: User): Deferred<Result> = coroutineScope {
+        async {
+            var result = Result(false, "General error Occurred")
+            try {
+                var res = userDao?.updateUser(user)
+                Log.d(TAG, "User updated with id $res")
+                result = Result(true, "User inserted successfully") // todo string
+            } catch (e: Exception) {
+                val reason = "Failed to insert user\n${e.cause.toString()}" //todo string
+                Log.e(TAG, "$reason\n$e.")
+                result = Result(false, reason)
+            }
+            result // Return the result
+        }
+    }
 }

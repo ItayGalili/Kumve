@@ -23,7 +23,7 @@ import com.example.mykumve.util.ShareLevel
             entity = TripInfo::class,
             parentColumns = ["id"],
             childColumns = ["trip_info_id"],
-            onDelete = ForeignKey.SET_NULL
+            onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [Index(value = ["user_id"]), Index(value = ["trip_info_id"])]
@@ -32,6 +32,7 @@ import com.example.mykumve.util.ShareLevel
 data class Trip(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "title") var title: String,
+    @ColumnInfo(name = "description") var description: String?,
     @ColumnInfo(name = "gather_time") var gatherTime: Long?,
     @ColumnInfo(name = "participants") var participants: MutableList<User>?,
     @ColumnInfo(name = "image") var image: String?,

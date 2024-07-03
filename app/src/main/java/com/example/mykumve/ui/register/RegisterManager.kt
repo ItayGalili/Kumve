@@ -1,7 +1,5 @@
 package com.example.mykumve.ui.register
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,26 +9,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
 import com.example.mykumve.databinding.RegisterBinding
 import com.example.mykumve.ui.viewmodel.UserViewModel
+import com.example.mykumve.util.ImagePickerUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-/**
- * Manages registration logic and operations.
- * Handles user registration.
- *
- * TODO: Implement more robust error handling and logging.
- */
 
 
 class RegisterManager : Fragment(), CoroutineScope {
@@ -42,22 +32,7 @@ class RegisterManager : Fragment(), CoroutineScope {
     private val binding get() = _binding!!
 
     private val userViewModel: UserViewModel by activityViewModels()
-
-    private var imageUri: Uri? = null
-    val pickImageLauncher: ActivityResultLauncher<Array<String>> =
-        registerForActivityResult(ActivityResultContracts.OpenDocument()) {
-            binding.imagePersonRegister.setImageURI(it)
-            requireActivity().contentResolver.takePersistableUriPermission(
-                it!!,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION
-            )
-            imageUri = it
-        }
-    fun getImageUri(): Uri? {
-        return imageUri
-    }
-
-
+    private lateinit var imagePickerUtil: ImagePickerUtil
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,6 +44,10 @@ class RegisterManager : Fragment(), CoroutineScope {
         setupFieldValidation(binding.emailRegister, 6, getString(R.string.error_invalid_email))
         setupFieldValidation(binding.PhoneRegister, 10, getString(R.string.error_invalid_phone))
 
+        imagePickerUtil = ImagePickerUtil(this) { uri ->
+            binding.imagePersonRegister.setImageURI(uri)
+        }
+
         binding.RegisterBtn.setOnClickListener {
             launch {
                 if (validateInput()) {
@@ -77,7 +56,7 @@ class RegisterManager : Fragment(), CoroutineScope {
             }
         }
         binding.imagePersonRegister.setOnClickListener {
-            pickImageLauncher.launch(arrayOf("image/*"))
+            imagePickerUtil.pickImage()
         }
 
         return binding.root
@@ -88,7 +67,7 @@ class RegisterManager : Fragment(), CoroutineScope {
         val password = binding.passwordRegister.text.toString()
         val email = binding.emailRegister.text.toString()
         val phone = binding.PhoneRegister.text.toString()
-        val photo = imageUri?.toString()
+        val photo = imagePickerUtil.getImageUri()?.toString()
 
         val nameParts = fullName.split(" ")
         val firstName = nameParts.firstOrNull() ?: ""

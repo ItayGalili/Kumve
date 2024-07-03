@@ -19,5 +19,13 @@
         app:showAsAction="always"
         android:icon="@drawable/log_out">
     </item>
+    <item
+        android:id="@+id/debug_delete_db"
+        android:title="Delete DB"
+        android:visible="false"
+        android:icon="@drawable/baseline_delete_24"
+        app:showAsAction="always">
+    </item>
+
 
 </menu>

@@ -44,12 +44,25 @@ class   UserViewModel (
         }
     }
 
+    suspend fun updateUser(
+        user: User,
+        callback: (Result) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO){
+            val result = userRepository.updateUser(user).await()
+            if (result.success) {
+                UserManager.saveUser(user)
+            }
+            callback(result)
+        }
+    }
+
     fun getUserByEmail(email: String): LiveData<User?>? {
         return userRepository.getUserByEmail(email)
     }
 
     fun getUserById(id: Int): LiveData<User?>? {
-            return userRepository.getUserById(id)
+        return userRepository.getUserById(id)
     }
 
 }

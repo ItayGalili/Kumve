@@ -8,11 +8,11 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,8 +27,9 @@ import com.example.mykumve.util.NavigationArgs
 import com.example.mykumve.util.UserManager
 
 class MainScreenManager : Fragment() {
-
+    //toolbar
     private lateinit var toolbar: Toolbar
+    //toolbar
     private var _binding: MainScreenBinding? = null
     private val binding get() = _binding!!
     private val tripViewModel: TripViewModel by activityViewModels()
@@ -38,12 +39,12 @@ class MainScreenManager : Fragment() {
     private var _firstTimeShowingScreen = true
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         _binding = MainScreenBinding.inflate(inflater, container, false)
 
         binding.addBtn.setOnClickListener {
@@ -52,15 +53,10 @@ class MainScreenManager : Fragment() {
             }
             findNavController().navigate(R.id.action_mainScreenManager_to_travelManager, bundle)
         }
-        binding.profileBtn.setOnClickListener(){
-            findNavController().navigate(R.id.action_mainScreenManager_to_myProfile)
-        }
 
         binding.partnersBtnMs.setOnClickListener {
             findNavController().navigate(R.id.action_mainScreenManager_to_networkManager)
         }
-
-
 
         binding
 
@@ -73,11 +69,19 @@ class MainScreenManager : Fragment() {
         binding.mainRecyclerView.adapter = tripAdapter
         binding.mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+        //toolbar
+        toolbar = view.findViewById(R.id.toolbar)
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+        // Ensure menu items are displayed in the Toolbar
+        setHasOptionsMenu(true)
+        //toolbar
+
+
         if (UserManager.isLoggedIn()) {
             currentUser = UserManager.getUser()
             currentUser?.let {
                 if (_firstTimeShowingScreen) {
-                    Toast.makeText( //todo only first time
+                    Toast.makeText( // todo remove - only for debug
                         requireContext(),
                         getString(R.string.welcome_user, it.firstName),
                         Toast.LENGTH_SHORT
@@ -136,9 +140,79 @@ class MainScreenManager : Fragment() {
             }
 
         }).attachToRecyclerView(binding.mainRecyclerView)
-
-
     }
+
+    //toolbar
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.main_menu, menu)
+        if (MainActivity.DEBUG_MODE) {
+            menu.findItem(R.id.debug_delete_db).isVisible = true
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.my_profile -> {
+                findNavController().navigate(R.id.action_mainScreenManager_to_myProfile)
+                return true
+            }
+            R.id.my_alerts -> {
+                // todo Handle My Alerts action
+                // Example: findNavController().navigate(R.id.action_mainScreenManager_to_myAlerts)
+                return true
+            }
+            R.id.log_out -> {
+                showLogoutDialog()
+                return true
+            }
+            R.id.debug_delete_db -> {
+                showDeleteDbDialog()
+                return true
+            }
+
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun showDeleteDbDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setMessage(R.string.delete_db_confirmation)
+            .setPositiveButton(R.string.yes) { dialog, _ ->
+                // delete the database
+                UserManager.clearUser()
+                requireContext().deleteDatabase("app_database")
+                Toast.makeText(requireContext(), "Database deleted. Restarting app...", Toast.LENGTH_SHORT).show()
+                // restart the app
+                val intent = requireActivity().intent
+                requireActivity().finish()
+                startActivity(intent)
+            }
+            .setNegativeButton(R.string.no) { dialog, _ ->
+                dialog.dismiss()
+            }
+
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+    private fun showLogoutDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setMessage(R.string.logout_confirmation)
+            .setPositiveButton(R.string.yes) { dialog, id ->
+                UserManager.clearUser()
+                findNavController().navigate(R.id.action_mainScreenManager_to_loginManager)
+            }
+            .setNegativeButton(R.string.no) { dialog, id ->
+                dialog.dismiss()
+            }
+
+        // Create and show the AlertDialog
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

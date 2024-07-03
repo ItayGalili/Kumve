@@ -67,14 +67,12 @@ tasks.named("preBuild") {
 }
 
 dependencies {
-    implementation ("com.github.bumptech.glide:glide:4.16.0")
-    implementation ("com.google.android.gms:play-services-maps:18.1.0")
-    implementation ("com.google.android.libraries.places:places:3.1.0")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
+    implementation("com.google.android.libraries.places:places:3.1.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-
     implementation("androidx.core:core-splashscreen:1.0.1")
-
-    implementation ("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("com.google.code.gson:gson:2.11.0") // Make sure to use the latest version
@@ -94,7 +92,5 @@ dependencies {
     testImplementation("org.mockito:mockito-core:3.11.2")
     testImplementation("org.mockito:mockito-inline:3.11.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0")
-    implementation ("com.google.android.material:material:1.4.0")
-
-
+    implementation("com.google.android.material:material:1.4.0")
 }
