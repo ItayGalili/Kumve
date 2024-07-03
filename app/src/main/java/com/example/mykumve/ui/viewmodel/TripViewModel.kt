@@ -2,7 +2,6 @@ package com.example.mykumve.ui.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import com.example.mykumve.data.model.TripInfo
 import com.example.mykumve.data.db.repository.TripInfoRepository
 import com.example.mykumve.data.db.repository.TripRepository
 import com.example.mykumve.data.model.Trip
@@ -10,11 +9,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.mykumve.data.data_classes.Equipment
+import com.example.mykumve.data.model.TripInfo
 import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.util.TripInvitationStatus
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 
 class TripViewModel(
@@ -127,8 +125,14 @@ class TripViewModel(
     }
 
     // Method to get trip invitations by trip ID
-    suspend fun getTripInvitationsByTripId(tripId: Int): LiveData<List<TripInvitation>>? {
+    fun getTripInvitationsByTripId(tripId: Int): LiveData<List<TripInvitation>>? {
         return tripRepository.getTripInvitationsByTripId(tripId)
+    }
+
+    fun deleteTripInvitation(invitation: TripInvitation) {
+        viewModelScope.launch{
+            tripRepository.deleteTripInvitation(invitation)
+        }
     }
 
     // Method to check if a user has pending invitations for a specific trip

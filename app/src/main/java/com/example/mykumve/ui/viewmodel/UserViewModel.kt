@@ -1,6 +1,7 @@
 package com.example.mykumve.ui.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -64,5 +65,11 @@ class   UserViewModel (
     fun getUserById(id: Int): LiveData<User?>? {
         return userRepository.getUserById(id)
     }
+    fun getAllUsers(): LiveData<List<User>>? {
+        val users = userRepository.getAllUsers()
+        Log.d("UserViewModel", "getAllUsers: ${users?.value}")
+        return users
+    }
+
 
 }

@@ -29,7 +29,9 @@ class UserRepository(application: Application): CoroutineScope {
     private var userDao: UserDao?
 
     fun getAllUsers(): LiveData<List<User>>? {
-        return userDao?.getAllUsers()
+        val users = userDao?.getAllUsers()
+        Log.d("UserRepository", "getAllUsers: ${users?.value}")
+        return users
     }
     init {
         val db = AppDatabase.getDatabase(application.applicationContext)

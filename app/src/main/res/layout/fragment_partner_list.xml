@@ -34,7 +34,7 @@
             android:background="@color/black"/>
 
         <Spinner
-            android:id="@+id/spinner"
+            android:id="@+id/possiblePartnerList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1" />
@@ -43,7 +43,7 @@
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView2"
+        android:id="@+id/invitation_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/closePartnerBtn"

@@ -9,12 +9,6 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.mykumve.data.model.User
 
-/**
- * DAO interface for user-related database operations.
- * Defines methods for querying and inserting users.
- *
- * TODO: Add methods for updating and deleting users if necessary.
- */
 @Dao
 interface UserDao {
     @Query("SELECT * FROM users ORDER BY id DESC")
@@ -25,6 +19,8 @@ interface UserDao {
 
     @Query("SELECT * FROM users WHERE email = :email")
     fun getUserByEmail(email: String): LiveData<User?>
+    @Query("SELECT * FROM users WHERE phone = :phone")
+    fun getUserByPhone(phone: String): LiveData<User?>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun insertUser(user: User): Long

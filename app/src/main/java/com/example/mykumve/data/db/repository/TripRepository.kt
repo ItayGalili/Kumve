@@ -63,6 +63,12 @@ class TripRepository(application: Application): CoroutineScope {
             tripDao?.deleteTrip(trip)
         }
     }
+    fun deleteTripInvitation(invitation: TripInvitation) {
+        val trip = getTripById(invitation.tripId)?.value?.let { trip ->
+            trip.invitations.removeAll { it.tripId == invitation.tripId }
+            tripDao?.updateTrip(trip)
+        }
+    }
 
     fun getTripsByUserId(userId: Int): LiveData<List<Trip>>? {
         return tripDao?.getTripsByUserId(userId)
@@ -95,10 +101,9 @@ class TripRepository(application: Application): CoroutineScope {
         }
     }
 
-    suspend fun getTripInvitationsByTripId(tripId: Int): LiveData<List<TripInvitation>>? {
+    fun getTripInvitationsByTripId(tripId: Int): LiveData<List<TripInvitation>>? {
         return tripInvitationDao?.getTripInvitationsByTripId(tripId)
     }
-
 
 }
 

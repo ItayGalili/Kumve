@@ -44,12 +44,12 @@ class EquipmentFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.recyclerView2.layoutManager = LinearLayoutManager(requireContext())
+        binding.invitationList.layoutManager = LinearLayoutManager(requireContext())
         adapter = EquipmentAdapter(loadData())
-        binding.recyclerView2.adapter = adapter
+        binding.invitationList.adapter = adapter
 
         val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(adapter))
-        itemTouchHelper.attachToRecyclerView(binding.recyclerView2)
+        itemTouchHelper.attachToRecyclerView(binding.invitationList)
 
         binding.addEquipmentBtn.setOnClickListener {
             addNewEquipment()
@@ -81,9 +81,9 @@ class EquipmentFragment : Fragment() {
         if (saveCurrentEditedItem()) {
             val newEquipment = Equipment("", false, null)
             val position = adapter.addEquipment(newEquipment)
-            binding.recyclerView2.post {
-                binding.recyclerView2.scrollToPosition(position) // Scroll to the new item
-                val lastViewHolder = binding.recyclerView2.findViewHolderForAdapterPosition(position) as? EquipmentAdapter.EquipmentViewHolder
+            binding.invitationList.post {
+                binding.invitationList.scrollToPosition(position) // Scroll to the new item
+                val lastViewHolder = binding.invitationList.findViewHolderForAdapterPosition(position) as? EquipmentAdapter.EquipmentViewHolder
                 lastViewHolder?.binding?.equipmentName?.requestFocus()
             }
         }
@@ -91,7 +91,7 @@ class EquipmentFragment : Fragment() {
 
     private fun saveCurrentEditedItem(): Boolean {
         val lastPosition = adapter.itemCount - 1
-        val lastViewHolder = binding.recyclerView2.findViewHolderForAdapterPosition(lastPosition) as? EquipmentAdapter.EquipmentViewHolder
+        val lastViewHolder = binding.invitationList.findViewHolderForAdapterPosition(lastPosition) as? EquipmentAdapter.EquipmentViewHolder
 
         lastViewHolder?.binding?.equipmentName?.let {
             val equipmentName = it.text.toString()

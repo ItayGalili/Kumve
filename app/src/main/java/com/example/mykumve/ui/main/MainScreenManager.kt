@@ -181,7 +181,7 @@ class MainScreenManager : Fragment() {
             .setPositiveButton(R.string.yes) { dialog, _ ->
                 // delete the database
                 UserManager.clearUser()
-                requireContext().deleteDatabase("app_database")
+                requireContext().deleteDatabase("kumve_db")
                 Toast.makeText(requireContext(), "Database deleted. Restarting app...", Toast.LENGTH_SHORT).show()
                 // restart the app
                 val intent = requireActivity().intent
