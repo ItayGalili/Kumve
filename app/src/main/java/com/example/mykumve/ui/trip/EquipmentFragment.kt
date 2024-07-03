@@ -58,19 +58,19 @@ class EquipmentFragment : Fragment() {
         binding.closeEquipmentBtn.setOnClickListener {
             if (saveCurrentEditedItem()) {
                 saveData()
-                if (sharedTripViewModel.isNewTrip) {
+                if (sharedTripViewModel.isCreatingTripMode) {
                     findNavController().navigate(R.id.action_equipmentFragment_to_travelManager)
                 } else {
+                    sharedTripViewModel.resetNewTripState()
                     findNavController().navigate(R.id.action_equipmentFragment_to_mainScreenManager)
                 }
             }
         }
         loadTripData()
-
     }
 
     private fun loadTripData() {
-        if (sharedTripViewModel.isNewTrip) {
+        if (sharedTripViewModel.isCreatingTripMode) {
             if (sharedTripViewModel.equipmentList.value == null) {
                 sharedTripViewModel.updateEquipment(mutableListOf())
             }
@@ -117,11 +117,8 @@ class EquipmentFragment : Fragment() {
     }
 
     private fun loadData(): MutableList<Equipment> {
-        return if (sharedTripViewModel.isNewTrip) {
-            sharedTripViewModel.equipmentList.value?.toMutableList() ?: mutableListOf()
-        } else {
-            sharedTripViewModel.selectedTrip.value?.equipment?.toMutableList() ?: mutableListOf()
-        }
+        val data = sharedTripViewModel.trip.value?.equipment?.toMutableList() ?: mutableListOf()
+        return data
     }
 
     override fun onDestroyView() {

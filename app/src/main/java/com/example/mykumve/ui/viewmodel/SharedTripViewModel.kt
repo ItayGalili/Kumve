@@ -11,21 +11,20 @@ import com.example.mykumve.data.model.Trip
 
 class SharedTripViewModel : ViewModel() {
     val TAG = SharedTripViewModel::class.java.toString()
-    private val _selectedTrip = MutableLiveData<Trip?>()
+    private val _selectedExistingTrip = MutableLiveData<Trip?>()
     private lateinit var tripViewModel: TripViewModel
-    val selectedTrip: LiveData<Trip?> get() = _selectedTrip
-    private val _equipmentList = MutableLiveData<List<Equipment>?>()
-    val equipmentList: MutableLiveData<List<Equipment>?> get() = _equipmentList
-    var isNewTrip: Boolean = true
-    private val _trip = MutableLiveData<Trip>()
-    val trip: LiveData<Trip> get() = _trip
-
-    fun setTrip(trip: Trip) {
-        _trip.value = trip
+    private val _tempEquipmentList = MutableLiveData<List<Equipment>?>()
+    val equipmentList: MutableLiveData<List<Equipment>?> get() = _tempEquipmentList
+    var isCreatingTripMode: Boolean = true
+    private val _partialTrip = MutableLiveData<Trip?>()
+    val trip: LiveData<Trip?> get() = if(isCreatingTripMode) _partialTrip else _selectedExistingTrip
+    fun setPartialTrip(trip: Trip) {
+        _partialTrip.value = trip
+        isCreatingTripMode = true
     }
 
-    fun updateTrip(trip: Trip) {
-        _trip.value = _trip.value?.apply {
+    fun updatePartialTrip(trip: Trip) {
+        _partialTrip.value = _partialTrip.value?.apply {
             this.title = trip.title
             this.description = trip.description
             this.gatherTime = trip.gatherTime
@@ -46,19 +45,19 @@ class SharedTripViewModel : ViewModel() {
         tripViewModel = ViewModelProvider(viewModelStoreOwner).get(TripViewModel::class.java)
     }
 
-    fun selectTrip(trip: Trip) {
-        _selectedTrip.value = trip
-        _equipmentList.value = trip.equipment // Load the trip's equipment list when selected
-        isNewTrip = false
+    fun selectExistingTrip(trip: Trip) {
+        _selectedExistingTrip.value = trip
+        _tempEquipmentList.value = trip.equipment // Load the trip's equipment list when selected
+        isCreatingTripMode = false
     }
 
     fun updateEquipment(equipment: MutableList<Equipment>?) {
-        selectedTrip.value?.equipment =
+        trip.value?.equipment =
             equipment?.toMutableList() // Ensure the trip's equipment list is updated
-        if (isNewTrip) {
-            _equipmentList.value = equipment
+        if (isCreatingTripMode) {
+            _tempEquipmentList.value = equipment
         } else try {
-            selectedTrip.value?.let {
+            trip.value?.let {
                 tripViewModel.updateTrip(it) // Call TripViewModel to update the trip
             }
         } catch (e: Exception) {
@@ -68,9 +67,10 @@ class SharedTripViewModel : ViewModel() {
     }
 
     fun resetNewTripState() {
-        _selectedTrip.value = null
-        _equipmentList.value = mutableListOf()
-        isNewTrip = true
+        _selectedExistingTrip.value = null
+        _partialTrip.value = null
+        _tempEquipmentList.value = mutableListOf()
+        isCreatingTripMode = true
     }
 
 }

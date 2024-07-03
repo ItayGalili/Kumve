@@ -1,11 +1,8 @@
 package com.example.mykumve.ui.trip
 
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mykumve.R
@@ -21,11 +18,11 @@ class TripAdapter(
 ) : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
 
     init {
-        if (sharedViewModel.isNewTrip) {
+        if (sharedViewModel.isCreatingTripMode) {
             sharedViewModel.equipmentList.observeForever { equipmentList ->
                 equipmentList?.let {
                     val tripIndex =
-                        trips.indexOfFirst { it.id == sharedViewModel.selectedTrip.value?.id }
+                            trips.indexOfFirst { it.id == sharedViewModel.trip.value?.id }
                     if (tripIndex != -1) {
                         trips[tripIndex].equipment = it.toMutableList()
                         notifyItemChanged(tripIndex)
@@ -51,13 +48,13 @@ class TripAdapter(
             }
 
             binding.listCardBtn.setOnClickListener {
-                sharedViewModel.selectTrip(trip)
+                sharedViewModel.selectExistingTrip(trip)
                 sharedViewModel.updateEquipment(trip.equipment)
                 it.findNavController().navigate(R.id.action_mainScreenManager_to_equipmentFragment)
             }
 
             binding.partnersCard.setOnClickListener {
-                sharedViewModel.selectTrip(trip)
+                sharedViewModel.selectExistingTrip(trip)
                 it.findNavController().navigate(R.id.action_travelManager_to_partnerListFragment)
             }
         }

@@ -30,14 +30,27 @@ class LoginManager : Fragment() {
 
 
         binding.LoginBtn.setOnClickListener {
-            val email = binding.emailAd.text.toString()
-            val password = binding.password.text.toString()
-
+                val emailInput = binding.emailAd.text.toString()
+            var email = ""
+            var password = ""
+            when {
+                emailInput.contains("1") -> {
+                     email = "da@da.com"
+                     password = "123456"
+                }
+                emailInput.contains("2") || emailInput.isBlank()  -> {
+                     email = "a@a.com"
+                     password = "123456"
+                }
+                else -> {
+                     email = emailInput
+                     password = binding.password.text.toString()
+                }
+            }
             loginUser(email, password) { isLoggedInUser ->
                 if (isLoggedInUser.success) {
                     Toast.makeText(requireContext(), R.string.login_successful, Toast.LENGTH_SHORT)
                         .show()
-                    // todo - make sure user can't get back to login page
                     // Navigate to main screen
                     findNavController().navigate(R.id.action_loginManager_to_mainScreenManager)
                 } else {

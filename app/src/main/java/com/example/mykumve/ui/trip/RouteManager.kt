@@ -7,18 +7,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
 import com.example.mykumve.databinding.RouteBinding
+import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 
 class RouteManager : Fragment() {
     private var _binding : RouteBinding? = null
 
     private val binding get() = _binding!!
+    private val sharedViewModel: SharedTripViewModel by activityViewModels()
     private val Difficulty: String = ""
     private val Area: String = ""
 
@@ -33,6 +33,8 @@ class RouteManager : Fragment() {
 
         binding.seve.setOnClickListener {
             //val bundle = bundleOf("title" to binding.itemTitle.text.toString(), "description" to binding.itemDescription.text.toString())
+            sharedViewModel.resetNewTripState()
+
             findNavController().navigate(R.id.action_routeManager_to_mainScreenManager2)
         }
 

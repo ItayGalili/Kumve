@@ -44,9 +44,10 @@ class TripManager : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Logic to determine if it's a new trip creation
-        val isCreatingNewTrip = arguments?.getBoolean(NavigationArgs.IS_CREATING_NEW_TRIP.key, false) ?: false
+        val isCreatingNewTrip = true // todo - verify; is it always true? arguments?.getBoolean(NavigationArgs.IS_CREATING_NEW_TRIP.key, false) ?: false
 
-        if (isCreatingNewTrip) {
+        if (isCreatingNewTrip && sharedViewModel.trip.value == null) {
+            // There is no cached trip and in creating trip fragment then reset state
             sharedViewModel.resetNewTripState()
         }
 
@@ -122,7 +123,7 @@ class TripManager : Fragment() {
     private fun cacheTrip() {
         currentUser?.let { user ->
             val tempTrip = formToTripObject(user)
-            sharedViewModel.setTrip(tempTrip)
+            sharedViewModel.setPartialTrip(tempTrip)
         }
     }
 
@@ -179,12 +180,23 @@ class TripManager : Fragment() {
         findNavController().navigate(R.id.action_travelManager_to_routeManager)
     }
 
-    private fun formToTripObject(user: User, equipmentList: List<Equipment>? = null): Trip {
+    private fun formToTripObject(
+        user: User,
+        equipmentList: List<Equipment>? = null,
+        participantList: List<User>? = null,
+
+    ): Trip {
         val title = binding.nameTrip.text.toString()
         // Convert startDate to a timestamp
         val gatherTime = startDate?.timeInMillis
         val endTime = endDate?.timeInMillis
-        val equipments = equipmentList?.toMutableList()  // Changed line to convert List<Equipment> to MutableList<Equipment>
+        val equipments = equipmentList?.takeIf { it.isNotEmpty() }?.toMutableList() ?:
+        sharedViewModel.trip.value?.equipment?.toMutableList()
+
+        val participants = participantList?.takeIf { it.isNotEmpty() }?.toMutableList() ?:
+        sharedViewModel.trip.value?.participants?.takeIf { it.isNotEmpty() }?.toMutableList() ?:
+        mutableListOf(user)
+
         val photo = imagePickerUtil.getImageUri()?.toString()
         val notes = null
         val description = binding.description.text.toString()
@@ -196,7 +208,7 @@ class TripManager : Fragment() {
             endDate = endTime,
             description = description,
             notes = notes,
-            participants = mutableListOf(user),
+            participants = participants,
             equipment = equipments,
             userId = user.id,
             image = photo,
