@@ -11,10 +11,10 @@ import androidx.room.PrimaryKey
 )
 data class User(
     @ColumnInfo(name = "first_name") val firstName: String,
-    @ColumnInfo(name = "surname") val surname: String?,
+    @ColumnInfo(name = "surname") var surname: String?,
     @ColumnInfo(name = "email") val email: String,
-    @ColumnInfo(name = "profile_photo_uri") val photo: String?,
-    @ColumnInfo(name = "description") val phone: String?,
+    @ColumnInfo(name = "profile_photo_uri") var photo: String?,
+    @ColumnInfo(name = "description") var phone: String?,
     @ColumnInfo(name = "password") val hashedPassword: String,
     @ColumnInfo(name = "salt") val salt: String,
     @PrimaryKey(autoGenerate = true) var id: Int = 0
