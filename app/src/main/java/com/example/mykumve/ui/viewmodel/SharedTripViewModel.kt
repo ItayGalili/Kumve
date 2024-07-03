@@ -17,6 +17,30 @@ class SharedTripViewModel : ViewModel() {
     private val _equipmentList = MutableLiveData<List<Equipment>?>()
     val equipmentList: MutableLiveData<List<Equipment>?> get() = _equipmentList
     var isNewTrip: Boolean = true
+    private val _trip = MutableLiveData<Trip>()
+    val trip: LiveData<Trip> get() = _trip
+
+    fun setTrip(trip: Trip) {
+        _trip.value = trip
+    }
+
+    fun updateTrip(trip: Trip) {
+        _trip.value = _trip.value?.apply {
+            this.title = trip.title
+            this.description = trip.description
+            this.gatherTime = trip.gatherTime
+            this.participants = trip.participants
+            this.image = trip.image
+            this.equipment = trip.equipment
+            this.userId = trip.userId
+            this.tripInfoId = trip.tripInfoId
+            this.notes = trip.notes
+            this.endDate = trip.endDate
+            this.invitations = trip.invitations
+            this.shareLevel = trip.shareLevel
+        }
+    }
+
 
     fun initTripViewModel(viewModelStoreOwner: ViewModelStoreOwner) {
         tripViewModel = ViewModelProvider(viewModelStoreOwner).get(TripViewModel::class.java)

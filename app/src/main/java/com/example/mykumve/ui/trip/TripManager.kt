@@ -2,16 +2,12 @@ package com.example.mykumve.ui.trip
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -27,6 +23,7 @@ import com.example.mykumve.util.ImagePickerUtil
 import com.example.mykumve.util.NavigationArgs
 import com.example.mykumve.util.ShareLevel
 import com.example.mykumve.util.UserManager
+import com.example.mykumve.util.Utility.timestampToString
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -52,6 +49,16 @@ class TripManager : Fragment() {
         if (isCreatingNewTrip) {
             sharedViewModel.resetNewTripState()
         }
+
+        // Restore data if available
+        sharedViewModel.trip.value?.let { trip ->
+            binding.tripImage.setImageURI(trip.image?.toUri())
+            binding.nameTrip.setText(trip.title)
+            binding.description.setText(trip.description.toString())
+            binding.dateStartPick.text = timestampToString(trip.gatherTime)
+            binding.dateEndPick.text = timestampToString(trip.endDate)
+        }
+
 
     }
 
@@ -84,6 +91,7 @@ class TripManager : Fragment() {
 
         //equipment list:
         binding.listBtn.setOnClickListener {
+            cacheTrip()
             findNavController().navigate(R.id.action_travelManager_to_equipmentFragment)
         }
 
@@ -109,6 +117,13 @@ class TripManager : Fragment() {
             imagePickerUtil.pickImage()
         }
         return binding.root
+    }
+
+    private fun cacheTrip() {
+        currentUser?.let { user ->
+            val tempTrip = formToTripObject(user)
+            sharedViewModel.setTrip(tempTrip)
+        }
     }
 
     private fun showDateTimePicker(isStartDate: Boolean) {
@@ -150,24 +165,37 @@ class TripManager : Fragment() {
 
     // todo - move to next fragment (page) of add info to trip (trip info)
     private fun addTrip(button: View?, user: User, equipmentList: List<Equipment>?) {
-        val title = binding.nameTrip.text.toString()
-        if (title.isBlank()) {
+        if (binding.nameTrip.text.toString().isBlank()) {
             Toast.makeText(requireContext(), "Title is required", Toast.LENGTH_SHORT).show()
             return
         }
 
+        val trip = formToTripObject(user, equipmentList)
+
+        // Add the trip to the viewModel
+        tripViewModel.addTrip(trip)
+
+        // Navigate to the main screen
+        findNavController().navigate(R.id.action_travelManager_to_routeManager)
+    }
+
+    private fun formToTripObject(user: User, equipmentList: List<Equipment>? = null): Trip {
+        val title = binding.nameTrip.text.toString()
         // Convert startDate to a timestamp
         val gatherTime = startDate?.timeInMillis
         val endTime = endDate?.timeInMillis
         val equipments = equipmentList?.toMutableList()  // Changed line to convert List<Equipment> to MutableList<Equipment>
         val photo = imagePickerUtil.getImageUri()?.toString()
+        val notes = null
+        val description = binding.description.text.toString()
 
         // Create a new Trip object with the provided details
         val trip = Trip(
             title = title,
             gatherTime = gatherTime,
             endDate = endTime,
-            notes = mutableListOf(binding.description.text.toString()),
+            description = description,
+            notes = notes,
             participants = mutableListOf(user),
             equipment = equipments,
             userId = user.id,
@@ -175,12 +203,7 @@ class TripManager : Fragment() {
             tripInfoId = null,
             shareLevel = ShareLevel.PUBLIC,
         )
-
-        // Add the trip to the viewModel
-        tripViewModel.addTrip(trip)
-
-        // Navigate to the main screen
-        findNavController().navigate(R.id.action_travelManager_to_routeManager)
+        return trip
     }
 
     override fun onDestroyView() {
