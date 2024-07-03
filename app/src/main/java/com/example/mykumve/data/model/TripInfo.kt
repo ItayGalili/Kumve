@@ -12,14 +12,15 @@ import com.example.mykumve.util.DifficultyLevel
 @TypeConverters(Converters::class)
 data class TripInfo(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "points") var points: List<Point>,
-    @ColumnInfo(name = "area_id") var areaId: Int,
-    @ColumnInfo(name = "sub_area_id") var subAreaId: Int,
-    @ColumnInfo(name = "description") var description: String,
-    @ColumnInfo(name = "route_description") var routeDescription: String,
-    @ColumnInfo(name = "difficulty") var difficulty: DifficultyLevel,
-    @ColumnInfo(name = "length") var length: Float,
-    @ColumnInfo(name = "tags") var tags: List<String>,
-    @ColumnInfo(name = "is_circular") var isCircular: Boolean,
-    @ColumnInfo(name = "likes") var likes: Int
+    @ColumnInfo(name = "title") var title: String,
+    @ColumnInfo(name = "points") var points: List<Point>?,
+    @ColumnInfo(name = "area_id") var areaId: Int?,
+    @ColumnInfo(name = "sub_area_id") var subAreaId: Int?,
+    @ColumnInfo(name = "description") var description: MutableList<String>?,
+    @ColumnInfo(name = "route_description") var routeDescription: String?,
+    @ColumnInfo(name = "difficulty") var difficulty: DifficultyLevel?,
+    @ColumnInfo(name = "length") var length: Float?,
+    @ColumnInfo(name = "tags") var tags: List<String>?,
+    @ColumnInfo(name = "is_circular") var isCircular: Boolean?,
+    @ColumnInfo(name = "likes") var likes: Int?
 )
