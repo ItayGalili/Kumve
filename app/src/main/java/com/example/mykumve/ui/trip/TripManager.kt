@@ -23,7 +23,7 @@ import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.TravelManagerViewBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
-import com.example.mykumve.util.Converters
+import com.example.mykumve.util.ImagePickerUtil
 import com.example.mykumve.util.NavigationArgs
 import com.example.mykumve.util.ShareLevel
 import com.example.mykumve.util.UserManager
@@ -41,18 +41,8 @@ class TripManager : Fragment() {
 
     private var startDate: Calendar? = null
     private var endDate: Calendar? = null
-    private var imageUri: Uri? = null
+    private lateinit var imagePickerUtil: ImagePickerUtil
 
-    val pickImageLauncher: ActivityResultLauncher<Array<String>> =
-        registerForActivityResult(ActivityResultContracts.OpenDocument()) {
-            binding.tripImage.scaleType = ImageView.ScaleType.CENTER_CROP
-            binding.tripImage.setImageURI(it)
-            requireActivity().contentResolver.takePersistableUriPermission(
-                it!!,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION
-            )
-            imageUri = it
-        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -74,14 +64,16 @@ class TripManager : Fragment() {
 
         if (UserManager.isLoggedIn()) {
             currentUser = UserManager.getUser()
-
         } else {
             // Handle the case where the user is not logged in
             Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()
-            // You can navigate to the login screen or take appropriate action
+
         }
 
-        //date
+        imagePickerUtil = ImagePickerUtil(this) { uri ->
+            binding.tripImage.setImageURI(uri)
+        }
+
         binding.dateStartBtn.setOnClickListener {
             showDateTimePicker(true)
         }
@@ -114,8 +106,7 @@ class TripManager : Fragment() {
         }
 
         binding.tripImage.setOnClickListener {
-            pickImageLauncher.launch(arrayOf("image/*"))
-
+            imagePickerUtil.pickImage()
         }
         return binding.root
     }
@@ -169,7 +160,7 @@ class TripManager : Fragment() {
         val gatherTime = startDate?.timeInMillis
         val endTime = endDate?.timeInMillis
         val equipments = equipmentList?.toMutableList()  // Changed line to convert List<Equipment> to MutableList<Equipment>
-        val image = imageUri?.toString()
+        val photo = imagePickerUtil.getImageUri()?.toString()
 
         // Create a new Trip object with the provided details
         val trip = Trip(
@@ -180,7 +171,7 @@ class TripManager : Fragment() {
             participants = mutableListOf(user),
             equipment = equipments,
             userId = user.id,
-            image = image,
+            image = photo,
             tripInfoId = null,
             shareLevel = ShareLevel.PUBLIC,
         )
