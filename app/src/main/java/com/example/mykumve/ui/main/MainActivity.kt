@@ -19,6 +19,10 @@ import com.example.mykumve.util.UserManager
 
 class MainActivity : AppCompatActivity() {
     private val viewModel by viewModels<MainViewModel>()
+    companion object {
+        const val DEBUG_MODE = true // Set to true to enable debug options
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen().apply {

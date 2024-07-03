@@ -50,6 +50,7 @@
     <string name="logout_confirmation">Are you sure you want to logout?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="delete_db_confirmation">Are you sure you want to delete db?</string>
 
     <string name="error_invalid_phone">Please enter a valid phone number with 10 digits or 10–13 digits prefixed with a plus sign (+)</string>
     <string name="api_key_placeholder" translatable="false">YOUR_API_KEY_HERE</string>

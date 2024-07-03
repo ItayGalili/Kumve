@@ -146,6 +146,9 @@ class MainScreenManager : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.main_menu, menu)
+        if (MainActivity.DEBUG_MODE) {
+            menu.findItem(R.id.debug_delete_db).isVisible = true
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -163,9 +166,36 @@ class MainScreenManager : Fragment() {
                 showLogoutDialog()
                 return true
             }
+            R.id.debug_delete_db -> {
+                showDeleteDbDialog()
+                return true
+            }
+
             else -> return super.onOptionsItemSelected(item)
         }
     }
+
+    private fun showDeleteDbDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setMessage(R.string.delete_db_confirmation)
+            .setPositiveButton(R.string.yes) { dialog, _ ->
+                // delete the database
+                UserManager.clearUser()
+                requireContext().deleteDatabase("app_database")
+                Toast.makeText(requireContext(), "Database deleted. Restarting app...", Toast.LENGTH_SHORT).show()
+                // restart the app
+                val intent = requireActivity().intent
+                requireActivity().finish()
+                startActivity(intent)
+            }
+            .setNegativeButton(R.string.no) { dialog, _ ->
+                dialog.dismiss()
+            }
+
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
     private fun showLogoutDialog() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setMessage(R.string.logout_confirmation)
