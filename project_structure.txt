@@ -31,13 +31,18 @@
 │   │   └── LoginManager.kt
 │   ├── main
 │   │   ├── MainActivity.kt
-│   │   └── MainScreenManager.kt
+│   │   ├── MainScreenManager.kt
+│   │   ├── MainViewModel.kt
+│   │   └── MyProfile.kt
 │   ├── map
 │   │   └── MapFragment.kt
 │   ├── register
 │   │   └── RegisterManager.kt
 │   ├── trip
 │   │   ├── EquipmentFragment.kt
+│   │   ├── PartnerListAdapter.kt
+│   │   ├── PartnerListFragment.kt
+│   │   ├── RouteManager.kt
 │   │   ├── TripAdapter.kt
 │   │   ├── TripCreationFragment.kt
 │   │   ├── TripDetailFragment.kt
@@ -51,53 +56,86 @@
     ├── Converters.kt
     ├── EncryptionUtils.kt
     ├── Enums.kt
+    ├── LocalProperties.kt
     ├── SharedPreferencesUtils.kt
     ├── UserManager.kt
     └── Utility.kt
 
-16 directories, 39 files
+16 directories, 45 files
 
 /Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/res
 /Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/res
 ├── anim
 │   ├── from_left.xml
 │   ├── from_right.xml
+│   ├── from_up.xml
+│   ├── to_down.xml
 │   ├── to_left.xml
 │   └── to_right.xml
+├── animator
+│   └── logo_animator.xml
 ├── drawable
+│   ├── _ie2vme2rukrojugbmrx0ud6k7u.xml
+│   ├── account_circle.xml
+│   ├── animated_logo.xml
+│   ├── annoucements_yogi_aprelliyanto.png
+│   ├── background_login.png
+│   ├── backpack_iconic_panda.png
 │   ├── baseline_add_24.xml
 │   ├── baseline_add_location_24.xml
 │   ├── baseline_backpack_24.xml
 │   ├── baseline_check_box_24.xml
 │   ├── baseline_check_box_outline_blank_24.xml
 │   ├── baseline_delete_24.xml
+│   ├── book.png
+│   ├── calendar.png
 │   ├── clock.png
 │   ├── fart.jpeg
 │   ├── flower.png
+│   ├── hills.jpg
 │   ├── ic_launcher_background.xml
 │   ├── icon.png
 │   ├── list.png
+│   ├── log_out.xml
+│   ├── login_screen.png
+│   ├── login_screen_high.png
 │   ├── macro_4327877.png
 │   ├── main.png
 │   ├── map.jpeg
+│   ├── menu_icon.png
+│   ├── my_alerts.xml
+│   ├── my_profile.png
+│   ├── my_trips_afif_fudina.png
 │   ├── network.png
+│   ├── network_no_bg_smashicons.png
+│   ├── network_smashicons.png
 │   ├── partners.png
 │   ├── pencil.png
-│   └── tin.png
+│   ├── rounded_button.xml
+│   ├── rounded_corner_btn.xml
+│   ├── tin.png
+│   └── walk.png
 ├── drawable-v24
 │   └── ic_launcher_foreground.xml
 ├── layout
 │   ├── activity_main.xml
 │   ├── equipment_card.xml
 │   ├── equipment_list.xml
+│   ├── fragment_partner_list.xml
+│   ├── item_partner_card.xml
 │   ├── login.xml
 │   ├── main_screen.xml
-│   ├── partners_list.xml
+│   ├── map.xml
+│   ├── my_profile_page.xml
 │   ├── register.xml
+│   ├── route.xml
 │   ├── travel_card.xml
 │   ├── travel_manager_view.xml
 │   ├── travel_network.xml
 │   └── trip_review.xml
+├── menu
+│   ├── main_menu.xml
+│   └── map_options.xml
 ├── mipmap-anydpi-v26
 │   ├── ic_launcher.xml
 │   └── ic_launcher_round.xml
@@ -128,17 +166,10 @@
 │   └── strings.xml
 ├── values-night
 │   └── themes.xml
+├── values-v31
+│   └── themes.xml
 └── xml
     ├── backup_rules.xml
     └── data_extraction_rules.xml
 
-16 directories, 57 files
-
-
-(
-  echo "/Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/java/com/example/mykumve" &&
-  tree /Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/java/com/example/mykumve &&
-  echo "" &&
-  echo "/Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/res" &&
-  tree /Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/res
-) > project_structure.txt
+19 directories, 88 files
