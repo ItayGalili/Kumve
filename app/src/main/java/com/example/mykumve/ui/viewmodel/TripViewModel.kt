@@ -75,6 +75,9 @@ class TripViewModel(
 
     fun updateTripInfo(tripInfo: TripInfo) {
         viewModelScope.launch {
+            val trip = tripRepository.getTripById(tripInfo.tripId)?.value ?: throw Exception("Trip not found")
+            trip.tripInfoId = tripInfo.id
+            tripRepository.updateTrip(trip)
             tripInfoRepository.updateTripInfo(tripInfo)
         }
     }
