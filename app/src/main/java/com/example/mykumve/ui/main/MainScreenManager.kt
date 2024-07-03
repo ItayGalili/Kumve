@@ -8,11 +8,11 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -155,18 +155,33 @@ class MainScreenManager : Fragment() {
                 return true
             }
             R.id.my_alerts -> {
-                // Handle My Alerts action
+                // todo Handle My Alerts action
                 // Example: findNavController().navigate(R.id.action_mainScreenManager_to_myAlerts)
                 return true
             }
             R.id.log_out -> {
-                //daniel please create a logic for logging out
+                showLogoutDialog()
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
         }
     }
-    //toolbar
+    private fun showLogoutDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setMessage(R.string.logout_confirmation)
+            .setPositiveButton(R.string.yes) { dialog, id ->
+                UserManager.clearUser()
+                findNavController().navigate(R.id.action_mainScreenManager_to_loginManager)
+            }
+            .setNegativeButton(R.string.no) { dialog, id ->
+                dialog.dismiss()
+            }
+
+        // Create and show the AlertDialog
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
 
 
     override fun onDestroyView() {

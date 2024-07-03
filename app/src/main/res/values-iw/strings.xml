@@ -33,5 +33,8 @@
     <string name="error_invalid_email">אימייל לא תקין</string>
     <string name="error_invalid_password">הסיסמא חייבת להכיל 6 תוים לפחות</string>
     <string name="error_invalid_phone">הטלפון צריך להיות בעל 10 ספרות או קידומת מדינה (עם הסימן + לפניו)</string>
+    <string name="logout_confirmation">את/ה בטוח/ה שאת/ה רוצה להתנתק?</string>
+    <string name="yes">כן</string>
+    <string name="no">לא</string>
 
 </resources>

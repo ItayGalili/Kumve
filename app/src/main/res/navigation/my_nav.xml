@@ -31,6 +31,9 @@
             app:destination="@id/myProfile"
             app:enterAnim="@anim/from_up"
             app:exitAnim="@anim/to_down"/>
+        <action
+            android:id="@+id/action_mainScreenManager_to_loginManager"
+            app:destination="@id/loginManager" />
     </fragment>
     <fragment
         android:id="@+id/registerManager"
@@ -109,6 +112,9 @@
         <action
             android:id="@+id/action_equipmentFragment_to_mainScreenManager"
             app:destination="@id/mainScreenManager" />
+        <action
+            android:id="@+id/action_equipmentFragment_self"
+            app:destination="@id/equipmentFragment" />
     </fragment>
     <fragment
         android:id="@+id/myProfile"
