@@ -23,7 +23,7 @@ import com.example.mykumve.util.ShareLevel
             entity = TripInfo::class,
             parentColumns = ["id"],
             childColumns = ["trip_info_id"],
-            onDelete = ForeignKey.SET_NULL
+            onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [Index(value = ["user_id"]), Index(value = ["trip_info_id"])]
