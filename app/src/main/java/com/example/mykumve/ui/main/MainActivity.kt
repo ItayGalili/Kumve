@@ -1,20 +1,14 @@
 package com.example.mykumve.ui.main
 
-import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Build
-import android.view.Menu
-import android.view.MenuItem
 import android.view.Window
 import android.view.WindowManager
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.mykumve.R
-import com.example.mykumve.util.LocalProperties
 import com.example.mykumve.util.UserManager
 
 
