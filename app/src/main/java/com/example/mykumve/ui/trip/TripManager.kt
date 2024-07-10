@@ -36,8 +36,8 @@ class TripManager : Fragment() {
     private val sharedViewModel: SharedTripViewModel by activityViewModels()
     private var currentUser: User? = null
 
-    private var startDate: Calendar? = null
-    private var endDate: Calendar? = null
+    private var startDate: Long? = null
+    private var endDate: Long? = null
     private lateinit var imagePickerUtil: ImagePickerUtil
 
 
@@ -105,8 +105,9 @@ class TripManager : Fragment() {
             // Check if currentUser is not null
             currentUser?.let { user ->
                 sharedViewModel.equipmentList.observe(viewLifecycleOwner, Observer { equipmentList ->
-                    addTrip(it, user, equipmentList)
-                })
+                    val trip = formToTripObject(user, equipmentList)
+                    sharedViewModel.setTrip(trip)
+                    findNavController().navigate(R.id.action_travelManager_to_routeManager)                })
             } ?: run {
                 // Handle the case where the user is not logged in or currentUser is null
                 Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()
@@ -135,27 +136,27 @@ class TripManager : Fragment() {
                 calendar.set(year, month, dayOfMonth, hourOfDay, minute)
 
                 if (isStartDate) {
-                    if (calendar.before(Calendar.getInstance())) {
+                    if (calendar.timeInMillis < System.currentTimeMillis()) {
                         Toast.makeText(requireContext(), "Start date cannot be before current date", Toast.LENGTH_SHORT).show()
                         return@OnTimeSetListener
                     }
-                    startDate = calendar
+                    startDate = calendar.timeInMillis
                     binding.StartView.text = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(calendar.time)
                 } else {
                     if (startDate == null) {
                         Toast.makeText(requireContext(), "Please select a start date first", Toast.LENGTH_SHORT).show()
                         return@OnTimeSetListener
                     }
-                    if (calendar.before(startDate)) {
+                    if (calendar.timeInMillis < startDate!!) {
                         Toast.makeText(requireContext(), "End date cannot be before start date", Toast.LENGTH_SHORT).show()
                         return@OnTimeSetListener
                     }
-                    val diff = calendar.timeInMillis - startDate!!.timeInMillis
+                    val diff = calendar.timeInMillis - startDate!!
                     if (diff < 3600000) {
                         Toast.makeText(requireContext(), "End date must be at least 1 hour after start date", Toast.LENGTH_SHORT).show()
                         return@OnTimeSetListener
                     }
-                    endDate = calendar
+                    endDate = calendar.timeInMillis
                     binding.EndView.text = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(calendar.time)
                 }
             }
@@ -176,8 +177,6 @@ class TripManager : Fragment() {
         // Add the trip to the viewModel
         tripViewModel.addTrip(trip)
 
-        // Navigate to the main screen
-        findNavController().navigate(R.id.action_travelManager_to_routeManager)
     }
 
     private fun formToTripObject(
@@ -187,9 +186,9 @@ class TripManager : Fragment() {
 
     ): Trip {
         val title = binding.nameTrip.text.toString()
-        // Convert startDate to a timestamp
-        val gatherTime = startDate?.timeInMillis
-        val endTime = endDate?.timeInMillis
+        val description = binding.description.text.toString()
+        val gatherTime = startDate
+        val endTime = endDate
         val equipments = equipmentList?.takeIf { it.isNotEmpty() }?.toMutableList() ?:
         sharedViewModel.trip.value?.equipment?.toMutableList()
 
@@ -199,7 +198,6 @@ class TripManager : Fragment() {
 
         val photo = imagePickerUtil.getImageUri()?.toString()
         val notes = null
-        val description = binding.description.text.toString()
 
         // Create a new Trip object with the provided details
         val trip = Trip(
