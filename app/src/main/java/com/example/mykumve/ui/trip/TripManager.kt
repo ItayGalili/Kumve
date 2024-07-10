@@ -106,7 +106,7 @@ class TripManager : Fragment() {
             currentUser?.let { user ->
                 sharedViewModel.equipmentList.observe(viewLifecycleOwner, Observer { equipmentList ->
                     val trip = formToTripObject(user, equipmentList)
-                    sharedViewModel.setTrip(trip)
+                    sharedViewModel.setPartialTrip(trip)
                     findNavController().navigate(R.id.action_travelManager_to_routeManager)                })
             } ?: run {
                 // Handle the case where the user is not logged in or currentUser is null
