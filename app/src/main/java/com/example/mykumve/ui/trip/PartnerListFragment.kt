@@ -52,7 +52,7 @@ class PartnerListFragment : Fragment() {
         }
 
         binding.closePartnerBtn.setOnClickListener{
-//            saveData()
+//            saveData() todo (save to db / cached the removed ones also)
             if (sharedTripViewModel.isCreatingTripMode) {
                 findNavController().navigate(R.id.action_partnerListFragment_to_travelManager)
             } else {
@@ -84,7 +84,7 @@ class PartnerListFragment : Fragment() {
                         sharedTripViewModel.addInvitation(newInvitation)
 //                        partnerListAdapter.notifyDataSetChanged() // Update RecyclerView
                         Toast.makeText(requireContext(), "Invitation added", Toast.LENGTH_SHORT).show()
-                    } else {
+                    } else { // todo check?
                         tripViewModel.sendTripInvitation(
                             tripId = currentTrip.id,
                             userId = user.id

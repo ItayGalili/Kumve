@@ -49,26 +49,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:id="@+id/invitationStatus"
                     android:text=""/>
-                <Button
-                    android:id="@+id/ComeBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="I'm coming"
-                    android:textColor="@color/white"
-                    android:backgroundTint="@color/statusBarColor"
-                    android:padding="1dp"/>
-
-                <Button
-                    android:id="@+id/NotComBtm"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="I'm not coming"
-                    android:backgroundTint="@color/statusBarColor"
-
-                    android:padding="1dp"/>
             </LinearLayout>
 
         </LinearLayout>

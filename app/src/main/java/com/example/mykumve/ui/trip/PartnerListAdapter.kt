@@ -36,14 +36,10 @@ class PartnerListAdapter(
             userViewModel.getUserById(invitation.userId)?.observe(lifecycleOwner, Observer { invitedUser ->
                 val userFullName = UserUtils.getFullName(invitedUser)
                 binding.textViewPartnerName.text = userFullName
+                binding.invitationStatus.text = invitation.status.toString()
                 Glide.with(binding.imageViewPartner.context)
                     .load(invitedUser?.photo) // Assuming `photo` is the URL or path to the image
                     .into(binding.imageViewPartner)
-
-                // Set up buttons
-                binding.ComeBtn.setOnClickListener {
-                    // Handle "I'm coming" button click
-                }
             })
         }
     }
@@ -54,6 +50,7 @@ class PartnerListAdapter(
         val currentList = currentList.toMutableList()
         currentList.removeAt(position)
         submitList(currentList)
+
     }
 
     class DiffCallback : DiffUtil.ItemCallback<TripInvitation>() {

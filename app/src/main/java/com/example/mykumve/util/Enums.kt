@@ -31,6 +31,15 @@ enum class TripInvitationStatus(val value: Int) {
     companion object {
         fun fromInt(value: Int) = TripInvitationStatus.values().first { it.value == value }
     }
+
+    override fun toString(): String {
+        return when (this) {
+            UNSENT -> "Unsent"
+            PENDING -> "Pending"
+            APPROVED -> "Approved"
+            REJECTED -> "Rejected"
+        }
+    }
 }
 
 enum class ShareLevel(val value: Int) {
