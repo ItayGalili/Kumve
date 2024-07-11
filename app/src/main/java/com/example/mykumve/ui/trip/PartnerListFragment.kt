@@ -24,6 +24,7 @@ import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.ui.viewmodel.UserViewModel
 import com.example.mykumve.util.TripInvitationStatus
 import com.example.mykumve.util.UserManager
+import com.example.mykumve.util.UserUtils
 
 
 class PartnerListFragment : Fragment() {
@@ -70,7 +71,7 @@ class PartnerListFragment : Fragment() {
             if (user != null) {
                 Log.d(
                     "InvitePartner",
-                    "User found: ${user.firstName} ${user.surname} with ID ${user.id}"
+                    "User found: ${UserUtils.getFullName(user)} with ID ${user.id}"
                 )
                 val currentTrip = sharedTripViewModel.trip.value
                 if (currentTrip != null) {

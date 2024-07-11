@@ -21,6 +21,7 @@ import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.databinding.EquipmentListBinding
 import com.example.mykumve.databinding.EquipmentCardBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
+import com.example.mykumve.util.UserUtils
 
 class EquipmentFragment : Fragment() {
 
@@ -173,7 +174,7 @@ class EquipmentAdapter(private val equipmentList: MutableList<Equipment>) :
                 val equipmentName = Editable.Factory.getInstance().newEditable(equipment.name)
                 if (equipmentName.isBlank()) binding.equipmentName.hint = "New Equipment ${adapter.itemCount}"
 
-                val userFullName = if (equipment.done) "${it.firstName} ${it.surname}" else ""
+                val userFullName = if (equipment.done) UserUtils.getFullName(it) else ""
                 binding.equipmentName.text = equipmentName
                 binding.nameRes.text = userFullName
                 binding.equipmentResponsibility.isChecked = equipment.done

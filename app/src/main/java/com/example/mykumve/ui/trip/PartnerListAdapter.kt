@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.databinding.ItemPartnerCardBinding
 import com.example.mykumve.ui.viewmodel.UserViewModel
+import com.example.mykumve.util.UserUtils
 
 class PartnerListAdapter(
     private val userViewModel: UserViewModel,
@@ -33,7 +34,7 @@ class PartnerListAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(invitation: TripInvitation) {
             userViewModel.getUserById(invitation.userId)?.observe(lifecycleOwner, Observer { invitedUser ->
-                val userFullName = "${invitedUser?.firstName} ${invitedUser?.surname}"
+                val userFullName = UserUtils.getFullName(invitedUser)
                 binding.textViewPartnerName.text = userFullName
                 Glide.with(binding.imageViewPartner.context)
                     .load(invitedUser?.photo) // Assuming `photo` is the URL or path to the image
