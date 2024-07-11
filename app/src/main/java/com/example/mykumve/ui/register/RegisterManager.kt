@@ -16,6 +16,7 @@ import com.example.mykumve.R
 import com.example.mykumve.databinding.RegisterBinding
 import com.example.mykumve.ui.viewmodel.UserViewModel
 import com.example.mykumve.util.ImagePickerUtil
+import com.example.mykumve.util.PATTERNS
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -66,7 +67,7 @@ class RegisterManager : Fragment(), CoroutineScope {
         val fullName = binding.name.text.toString()
         val password = binding.passwordRegister.text.toString()
         val email = binding.emailRegister.text.toString()
-        val phone = binding.PhoneRegister.text.toString()
+        val phone = _normalizePhoneNumber(binding.PhoneRegister.text.toString())
         val photo = imagePickerUtil.getImageUri()?.toString()
 
         val nameParts = fullName.split(" ")
@@ -123,7 +124,9 @@ class RegisterManager : Fragment(), CoroutineScope {
     }
 
     private fun isValidPhoneNumber(phone: String): Boolean {
-        val phoneRegex = Regex("^[+]?[0-9]{10,13}$|^[0-9]{10}$")
+// Regex to match an international phone number with a country code (+1 to +9999) optionally followed by a space,
+        // then either 10 digits starting with 0 or 9 digits not starting with 0.
+        val phoneRegex = Regex(PATTERNS.PHONE)
         return phoneRegex.matches(phone)
     }
 
@@ -162,7 +165,25 @@ class RegisterManager : Fragment(), CoroutineScope {
         }
     }
 
+    fun _normalizePhoneNumber(phoneNumber: String): String {
+        val matchResult = Regex(PATTERNS.PHONE).matchEntire(phoneNumber)
 
+        if (matchResult != null) {
+            // Extract the country code and the digits after it
+            val countryCode = matchResult.groupValues[1]
+            var digits = matchResult.groupValues[2]
+
+            // Remove the leading zero if it's a 10-digit number starting with zero
+            if (digits.startsWith('0')) {
+                digits = digits.substring(1)
+            }
+
+            // Return the normalized phone number
+            return "+$countryCode$digits"
+        } else {
+            throw IllegalArgumentException("Invalid format: Use '+[country code] [9-10 digits]'. Example: +1234567890 or +123 04567890.")
+        }
+    }
     private fun showToast(message: String) {
         launch(Dispatchers.Main) {
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
