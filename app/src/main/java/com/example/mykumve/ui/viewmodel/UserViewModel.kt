@@ -61,6 +61,9 @@ class   UserViewModel (
     fun getUserByEmail(email: String): LiveData<User?>? {
         return userRepository.getUserByEmail(email)
     }
+    fun getUserByPhone(phone: String): LiveData<User?>? {
+        return userRepository.getUserByPhone(phone)
+    }
 
     fun getUserById(id: Int): LiveData<User?>? {
         return userRepository.getUserById(id)
