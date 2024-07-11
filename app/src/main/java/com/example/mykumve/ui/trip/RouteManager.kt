@@ -1,26 +1,23 @@
 package com.example.mykumve.ui.trip
 
-import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
+import com.example.mykumve.data.data_classes.Point
 import com.example.mykumve.data.model.Trip
+import com.example.mykumve.data.model.TripInfo
 import com.example.mykumve.databinding.RouteBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
+import com.example.mykumve.util.DifficultyLevel
 
 class RouteManager : Fragment() {
     private var _binding : RouteBinding? = null
@@ -42,10 +39,11 @@ class RouteManager : Fragment() {
         setupSpinners()
 
         binding.seve.setOnClickListener {
-            //val bundle = bundleOf("title" to binding.itemTitle.text.toString(), "description" to binding.itemDescription.text.toString())
-            sharedViewModel.resetNewTripState()
-
-            findNavController().navigate(R.id.action_routeManager_to_mainScreenManager2)
+            if(verifyRouteForm()){
+                saveTrip()
+                sharedViewModel.resetNewTripState()
+                findNavController().navigate(R.id.action_routeManager_to_mainScreenManager2)
+            }
         }
 
         binding.MapBtn.setOnClickListener {
@@ -53,6 +51,43 @@ class RouteManager : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun saveTrip() {
+        sharedViewModel.trip.observe(viewLifecycleOwner, Observer { trip ->
+            if (trip != null) {
+                val title = ""
+                val points = listOf<Point>()
+                val areaId = -1
+                val subAreaId = -1
+                val description = ""
+                val routeDescription = ""
+                val difficulty = DifficultyLevel.UNSET
+                val length = 0.0f
+                val tags = listOf<String>()
+                val isCircular = false
+                val likes = 0
+                val tripInfo = TripInfo(
+                    title = title,
+                    points = points,
+                    areaId = areaId,
+                    subAreaId = subAreaId,
+                    description = description,
+                    routeDescription = routeDescription,
+                    difficulty = difficulty,
+                    length = length,
+                    tags = tags,
+                    isCircular = isCircular,
+                    likes = likes,
+                )
+                tripViewModel.addTripWithInfo(trip, tripInfo)
+            }
+        })
+    }
+
+    private fun verifyRouteForm(): Boolean {
+        return true
+        TODO("Not yet implemented")
     }
 
 

@@ -65,7 +65,7 @@ class   UserViewModel (
         return userRepository.getUserByPhone(phone)
     }
 
-    fun getUserById(id: Int): LiveData<User?>? {
+    fun getUserById(id: Long): LiveData<User?>? {
         return userRepository.getUserById(id)
     }
     fun getAllUsers(): LiveData<List<User>>? {

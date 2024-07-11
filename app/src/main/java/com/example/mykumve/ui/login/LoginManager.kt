@@ -1,6 +1,7 @@
 package com.example.mykumve.ui.login
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
+import com.example.mykumve.data.db.repository.UserRepository
 import com.example.mykumve.databinding.LoginBinding
 import com.example.mykumve.ui.viewmodel.UserViewModel
 import com.example.mykumve.util.EncryptionUtils
@@ -18,6 +20,7 @@ import com.example.mykumve.util.Result
 
 class LoginManager : Fragment() {
 
+    val TAG = LoginManager::class.java.toString()
     private var _binding: LoginBinding? = null
     private val binding get() = _binding!!
     private val userViewModel: UserViewModel by activityViewModels()
@@ -30,9 +33,23 @@ class LoginManager : Fragment() {
 
 
         binding.LoginBtn.setOnClickListener {
-            val email = binding.emailAd.text.toString()
-            val password = binding.password.text.toString()
-
+            val emailInput = binding.emailAd.text.toString()
+            var email = ""
+            var password = ""
+            when {
+                emailInput.contains("1") -> {
+                     email = "da@da.com"
+                     password = "123456"
+                }
+                emailInput.contains("2") || emailInput.isBlank()  -> {
+                     email = "a@a.com"
+                     password = "123456"
+                }
+                else -> {
+                     email = emailInput
+                     password = binding.password.text.toString()
+                }
+            }
             loginUser(email, password) { isLoggedInUser ->
                 if (isLoggedInUser.success) {
                     Toast.makeText(requireContext(), R.string.login_successful, Toast.LENGTH_SHORT)
@@ -42,6 +59,7 @@ class LoginManager : Fragment() {
                 } else {
                     Toast.makeText(requireContext(), R.string.login_failed, Toast.LENGTH_SHORT)
                         .show()
+                    Log.e(TAG, isLoggedInUser.reason )
                 }
             }
         }

@@ -34,6 +34,9 @@
         <action
             android:id="@+id/action_mainScreenManager_to_loginManager"
             app:destination="@id/loginManager" />
+        <action
+            android:id="@+id/action_mainScreenManager_to_partnerListFragment"
+            app:destination="@id/partnerListFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerManager"
@@ -129,6 +132,9 @@
         <action
             android:id="@+id/action_partnerListFragment_to_travelManager"
             app:destination="@id/travelManager" />
+        <action
+            android:id="@+id/action_partnerListFragment_to_mainScreenManager"
+            app:destination="@id/mainScreenManager" />
     </fragment>
     <fragment
         android:id="@+id/mapFragment3"

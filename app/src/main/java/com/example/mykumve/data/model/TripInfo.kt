@@ -11,12 +11,12 @@ import com.example.mykumve.util.DifficultyLevel
 @Entity(tableName = "trip_info")
 @TypeConverters(Converters::class)
 data class TripInfo(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "title") var title: String,
     @ColumnInfo(name = "points") var points: List<Point>?,
     @ColumnInfo(name = "area_id") var areaId: Int?,
     @ColumnInfo(name = "sub_area_id") var subAreaId: Int?,
-    @ColumnInfo(name = "description") var description: MutableList<String>?,
+    @ColumnInfo(name = "description") var description: String?,
     @ColumnInfo(name = "route_description") var routeDescription: String?,
     @ColumnInfo(name = "difficulty") var difficulty: DifficultyLevel?,
     @ColumnInfo(name = "length") var length: Float?,

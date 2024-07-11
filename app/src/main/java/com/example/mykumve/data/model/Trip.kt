@@ -30,15 +30,15 @@ import com.example.mykumve.util.ShareLevel
 )
 @TypeConverters(Converters::class)
 data class Trip(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "title") var title: String,
     @ColumnInfo(name = "description") var description: String?,
     @ColumnInfo(name = "gather_time") var gatherTime: Long?,
     @ColumnInfo(name = "participants") var participants: MutableList<User>?,
     @ColumnInfo(name = "image") var image: String?,
     @ColumnInfo(name = "equipment") var equipment: MutableList<Equipment>?,
-    @ColumnInfo(name = "user_id") var userId: Int,
-    @ColumnInfo(name = "trip_info_id") var tripInfoId: Int?,
+    @ColumnInfo(name = "user_id") var userId: Long,
+    @ColumnInfo(name = "trip_info_id") var tripInfoId: Long?,
     @ColumnInfo(name = "notes") var notes: MutableList<String>?,
     @ColumnInfo(name = "end_date") var endDate: Long?,
     @ColumnInfo(name = "invitations") var invitations: MutableList<TripInvitation> = mutableListOf(),

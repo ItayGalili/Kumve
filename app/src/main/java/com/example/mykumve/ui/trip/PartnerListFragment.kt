@@ -51,9 +51,14 @@ class PartnerListFragment : Fragment() {
         }
 
         binding.closePartnerBtn.setOnClickListener{
-            findNavController().navigate(R.id.action_partnerListFragment_to_travelManager)
+//            saveData()
+            if (sharedTripViewModel.isCreatingTripMode) {
+                findNavController().navigate(R.id.action_partnerListFragment_to_travelManager)
+            } else {
+                sharedTripViewModel.resetNewTripState()
+                findNavController().navigate(R.id.action_partnerListFragment_to_mainScreenManager)
+            }
         }
-
         return binding.root
     }
 

@@ -37,7 +37,7 @@ class TripInfoRepository(application: Application): CoroutineScope {
         return tripInfoDao?.getAllTripInfo()
     }
 
-    fun getTripInfoById(id: Int): LiveData<TripInfo>? {
+    fun getTripInfoById(id: Long): LiveData<TripInfo>? {
         return tripInfoDao?.getTripInfoById(id)
     }
 

@@ -5,8 +5,10 @@ import com.example.mykumve.data.db.local_db.TripDao
 import com.example.mykumve.data.model.Trip
 import androidx.lifecycle.LiveData
 import com.example.mykumve.data.db.local_db.AppDatabase
+import com.example.mykumve.data.db.local_db.TripInfoDao
 import com.example.mykumve.data.db.local_db.TripInvitationDao
 import com.example.mykumve.data.db.local_db.UserDao
+import com.example.mykumve.data.model.TripInfo
 import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.util.TripInvitationStatus
 import kotlinx.coroutines.CoroutineScope
@@ -24,13 +26,14 @@ import kotlin.coroutines.CoroutineContext
  */
 
 
-class TripRepository(application: Application): CoroutineScope {
+class TripRepository(application: Application,): CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO
 
     private var tripDao:TripDao? = null
     private var userDao: UserDao? = null
     private var tripInvitationDao: TripInvitationDao? = null
+    private var tripInfoDao: TripInfoDao? = null
 
 
     init {
@@ -38,13 +41,14 @@ class TripRepository(application: Application): CoroutineScope {
         tripDao = db.tripDao()
         tripInvitationDao = db.tripInvitationDao()
         userDao = db.userDao()
+        tripInfoDao = db.tripInfoDao()
     }
 
     fun getAllTrips(): LiveData<List<Trip>>? {
         return tripDao?.getAllTrips()
     }
 
-    fun getTripById(id: Int): LiveData<Trip>? {
+    fun getTripById(id: Long): LiveData<Trip>? {
         return tripDao?.getTripById(id)
     }
 
@@ -52,6 +56,10 @@ class TripRepository(application: Application): CoroutineScope {
         launch {
             tripDao?.insertTrip(trip)
         }
+    }
+
+    suspend fun insertTripWithInfo(trip: Trip, tripInfo: TripInfo) {
+        tripDao?.insertTripWithInfo(trip, tripInfo, tripInfoDao)
     }
 
     fun updateTrip(trip: Trip)  {
@@ -70,7 +78,7 @@ class TripRepository(application: Application): CoroutineScope {
         }
     }
 
-    fun getTripsByUserId(userId: Int): LiveData<List<Trip>>? {
+    fun getTripsByUserId(userId: Long): LiveData<List<Trip>>? {
         return tripDao?.getTripsByUserId(userId)
     }
 
@@ -101,7 +109,7 @@ class TripRepository(application: Application): CoroutineScope {
         }
     }
 
-    fun getTripInvitationsByTripId(tripId: Int): LiveData<List<TripInvitation>>? {
+    fun getTripInvitationsByTripId(tripId: Long): LiveData<List<TripInvitation>>? {
         return tripInvitationDao?.getTripInvitationsByTripId(tripId)
     }
 

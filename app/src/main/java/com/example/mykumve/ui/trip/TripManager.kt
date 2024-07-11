@@ -44,7 +44,8 @@ class TripManager : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Logic to determine if it's a new trip creation
-        val isCreatingNewTrip = true // todo - verify; is it always true? arguments?.getBoolean(NavigationArgs.IS_CREATING_NEW_TRIP.key, false) ?: false
+        val isCreatingNewTrip =
+            true // todo - verify; is it always true? arguments?.getBoolean(NavigationArgs.IS_CREATING_NEW_TRIP.key, false) ?: false
 
         if (isCreatingNewTrip && sharedViewModel.trip.value == null) {
             // There is no cached trip and in creating trip fragment then reset state
@@ -59,8 +60,6 @@ class TripManager : Fragment() {
             binding.dateStartPick.text = timestampToString(trip.gatherTime)
             binding.dateEndPick.text = timestampToString(trip.endDate)
         }
-
-
     }
 
     override fun onCreateView(
@@ -105,9 +104,14 @@ class TripManager : Fragment() {
         binding.NextBtn.setOnClickListener {
             // Check if currentUser is not null
             currentUser?.let { user ->
-                sharedViewModel.equipmentList.observe(viewLifecycleOwner, Observer { equipmentList ->
-                    cacheTrip()
-                    findNavController().navigate(R.id.action_travelManager_to_routeManager)                })
+                sharedViewModel.equipmentList.observe(
+                    viewLifecycleOwner,
+                    Observer { equipmentList ->
+                        if (verifyTripForm()) {
+                            cacheTrip()
+                            findNavController().navigate(R.id.action_travelManager_to_routeManager)
+                        }
+                    })
             } ?: run {
                 // Handle the case where the user is not logged in or currentUser is null
                 Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()
@@ -119,6 +123,14 @@ class TripManager : Fragment() {
             imagePickerUtil.pickImage()
         }
         return binding.root
+    }
+
+    private fun verifyTripForm(): Boolean {
+        if (binding.nameTrip.text.toString().isBlank()) {
+            Toast.makeText(requireContext(), R.string.title_is_required, Toast.LENGTH_SHORT).show()
+            return false
+        }
+        return true
     }
 
     private fun cacheTrip() {
@@ -137,46 +149,66 @@ class TripManager : Fragment() {
 
                 if (isStartDate) {
                     if (calendar.timeInMillis < System.currentTimeMillis()) {
-                        Toast.makeText(requireContext(), "Start date cannot be before current date", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "Start date cannot be before current date",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         return@OnTimeSetListener
                     }
                     startDate = calendar.timeInMillis
-                    binding.StartView.text = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(calendar.time)
+                    binding.StartView.text = SimpleDateFormat(
+                        "dd/MM/yyyy HH:mm",
+                        Locale.getDefault()
+                    ).format(calendar.time)
                 } else {
                     if (startDate == null) {
-                        Toast.makeText(requireContext(), "Please select a start date first", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "Please select a start date first",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         return@OnTimeSetListener
                     }
                     if (calendar.timeInMillis < startDate!!) {
-                        Toast.makeText(requireContext(), "End date cannot be before start date", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "End date cannot be before start date",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         return@OnTimeSetListener
                     }
                     val diff = calendar.timeInMillis - startDate!!
                     if (diff < 3600000) {
-                        Toast.makeText(requireContext(), "End date must be at least 1 hour after start date", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "End date must be at least 1 hour after start date",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         return@OnTimeSetListener
                     }
                     endDate = calendar.timeInMillis
-                    binding.EndView.text = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(calendar.time)
+                    binding.EndView.text = SimpleDateFormat(
+                        "dd/MM/yyyy HH:mm",
+                        Locale.getDefault()
+                    ).format(calendar.time)
                 }
             }
-            TimePickerDialog(requireContext(), timeListener, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true).show()
+            TimePickerDialog(
+                requireContext(),
+                timeListener,
+                c.get(Calendar.HOUR_OF_DAY),
+                c.get(Calendar.MINUTE),
+                true
+            ).show()
         }
-        DatePickerDialog(requireContext(), dateListener, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show()
-    }
-
-    // todo - move to next fragment (page) of add info to trip (trip info)
-    private fun addTrip(button: View?, user: User, equipmentList: List<Equipment>?) {
-        if (binding.nameTrip.text.toString().isBlank()) {
-            Toast.makeText(requireContext(), "Title is required", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val trip = formToTripObject(user, equipmentList)
-
-        // Add the trip to the viewModel
-        tripViewModel.addTrip(trip)
-
+        DatePickerDialog(
+            requireContext(),
+            dateListener,
+            c.get(Calendar.YEAR),
+            c.get(Calendar.MONTH),
+            c.get(Calendar.DAY_OF_MONTH)
+        ).show()
     }
 
     private fun formToTripObject(
@@ -185,22 +217,21 @@ class TripManager : Fragment() {
         participantList: List<User>? = null,
         invitationList: List<TripInvitation>? = null,
 
-    ): Trip {
+        ): Trip {
         val title = binding.nameTrip.text.toString()
         val description = binding.description.text.toString()
         val gatherTime = startDate
         val endTime = endDate
-        val equipments = equipmentList?.takeIf { it.isNotEmpty() }?.toMutableList() ?:
-        sharedViewModel.trip.value?.equipment?.toMutableList()
+        val equipments = equipmentList?.takeIf { it.isNotEmpty() }?.toMutableList()
+            ?: sharedViewModel.trip.value?.equipment?.toMutableList()
 
-        val participants = participantList?.takeIf { it.isNotEmpty() }?.toMutableList() ?:
-        mutableListOf(user)
+        val participants =
+            participantList?.takeIf { it.isNotEmpty() }?.toMutableList() ?: mutableListOf(user)
 
-        val invitations = invitationList?.takeIf { it.isNotEmpty() }?.toMutableList() ?:
-        sharedViewModel.trip.value?.invitations?.takeIf { it.isNotEmpty() }?.toMutableList() ?:
-        mutableListOf()
+        val invitations = invitationList?.takeIf { it.isNotEmpty() }?.toMutableList()
+            ?: sharedViewModel.trip.value?.invitations?.takeIf { it.isNotEmpty() }?.toMutableList()
+            ?: mutableListOf()
 
-        val temp = sharedViewModel.trip.value?.participants
         val photo = imagePickerUtil.getImageUri()?.toString()
         val notes = null
 

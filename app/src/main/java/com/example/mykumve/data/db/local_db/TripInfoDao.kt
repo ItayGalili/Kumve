@@ -20,13 +20,13 @@ import com.example.mykumve.data.model.TripInfo
 interface TripInfoDao {
 
     @Query("SELECT * FROM trip_info WHERE id = :id")
-    fun getTripInfoById(id: Int): LiveData<TripInfo>
+    fun getTripInfoById(id: Long): LiveData<TripInfo>
 
     @Query("SELECT * FROM trip_info")
     fun getAllTripInfo(): LiveData<List<TripInfo>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertTripInfo(tripInfo: TripInfo)
+    suspend fun insertTripInfo(tripInfo: TripInfo): Long
 
     @Update
     fun updateTripInfo(tripInfo: TripInfo)

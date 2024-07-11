@@ -38,7 +38,7 @@ class UserRepository(application: Application): CoroutineScope {
         userDao = db.userDao()
     }
 
-    fun getUserById(id: Int): LiveData<User?>? =
+    fun getUserById(id: Long): LiveData<User?>? =
         userDao?.getUserById(id)
 
     fun getUserByEmail(email: String): LiveData<User?>? {

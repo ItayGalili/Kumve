@@ -16,5 +16,5 @@ interface TripInvitationDao {
     suspend fun updateTripInvitation(invitation: TripInvitation)
 
     @Query("SELECT * FROM trip_invitations WHERE tripId = :tripId")
-    fun getTripInvitationsByTripId(tripId: Int): LiveData<List<TripInvitation>>
+    fun getTripInvitationsByTripId(tripId: Long): LiveData<List<TripInvitation>>
 }

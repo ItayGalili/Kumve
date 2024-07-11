@@ -17,5 +17,5 @@ data class User(
     @ColumnInfo(name = "phone") var phone: String?,
     @ColumnInfo(name = "password") val hashedPassword: String,
     @ColumnInfo(name = "salt") val salt: String,
-    @PrimaryKey(autoGenerate = true) var id: Int = 0
+    @PrimaryKey(autoGenerate = true) var id: Long = 0
 )

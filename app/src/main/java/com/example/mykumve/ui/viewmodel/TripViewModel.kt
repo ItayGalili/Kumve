@@ -1,6 +1,7 @@
 package com.example.mykumve.ui.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.example.mykumve.data.db.repository.TripInfoRepository
 import com.example.mykumve.data.db.repository.TripRepository
@@ -30,13 +31,13 @@ class TripViewModel(
     private val _trips = MutableLiveData<List<Trip>>()
     val trips: LiveData<List<Trip>> get() = _trips
 
-    fun getTripById(id: Int) {
+    fun getTripById(id: Long) {
         viewModelScope.launch {
             _trip.postValue(tripRepository.getTripById(id)?.value)
         }
     }
 
-    fun getTripInfoByTripId(tripId: Int) {
+    fun getTripInfoByTripId(tripId: Long) {
         viewModelScope.launch {
             val trip = tripRepository.getTripById(tripId)?.value
             trip?.tripInfoId?.let {
@@ -45,7 +46,7 @@ class TripViewModel(
         }
     }
 
-    fun getTripInfoById(id: Int) {
+    fun getTripInfoById(id: Long) {
         viewModelScope.launch {
             _tripInfo.postValue(tripInfoRepository.getTripInfoById(id)?.value)
         }
@@ -66,6 +67,17 @@ class TripViewModel(
             tripInfoRepository.insertTripInfo(tripInfo)
         }
     }
+
+    fun addTripWithInfo(trip: Trip, tripInfo: TripInfo) {
+        viewModelScope.launch {
+            try {
+                tripRepository.insertTripWithInfo(trip, tripInfo)
+            } catch (e: Exception) {
+                Log.e("TripViewModel", "Failed to insert trip and trip info: ${e.message}")
+            }
+        }
+    }
+
 
     fun updateTrip(trip: Trip) {
         tripRepository.updateTrip(trip)
@@ -92,11 +104,11 @@ class TripViewModel(
         }
     }
 
-    fun getTripsByUserId(userId: Int): LiveData<List<Trip>>? {
+    fun getTripsByUserId(userId: Long): LiveData<List<Trip>>? {
         return tripRepository.getTripsByUserId(userId)
     }
 
-    fun sendTripInvitation(tripId: Int, userId: Int, callback: (Boolean) -> Unit) {
+    fun sendTripInvitation(tripId: Long, userId: Long, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             val invitation = TripInvitation(tripId = tripId, userId = userId)
             val result = tripRepository.sendTripInvitation(invitation)
@@ -114,8 +126,8 @@ class TripViewModel(
 
     // Method to respond to a trip invitation
     fun respondToTripInvitation(
-        tripId: Int,
-        invitationId: Int,
+        tripId: Long,
+        invitationId: Long,
         status: TripInvitationStatus,
         callback: (Boolean) -> Unit
     ) {
@@ -133,7 +145,7 @@ class TripViewModel(
     }
 
     // Method to get trip invitations by trip ID
-    fun getTripInvitationsByTripId(tripId: Int): LiveData<List<TripInvitation>>? {
+    fun getTripInvitationsByTripId(tripId: Long): LiveData<List<TripInvitation>>? {
         return tripRepository.getTripInvitationsByTripId(tripId)
     }
 
@@ -144,7 +156,7 @@ class TripViewModel(
     }
 
     // Method to check if a user has pending invitations for a specific trip
-    fun hasPendingInvitations(userId: Int, tripId: Int, callback: (Boolean) -> Unit) {
+    fun hasPendingInvitations(userId: Long, tripId: Long, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             val invitations = tripRepository.getTripInvitationsByTripId(tripId)?.value
             val hasPending =
@@ -155,7 +167,7 @@ class TripViewModel(
 
 
     // CRUD methods for equipments
-    fun addEquipment(tripId: Int, equipment: Equipment, callback: (Boolean) -> Unit) {
+    fun addEquipment(tripId: Long, equipment: Equipment, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             val trip = tripRepository.getTripById(tripId)?.value
             if (trip != null) {
@@ -168,7 +180,7 @@ class TripViewModel(
         }
     }
 
-    fun removeEquipment(tripId: Int, equipment: Equipment, callback: (Boolean) -> Unit) {
+    fun removeEquipment(tripId: Long, equipment: Equipment, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             val trip = tripRepository.getTripById(tripId)?.value
             if (trip != null) {
@@ -183,7 +195,7 @@ class TripViewModel(
     }
 
     fun updateEquipment(
-        tripId: Int,
+        tripId: Long,
         oldEquipment: Equipment,
         newEquipment: Equipment,
         callback: (Boolean) -> Unit
