@@ -26,6 +26,7 @@ import com.example.mykumve.util.UserManager
 import com.example.mykumve.util.Utility.timestampToString
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 class TripManager : Fragment() {
@@ -140,8 +141,10 @@ class TripManager : Fragment() {
         }
     }
 
-    private fun showDateTimePicker(isStartDate: Boolean) {
+    private fun showDateTimePicker(isStartDate: Boolean, eventLength: Int = 4 * 60 * 60 * 1000) {
         val c = Calendar.getInstance()
+
+        // Set date picker to allow only future dates
         val dateListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
             val timeListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
                 val calendar = Calendar.getInstance()
@@ -161,6 +164,13 @@ class TripManager : Fragment() {
                         "dd/MM/yyyy HH:mm",
                         Locale.getDefault()
                     ).format(calendar.time)
+
+                    // Automatically set end date to 4 hours later
+                    endDate = startDate!! + eventLength
+                    binding.EndView.text = SimpleDateFormat(
+                        "dd/MM/yyyy HH:mm",
+                        Locale.getDefault()
+                    ).format(Date(endDate!!))
                 } else {
                     if (startDate == null) {
                         Toast.makeText(
@@ -202,13 +212,24 @@ class TripManager : Fragment() {
                 true
             ).show()
         }
-        DatePickerDialog(
+
+        val datePickerDialog = DatePickerDialog(
             requireContext(),
             dateListener,
             c.get(Calendar.YEAR),
             c.get(Calendar.MONTH),
             c.get(Calendar.DAY_OF_MONTH)
-        ).show()
+        )
+
+        // Limit date picker to future dates only
+        datePickerDialog.datePicker.minDate = System.currentTimeMillis()
+
+        if (!isStartDate && startDate != null) {
+            // Limit end date picker to dates after the start date
+            datePickerDialog.datePicker.minDate = startDate!!
+        }
+
+        datePickerDialog.show()
     }
 
     private fun formToTripObject(
