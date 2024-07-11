@@ -125,7 +125,11 @@
         android:id="@+id/partnerListFragment"
         android:name="com.example.mykumve.ui.trip.PartnerListFragment"
         android:label="fragment_partner_list"
-        tools:layout="@layout/fragment_partner_list" />
+        tools:layout="@layout/fragment_partner_list" >
+        <action
+            android:id="@+id/action_partnerListFragment_to_travelManager"
+            app:destination="@id/travelManager" />
+    </fragment>
     <fragment
         android:id="@+id/mapFragment3"
         android:name="com.example.mykumve.ui.map.MapFragment"
