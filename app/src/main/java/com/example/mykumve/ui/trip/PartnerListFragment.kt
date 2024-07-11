@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -15,7 +16,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mykumve.R
-import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.databinding.FragmentPartnerListBinding
 import com.example.mykumve.data.model.User
@@ -51,20 +51,29 @@ class PartnerListFragment : Fragment() {
             invitePartnerToTrip(it)
         }
 
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            handleCloseButton()
+        }
         binding.closePartnerBtn.setOnClickListener{
-//            saveData() todo (save to db / cached the removed ones also)
-            if (sharedTripViewModel.isCreatingTripMode) {
-                findNavController().navigate(R.id.action_partnerListFragment_to_travelManager)
-            } else {
-                sharedTripViewModel.resetNewTripState()
-                findNavController().navigate(R.id.action_partnerListFragment_to_mainScreenManager)
-            }
+            handleCloseButton()
         }
         return binding.root
     }
 
+    private fun handleCloseButton() {
+        //            saveData() todo (save to db / cached the removed ones also)
+        if (sharedTripViewModel.isCreatingTripMode) {
+            findNavController().navigate(R.id.action_partnerListFragment_to_travelManager)
+        } else {
+            sharedTripViewModel.resetNewTripState()
+            findNavController().navigate(R.id.action_partnerListFragment_to_mainScreenManager)
+        }
+    }
+
     private fun invitePartnerToTrip(button: View?) {
         val phoneNumber = binding.phoneNumberToInvite.text.toString() // Corrected to get the text
+        if (phoneNumber.isEmpty())
+            return
         Log.d("InvitePartner", "Phone number to invite: $phoneNumber")
 
         userViewModel.getUserByPhone(phoneNumber)?.observe(viewLifecycleOwner, Observer { user ->
@@ -122,7 +131,6 @@ class PartnerListFragment : Fragment() {
     private fun logPossiblePartner() {
         userViewModel.getAllUsers()?.observe(viewLifecycleOwner, Observer { users ->
             if (users != null) {
-                Log.d("PartnerListFragment", "Users fetched: $users")
                 val currentUserId = UserManager.getUser()?.id
                 val filteredUsers = users.filter { it.id != currentUserId }
                 Log.d(

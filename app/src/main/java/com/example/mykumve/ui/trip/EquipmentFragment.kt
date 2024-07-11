@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -57,16 +58,13 @@ class EquipmentFragment : Fragment() {
         }
 
         binding.closeEquipmentBtn.setOnClickListener {
-            if (saveCurrentEditedItem()) {
-                saveData()
-                if (sharedTripViewModel.isCreatingTripMode) {
-                    findNavController().navigate(R.id.action_equipmentFragment_to_travelManager)
-                } else {
-                    sharedTripViewModel.resetNewTripState()
-                    findNavController().navigate(R.id.action_equipmentFragment_to_mainScreenManager)
-                }
-            }
+            handleCloseButton()
         }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            handleCloseButton()
+        }
+
         loadTripData()
     }
 
@@ -77,6 +75,19 @@ class EquipmentFragment : Fragment() {
             }
         }
     }
+
+    private fun handleCloseButton() {
+        if (saveCurrentEditedItem()) {
+            saveData()
+            if (sharedTripViewModel.isCreatingTripMode) {
+                findNavController().navigate(R.id.action_equipmentFragment_to_travelManager)
+            } else {
+                sharedTripViewModel.resetNewTripState()
+                findNavController().navigate(R.id.action_equipmentFragment_to_mainScreenManager)
+            }
+        }
+    }
+
 
     private fun addNewEquipment() {
         if (saveCurrentEditedItem()) {
