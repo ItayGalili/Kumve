@@ -23,6 +23,7 @@ object PATTERNS {
 
 
 enum class TripInvitationStatus(val value: Int) {
+    UNSENT(-1),
     PENDING(0),
     APPROVED(1),
     REJECTED(2);
