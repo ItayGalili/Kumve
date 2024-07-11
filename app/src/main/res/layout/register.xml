@@ -116,7 +116,7 @@
         android:layout_marginTop="10dp"
         android:gravity="center"
         android:backgroundTint="#C49649"
-        android:text="Sign in"
+        android:text="@string/register"
         android:layout_gravity="center"/>
 
 </LinearLayout>
