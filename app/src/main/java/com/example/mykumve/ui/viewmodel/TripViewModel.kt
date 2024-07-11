@@ -104,6 +104,14 @@ class TripViewModel(
         }
     }
 
+    fun sendTripInvitation(invitation: TripInvitation, callback: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            invitation.status = TripInvitationStatus.PENDING
+            val result = tripRepository.sendTripInvitation(invitation)
+            callback(result)
+        }
+    }
+
     // Method to respond to a trip invitation
     fun respondToTripInvitation(
         tripId: Int,
