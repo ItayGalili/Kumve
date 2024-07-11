@@ -212,7 +212,7 @@
                         />
 
                     <ImageButton
-                        android:id="@+id/list_btn"
+                        android:id="@+id/equipment_list_btn"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
                         android:layout_weight="1"

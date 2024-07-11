@@ -15,12 +15,12 @@ import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
 import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.data.model.Trip
+import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.TravelManagerViewBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.ImagePickerUtil
-import com.example.mykumve.util.NavigationArgs
 import com.example.mykumve.util.ShareLevel
 import com.example.mykumve.util.UserManager
 import com.example.mykumve.util.Utility.timestampToString
@@ -91,13 +91,14 @@ class TripManager : Fragment() {
         }
 
         //equipment list:
-        binding.listBtn.setOnClickListener {
+        binding.equipmentListBtn.setOnClickListener {
             cacheTrip()
             findNavController().navigate(R.id.action_travelManager_to_equipmentFragment)
         }
 
         //Partner list
         binding.PartnersBtn.setOnClickListener {
+            cacheTrip()
             findNavController().navigate(R.id.action_travelManager_to_partnerListFragment)
         }
 
@@ -105,8 +106,7 @@ class TripManager : Fragment() {
             // Check if currentUser is not null
             currentUser?.let { user ->
                 sharedViewModel.equipmentList.observe(viewLifecycleOwner, Observer { equipmentList ->
-                    val trip = formToTripObject(user, equipmentList)
-                    sharedViewModel.setPartialTrip(trip)
+                    cacheTrip()
                     findNavController().navigate(R.id.action_travelManager_to_routeManager)                })
             } ?: run {
                 // Handle the case where the user is not logged in or currentUser is null
@@ -183,6 +183,7 @@ class TripManager : Fragment() {
         user: User,
         equipmentList: List<Equipment>? = null,
         participantList: List<User>? = null,
+        invitationList: List<TripInvitation>? = null,
 
     ): Trip {
         val title = binding.nameTrip.text.toString()
@@ -193,9 +194,13 @@ class TripManager : Fragment() {
         sharedViewModel.trip.value?.equipment?.toMutableList()
 
         val participants = participantList?.takeIf { it.isNotEmpty() }?.toMutableList() ?:
-        sharedViewModel.trip.value?.participants?.takeIf { it.isNotEmpty() }?.toMutableList() ?:
         mutableListOf(user)
 
+        val invitations = invitationList?.takeIf { it.isNotEmpty() }?.toMutableList() ?:
+        sharedViewModel.trip.value?.invitations?.takeIf { it.isNotEmpty() }?.toMutableList() ?:
+        mutableListOf()
+
+        val temp = sharedViewModel.trip.value?.participants
         val photo = imagePickerUtil.getImageUri()?.toString()
         val notes = null
 
@@ -207,6 +212,7 @@ class TripManager : Fragment() {
             description = description,
             notes = notes,
             participants = participants,
+            invitations = invitations,
             equipment = equipments,
             userId = user.id,
             image = photo,
