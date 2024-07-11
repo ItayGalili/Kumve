@@ -42,16 +42,16 @@ class RegisterManager : Fragment(), CoroutineScope {
         _binding = RegisterBinding.inflate(inflater, container, false)
         setupFieldValidation(binding.name, 3, getString(R.string.error_empty_name))
         setupFieldValidation(binding.passwordRegister, 6, getString(R.string.error_invalid_password))
-        setupFieldValidation(binding.emailRegister, 6, getString(R.string.error_invalid_email))
-        setupFieldValidation(binding.PhoneRegister, 10, getString(R.string.error_invalid_phone))
+        setupFieldValidation(binding.emailRegister, getString(R.string.error_invalid_email))
+        setupFieldValidation(binding.PhoneRegister, getString(R.string.error_invalid_phone))
 
         imagePickerUtil = ImagePickerUtil(this) { uri ->
             binding.imagePersonRegister.setImageURI(uri)
         }
 
         binding.RegisterBtn.setOnClickListener {
-            launch {
-                if (validateInput()) {
+            if (validateInput()) {
+                launch {
                     registerUser(it)
                 }
             }
@@ -99,28 +99,42 @@ class RegisterManager : Fragment(), CoroutineScope {
 
 
     private fun validateInput(): Boolean {
+        var isValid = true
+
         val fullName = binding.name.text.toString()
         val password = binding.passwordRegister.text.toString()
         val email = binding.emailRegister.text.toString()
         val phone = binding.PhoneRegister.text.toString()
 
         if (fullName.isBlank() || fullName.length < 3) {
-            return false
+            binding.name.error = getString(R.string.error_empty_name)
+            isValid = false
+        } else {
+            binding.name.error = null
         }
 
         if (email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            return false
+            binding.emailRegister.error = getString(R.string.error_invalid_email)
+            isValid = false
+        } else {
+            binding.emailRegister.error = null
         }
 
         if (password.isBlank() || password.length < 6) {
-            return false
+            binding.passwordRegister.error = getString(R.string.error_invalid_password)
+            isValid = false
+        } else {
+            binding.passwordRegister.error = null
         }
 
         if (phone.isBlank() || !isValidPhoneNumber(phone)) {
-            return false
+            binding.PhoneRegister.error = getString(R.string.error_invalid_phone)
+            isValid = false
+        } else {
+            binding.PhoneRegister.error = null
         }
 
-        return true
+        return isValid
     }
 
     private fun isValidPhoneNumber(phone: String): Boolean {
@@ -131,8 +145,6 @@ class RegisterManager : Fragment(), CoroutineScope {
     }
 
     private fun setupFieldValidation(editText: EditText, minLength: Int, errorMessage: String) {
-        var hasShownError = false
-
         editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
@@ -140,11 +152,6 @@ class RegisterManager : Fragment(), CoroutineScope {
                 if (count > before) {
                     if ((s?.length ?: 0) >= minLength) {
                         editText.error = null
-                        hasShownError = false
-                    }
-                } else if (hasShownError) {
-                    if ((s?.length ?: 0) < minLength) {
-                        editText.error = errorMessage
                     }
                 }
             }
@@ -153,14 +160,28 @@ class RegisterManager : Fragment(), CoroutineScope {
         })
 
         editText.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                if (editText.text.length < minLength) {
-                    editText.error = errorMessage
-                    hasShownError = true
-                } else {
-                    editText.error = null
-                    hasShownError = false
-                }
+            if (!hasFocus && editText.text.length < minLength) {
+                editText.error = errorMessage
+            } else {
+                editText.error = null
+            }
+        }
+    }
+
+    private fun setupFieldValidation(editText: EditText, errorMessage: String) {
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        editText.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus && editText.text.isBlank()) {
+                editText.error = errorMessage
+            } else {
+                editText.error = null
             }
         }
     }
