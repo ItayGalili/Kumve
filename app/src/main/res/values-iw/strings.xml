@@ -38,5 +38,6 @@
     <string name="no">לא</string>
     <string name="delete_db_confirmation">האם למחוק את מאגר הנתונים?</string>
     <string name="register">הרשם</string>
+    <string name="trip_partner_list_title">רשימת משתתפים</string>
 
 </resources>

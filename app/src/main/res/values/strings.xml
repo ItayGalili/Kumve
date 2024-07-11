@@ -55,6 +55,7 @@
     <string name="error_invalid_phone">Invalid format: Use \'+[country code] [9–10 digits]\'. Example: +1234567890 or +123 04567890.</string>
     <string name="api_key_placeholder" translatable="false">YOUR_API_KEY_HERE</string>
     <string name="register">Register</string>
+    <string name="trip_partner_list_title">Partners List</string>
 
     <string-array name="difficulty_options">
         <item>@string/difficulty_unset</item>
