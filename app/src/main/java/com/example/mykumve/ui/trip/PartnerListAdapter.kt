@@ -2,6 +2,8 @@ package com.example.mykumve.ui.trip
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +13,9 @@ import com.example.mykumve.databinding.ItemPartnerCardBinding
 import com.example.mykumve.ui.viewmodel.UserViewModel
 
 class PartnerListAdapter(
-    private val userViewModel: UserViewModel
+    private val userViewModel: UserViewModel,
+    private val lifecycleOwner: LifecycleOwner
+
 ) : ListAdapter<TripInvitation, PartnerListAdapter.PartnerViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PartnerViewHolder {
@@ -28,17 +32,18 @@ class PartnerListAdapter(
     inner class PartnerViewHolder(private val binding: ItemPartnerCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(invitation: TripInvitation) {
-            val invitedUser = userViewModel.getUserById(invitation.userId)?.value
-            val userFullName = "${invitedUser?.firstName} ${invitedUser?.surname}"
-            binding.textViewPartnerName.text = userFullName
-            Glide.with(binding.imageViewPartner.context)
-                .load(invitedUser?.photo) // Assuming `photo` is the URL or path to the image
-                .into(binding.imageViewPartner)
+            userViewModel.getUserById(invitation.userId)?.observe(lifecycleOwner, Observer { invitedUser ->
+                val userFullName = "${invitedUser?.firstName} ${invitedUser?.surname}"
+                binding.textViewPartnerName.text = userFullName
+                Glide.with(binding.imageViewPartner.context)
+                    .load(invitedUser?.photo) // Assuming `photo` is the URL or path to the image
+                    .into(binding.imageViewPartner)
 
-            // Set up buttons
-            binding.ComeBtn.setOnClickListener {
-                // Handle "I'm coming" button click
-            }
+                // Set up buttons
+                binding.ComeBtn.setOnClickListener {
+                    // Handle "I'm coming" button click
+                }
+            })
         }
     }
 
