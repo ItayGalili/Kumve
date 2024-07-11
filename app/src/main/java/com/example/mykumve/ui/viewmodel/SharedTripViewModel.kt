@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.data.model.Trip
+import com.example.mykumve.data.model.TripInvitation
 
 class SharedTripViewModel : ViewModel() {
     val TAG = SharedTripViewModel::class.java.toString()
@@ -40,6 +41,10 @@ class SharedTripViewModel : ViewModel() {
         }
     }
 
+    fun addInvitation(invitation: TripInvitation) {
+        _partialTrip.value?.invitations?.add(invitation)
+        _partialTrip.postValue(_partialTrip.value) // Notify observers of the change
+    }
 
     fun initTripViewModel(viewModelStoreOwner: ViewModelStoreOwner) {
         tripViewModel = ViewModelProvider(viewModelStoreOwner).get(TripViewModel::class.java)

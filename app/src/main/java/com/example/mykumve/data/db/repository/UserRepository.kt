@@ -44,6 +44,9 @@ class UserRepository(application: Application): CoroutineScope {
     fun getUserByEmail(email: String): LiveData<User?>? {
         return userDao?.getUserByEmail(email)
     }
+    fun getUserByPhone(phone: String): LiveData<User?>? {
+        return userDao?.getUserByPhone(phone)
+    }
 
     suspend fun insertUser(user: User): Deferred<Result> = coroutineScope {
         async {
