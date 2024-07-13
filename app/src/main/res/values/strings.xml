@@ -58,6 +58,7 @@
     <string name="trip_partner_list_title">Partners List</string>
     <string name="title_is_required">Title is required</string>
     <string name="notifications">Notifications</string>
+    <string name="show_invitations">Show Invitations</string>
 
     <string-array name="difficulty_options">
         <item>@string/difficulty_unset</item>

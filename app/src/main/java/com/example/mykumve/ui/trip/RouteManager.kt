@@ -42,12 +42,12 @@ class RouteManager : Fragment() {
             if(verifyRouteForm()){
                 saveTrip()
                 sharedViewModel.resetNewTripState()
-                findNavController().navigate(R.id.action_routeManager_to_mainScreenManager2)
+                findNavController().navigate(R.id.action_routeManager_to_mainScreenManager)
             }
         }
 
         binding.MapBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_routeManager_to_mapFragment3)
+            findNavController().navigate(R.id.action_routeManager_to_mapFragment)
         }
 
         return binding.root

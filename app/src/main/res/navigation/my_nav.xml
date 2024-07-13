@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -38,6 +37,7 @@
             android:id="@+id/action_mainScreenManager_to_partnerListFragment"
             app:destination="@id/partnerListFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/registerManager"
         android:name="com.example.mykumve.ui.register.RegisterManager"
@@ -53,6 +53,7 @@
             app:popUpTo="@id/loginManager"
             app:popUpToInclusive="true" />
     </fragment>
+
     <fragment
         android:id="@+id/travelManager"
         android:name="com.example.mykumve.ui.trip.TripManager"
@@ -66,8 +67,9 @@
             app:destination="@id/partnerListFragment" />
         <action
             android:id="@+id/action_travelManager_to_routeManager"
-            app:destination="@id/routeManager" />
+            app:destination="@id/routeManager3" />
     </fragment>
+
     <fragment
         android:id="@+id/networkManager"
         android:name="com.example.mykumve.ui.SocialNetworkManager"
@@ -79,6 +81,7 @@
             app:popUpTo="@id/mainScreenManager"
             app:popUpToInclusive="true" />
     </fragment>
+
     <fragment
         android:id="@+id/loginManager"
         android:name="com.example.mykumve.ui.login.LoginManager"
@@ -99,11 +102,13 @@
             app:popEnterAnim="@anim/from_left"
             app:popExitAnim="@anim/to_right" />
     </fragment>
+
     <fragment
         android:id="@+id/tripReviewManager"
         android:name="com.example.mykumve.ui.trip.TripReviewManager"
         android:label="trip_review"
         tools:layout="@layout/trip_review" />
+
     <fragment
         android:id="@+id/equipmentFragment"
         android:name="com.example.mykumve.ui.trip.EquipmentFragment"
@@ -119,11 +124,13 @@
             android:id="@+id/action_equipmentFragment_self"
             app:destination="@id/equipmentFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/myProfile"
         android:name="com.example.mykumve.ui.menu.MyProfile"
         android:label="my_profile_page"
         tools:layout="@layout/my_profile_page" />
+
     <fragment
         android:id="@+id/partnerListFragment"
         android:name="com.example.mykumve.ui.trip.PartnerListFragment"
@@ -135,25 +142,36 @@
         <action
             android:id="@+id/action_partnerListFragment_to_mainScreenManager"
             app:destination="@id/mainScreenManager" />
+        <action
+            android:id="@+id/action_partnerListFragment_to_invitationListFragment"
+            app:destination="@id/invitationListFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/mapFragment3"
         android:name="com.example.mykumve.ui.map.MapFragment"
         android:label="map"
         tools:layout="@layout/map" />
+
     <fragment
-        android:id="@+id/routeManager"
+        android:id="@+id/routeManager3"
         android:name="com.example.mykumve.ui.trip.RouteManager"
         android:label="route"
         tools:layout="@layout/route" >
         <action
-            android:id="@+id/action_routeManager_to_mapFragment3"
+            android:id="@+id/action_routeManager_to_mapFragment"
             app:destination="@id/mapFragment3" />
         <action
             android:id="@+id/action_routeManager_to_mainScreenManager"
             app:destination="@id/mainScreenManager" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/invitationListFragment"
+        android:name="com.example.mykumve.ui.trip.InvitationListFragment"
+        android:label="InvitationListFragment" >
         <action
-            android:id="@+id/action_routeManager_to_mainScreenManager2"
-            app:destination="@id/mainScreenManager" />
+            android:id="@+id/action_invitationListFragment_to_partnerListFragment"
+            app:destination="@id/partnerListFragment" />
     </fragment>
 </navigation>
