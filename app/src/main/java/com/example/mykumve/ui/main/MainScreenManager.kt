@@ -1,6 +1,7 @@
 package com.example.mykumve.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -39,6 +40,7 @@ class MainScreenManager : Fragment() {
     private lateinit var tripAdapter: TripAdapter
     private var currentUser: User? = null
     private var _firstTimeShowingScreen = true
+    val TAG = MainScreenManager::class.java.simpleName
 
 
     override fun onCreateView(
@@ -79,7 +81,7 @@ class MainScreenManager : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tripAdapter = TripAdapter(emptyList(), sharedViewModel)
+        tripAdapter = TripAdapter(emptyList(), sharedViewModel, requireContext())
         binding.mainRecyclerView.adapter = tripAdapter
         binding.mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -146,10 +148,13 @@ class MainScreenManager : Fragment() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 Toast.makeText(
                     requireContext(),
-                    "adapterPosition=${viewHolder.adapterPosition}",
+                    "DELETING Trip...",
                     Toast.LENGTH_SHORT
                 ).show()
-                tripViewModel.deleteTrip(tripAdapter.trips[viewHolder.adapterPosition])
+                val trip = tripAdapter.trips[viewHolder.adapterPosition]
+                Log.d(TAG, "Swipe action, deleting ${trip.title} " +
+                        "on ${viewHolder.adapterPosition} index")
+                tripViewModel.deleteTrip(trip)
                 tripAdapter.notifyItemRemoved(viewHolder.adapterPosition)
 
 

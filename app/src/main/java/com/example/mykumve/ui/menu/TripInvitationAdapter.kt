@@ -17,7 +17,7 @@ class TripInvitationAdapter(
     private val lifecycleOwner: LifecycleOwner
 ) : RecyclerView.Adapter<TripInvitationAdapter.TripInvitationViewHolder>() {
 
-    val TAG = TripInvitationAdapter::class.java.toString()
+    val TAG = TripInvitationAdapter::class.java.simpleName
 
     inner class TripInvitationViewHolder(private val binding: ItemNotificationBinding) :
         RecyclerView.ViewHolder(binding.root) {

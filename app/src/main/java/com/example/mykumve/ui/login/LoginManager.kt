@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
-import com.example.mykumve.data.db.repository.UserRepository
 import com.example.mykumve.databinding.LoginBinding
 import com.example.mykumve.ui.viewmodel.UserViewModel
 import com.example.mykumve.util.EncryptionUtils
@@ -20,7 +19,7 @@ import com.example.mykumve.util.Result
 
 class LoginManager : Fragment() {
 
-    val TAG = LoginManager::class.java.toString()
+    val TAG = LoginManager::class.java.simpleName
     private var _binding: LoginBinding? = null
     private val binding get() = _binding!!
     private val userViewModel: UserViewModel by activityViewModels()
@@ -44,7 +43,7 @@ class LoginManager : Fragment() {
                 } else {
                     Toast.makeText(requireContext(), R.string.login_failed, Toast.LENGTH_SHORT)
                         .show()
-                    Log.e(TAG, isLoggedInUser.reason )
+                    Log.e(TAG, "User is not logged in: ${isLoggedInUser.reason}" )
                 }
             }
         }

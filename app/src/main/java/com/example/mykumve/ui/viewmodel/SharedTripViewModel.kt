@@ -11,7 +11,7 @@ import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.TripInvitation
 
 class SharedTripViewModel : ViewModel() {
-    val TAG = SharedTripViewModel::class.java.toString()
+    val TAG = SharedTripViewModel::class.java.simpleName
     private val _selectedExistingTrip = MutableLiveData<Trip?>()
     private lateinit var tripViewModel: TripViewModel
     private val _tempEquipmentList = MutableLiveData<List<Equipment>?>()

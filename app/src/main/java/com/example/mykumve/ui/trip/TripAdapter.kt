@@ -1,5 +1,7 @@
 package com.example.mykumve.ui.trip
 
+import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
@@ -14,8 +16,11 @@ import com.example.mykumve.util.Utility.toFormattedString
 
 class TripAdapter(
     var trips: List<Trip>,
-    private val sharedViewModel: SharedTripViewModel
+    private val sharedViewModel: SharedTripViewModel,
+    var context: Context,
 ) : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
+
+    val TAG = TripAdapter::class.java.simpleName
 
     init {
         if (sharedViewModel.isCreatingTripMode) {
@@ -32,13 +37,17 @@ class TripAdapter(
         }
     }
     class TripViewHolder(private val binding: TravelCardBinding) : RecyclerView.ViewHolder(binding.root) {
+        val TAG = TripViewHolder::class.java.simpleName
+
         fun bind(trip: Trip, sharedViewModel: SharedTripViewModel) {
+            Log.d(TAG, "Binding trip ${trip.title}" +
+                    ", with total ${trip.invitations.size} invitations and  ${trip.participants?.size} participants")
             binding.tripTitle.text = trip.title
             binding.areaCard.text = "Dummy area"
             binding.dateCard.text = Converters().toDate(trip.gatherTime?.toString()?.toLong())?.toFormattedString()
             binding.levelCard.text = "Dummy difficulty"
 
-            //image up lode:
+            //image up load:
             if (trip.image != null) {
                 Glide.with(binding.root).load(trip.image).circleCrop()
                     .into(binding.itemImage)

@@ -22,7 +22,7 @@ import kotlin.coroutines.CoroutineContext
  */
 class UserRepository(application: Application): CoroutineScope {
 
-    val TAG = UserRepository::class.java.toString()
+    val TAG = UserRepository::class.java.simpleName
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO
 
