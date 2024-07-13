@@ -121,7 +121,7 @@
     </fragment>
     <fragment
         android:id="@+id/myProfile"
-        android:name="com.example.mykumve.ui.main.MyProfile"
+        android:name="com.example.mykumve.ui.menu.MyProfile"
         android:label="my_profile_page"
         tools:layout="@layout/my_profile_page" />
     <fragment

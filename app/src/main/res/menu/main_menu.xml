@@ -9,7 +9,7 @@
     </item>
     <item
         android:title="My Alerts"
-        android:id="@+id/my_alerts"
+        android:id="@+id/menuAlerts"
         app:showAsAction="always"
         android:icon="@drawable/my_alerts">
     </item>

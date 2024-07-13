@@ -1,4 +1,4 @@
-package com.example.mykumve.ui.main
+package com.example.mykumve.ui.menu
 
 import android.net.Uri
 import android.os.Bundle
@@ -15,6 +15,7 @@ import com.example.mykumve.databinding.MyProfilePageBinding
 import com.example.mykumve.ui.viewmodel.UserViewModel
 import com.example.mykumve.util.ImagePickerUtil
 import com.example.mykumve.util.UserManager
+import com.example.mykumve.util.UserUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,9 +49,9 @@ class MyProfile : Fragment(), CoroutineScope {
         }
 
         if (UserManager.isLoggedIn()) {
-            UserManager.getUser()?.let {
-                currentUser = it
-                binding.profilePic.setImageURI(it.photo?.toUri())
+            UserManager.getUser()?.let { user ->
+                binding.profilePic.setImageURI(user.photo?.toUri())
+                binding.profileUserFullNameTv.setText(UserUtils.getFullName(user))
                 binding.profilePic.setOnLongClickListener {
                     imagePickerUtil.pickImage()
                     true

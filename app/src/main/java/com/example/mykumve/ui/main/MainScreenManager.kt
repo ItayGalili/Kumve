@@ -21,15 +21,17 @@ import com.example.mykumve.ui.trip.TripAdapter
 import com.example.mykumve.R
 import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.MainScreenBinding
+import com.example.mykumve.ui.notifications.NotificationsFragment
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
+import com.example.mykumve.ui.viewmodel.UserViewModel
 import com.example.mykumve.util.NavigationArgs
+import com.example.mykumve.util.TripInvitationStatus
 import com.example.mykumve.util.UserManager
 
 class MainScreenManager : Fragment() {
     //toolbar
     private lateinit var toolbar: Toolbar
-    //toolbar
     private var _binding: MainScreenBinding? = null
     private val binding get() = _binding!!
     private val tripViewModel: TripViewModel by activityViewModels()
@@ -58,9 +60,21 @@ class MainScreenManager : Fragment() {
             findNavController().navigate(R.id.action_mainScreenManager_to_networkManager)
         }
 
-        binding
-
         return binding.root
+    }
+
+    private fun observeUserTripInvitations(userId: Long) {
+        tripViewModel.getTripInvitationsForUser(userId)?.observe(viewLifecycleOwner) { invitations ->
+            // Handle the trip invitations
+            val pendingInvitations = invitations.filter { it.status == TripInvitationStatus.PENDING }
+            val pendingInvitationsCount = pendingInvitations.size
+            if (pendingInvitationsCount == 0) {
+                Toast.makeText(requireContext(), "No new invitations", Toast.LENGTH_SHORT).show()
+            } else {
+                // Show notifications or update UI with the invitations
+                Toast.makeText(requireContext(), "You have ${pendingInvitationsCount} new invitations", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -79,17 +93,17 @@ class MainScreenManager : Fragment() {
 
         if (UserManager.isLoggedIn()) {
             currentUser = UserManager.getUser()
-            currentUser?.let {
+            currentUser?.let {user ->
                 if (_firstTimeShowingScreen) {
                     Toast.makeText( // todo remove - only for debug
                         requireContext(),
-                        getString(R.string.welcome_user, it.firstName),
+                        getString(R.string.welcome_user, user.firstName),
                         Toast.LENGTH_SHORT
                     ).show()
                     _firstTimeShowingScreen = false
                 }
 
-                tripViewModel.getTripsByUserId(it.id)?.observe(viewLifecycleOwner) { trips ->
+                tripViewModel.getTripsByUserId(user.id)?.observe(viewLifecycleOwner) { trips ->
                     tripAdapter.trips = trips
                     tripAdapter.notifyDataSetChanged()
                     var welcome_msg=binding.informationWhileEmpty
@@ -102,6 +116,8 @@ class MainScreenManager : Fragment() {
 
                 }
 
+                // Observe trip invitations
+                observeUserTripInvitations(user.id)
             }
 
         } else {
@@ -157,9 +173,8 @@ class MainScreenManager : Fragment() {
                 findNavController().navigate(R.id.action_mainScreenManager_to_myProfile)
                 return true
             }
-            R.id.my_alerts -> {
-                // todo Handle My Alerts action
-                // Example: findNavController().navigate(R.id.action_mainScreenManager_to_myAlerts)
+            R.id.menuAlerts -> {
+                showNotificationsFragment()
                 return true
             }
             R.id.log_out -> {
@@ -174,6 +189,12 @@ class MainScreenManager : Fragment() {
             else -> return super.onOptionsItemSelected(item)
         }
     }
+
+    private fun showNotificationsFragment() {
+        val notificationsFragment = NotificationsFragment()
+        notificationsFragment.show(parentFragmentManager, notificationsFragment.tag)
+    }
+
 
     private fun showDeleteDbDialog() {
         val builder = AlertDialog.Builder(requireContext())

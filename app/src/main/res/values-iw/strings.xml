@@ -40,5 +40,6 @@
     <string name="register">הרשם</string>
     <string name="trip_partner_list_title">רשימת משתתפים</string>
     <string name="title_is_required">אנא מלא שם טיול</string>
+    <string name="notifications">Notifications</string>
 
 </resources>
