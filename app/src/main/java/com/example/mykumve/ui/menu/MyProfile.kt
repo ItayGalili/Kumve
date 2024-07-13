@@ -50,6 +50,7 @@ class MyProfile : Fragment(), CoroutineScope {
 
         if (UserManager.isLoggedIn()) {
             UserManager.getUser()?.let { user ->
+                currentUser = user
                 binding.profilePic.setImageURI(user.photo?.toUri())
                 binding.profileUserFullNameTv.setText(UserUtils.getFullName(user))
                 binding.profilePic.setOnLongClickListener {
