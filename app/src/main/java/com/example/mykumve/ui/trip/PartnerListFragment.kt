@@ -27,11 +27,11 @@ class PartnerListFragment : Fragment() {
 
     private lateinit var binding: FragmentPartnerListBinding
     private lateinit var partnerListAdapter: PartnerListAdapter
+    private lateinit var currentUser: User
     private val sharedTripViewModel: SharedTripViewModel by activityViewModels()
     private val tripViewModel: TripViewModel by activityViewModels()
     private val userViewModel: UserViewModel by activityViewModels()
 
-    private var selectedUser: User? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,6 +39,11 @@ class PartnerListFragment : Fragment() {
     ): View? {
         binding = FragmentPartnerListBinding.inflate(inflater, container, false)
 
+        if (UserManager.isLoggedIn()) {
+            UserManager.getUser()?.let { user ->
+                currentUser = user
+            }
+        }
         setupRecyclerView()
         observeTripPartners()
 

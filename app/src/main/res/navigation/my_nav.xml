@@ -68,6 +68,9 @@
         <action
             android:id="@+id/action_travelManager_to_routeManager"
             app:destination="@id/routeManager3" />
+        <action
+            android:id="@+id/action_travelManager_to_mainScreenManager"
+            app:destination="@id/mainScreenManager" />
     </fragment>
 
     <fragment

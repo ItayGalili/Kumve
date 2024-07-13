@@ -9,10 +9,12 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -62,21 +64,17 @@ class MainScreenManager : Fragment() {
             findNavController().navigate(R.id.action_mainScreenManager_to_networkManager)
         }
 
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            clearFragmentBackStack()
+            findNavController().navigate(R.id.mainScreenManager)
+        }
+
         return binding.root
     }
 
-    private fun observeUserTripInvitations(userId: Long) {
-        tripViewModel.getTripInvitationsForUser(userId)?.observe(viewLifecycleOwner) { invitations ->
-            // Handle the trip invitations
-            val pendingInvitations = invitations.filter { it.status == TripInvitationStatus.PENDING }
-            val pendingInvitationsCount = pendingInvitations.size
-            if (pendingInvitationsCount == 0) {
-                Toast.makeText(requireContext(), "No new invitations", Toast.LENGTH_SHORT).show()
-            } else {
-                // Show notifications or update UI with the invitations
-                Toast.makeText(requireContext(), "You have ${pendingInvitationsCount} new invitations", Toast.LENGTH_SHORT).show()
-            }
-        }
+
+    private fun clearFragmentBackStack() {
+        parentFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -105,7 +103,7 @@ class MainScreenManager : Fragment() {
                     _firstTimeShowingScreen = false
                 }
 
-                tripViewModel.getTripsByUserId(user.id)?.observe(viewLifecycleOwner) { trips ->
+                tripViewModel.getTripsByParticipantUserId(user.id).observe(viewLifecycleOwner) { trips ->
                     tripAdapter.trips = trips
                     tripAdapter.notifyDataSetChanged()
                     var welcome_msg=binding.informationWhileEmpty
@@ -195,6 +193,19 @@ class MainScreenManager : Fragment() {
         }
     }
 
+    private fun observeUserTripInvitations(userId: Long) {
+        tripViewModel.getTripInvitationsForUser(userId)?.observe(viewLifecycleOwner) { invitations ->
+            // Handle the trip invitations
+            val pendingInvitations = invitations.filter { it.status == TripInvitationStatus.PENDING }
+            val pendingInvitationsCount = pendingInvitations.size
+            if (pendingInvitationsCount == 0) {
+                Toast.makeText(requireContext(), "No new invitations", Toast.LENGTH_SHORT).show()
+            } else {
+                // Show notifications or update UI with the invitations
+                Toast.makeText(requireContext(), "You have ${pendingInvitationsCount} new invitations", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
     private fun showNotificationsFragment() {
         val notificationsFragment = NotificationsFragment()
         notificationsFragment.show(parentFragmentManager, notificationsFragment.tag)
@@ -237,6 +248,20 @@ class MainScreenManager : Fragment() {
         val dialog: AlertDialog = builder.create()
         dialog.show()
     }
+
+//    private fun setAlertsBadgeCount(count: Int) {
+//        val menuItem = toolbar.menu.findItem(R.id.menuAlerts)
+//        val actionView = menuItem?.actionView ?: return
+//
+//        val badge = actionView.findViewById<TextView>(R.id.badge)
+//
+//        if (count > 0) {
+//            badge.text = "+$count"
+//            badge.visibility = View.VISIBLE
+//        } else {
+//            badge.visibility = View.GONE
+//        }
+//    }
 
 
 

@@ -2,10 +2,12 @@ package com.example.mykumve.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import com.example.mykumve.data.model.User
 import com.google.gson.Gson
 
 object UserManager {
+    val TAG = UserManager::class.java.simpleName
     private const val PREFS_NAME = "user_prefs"
     private const val USER_KEY = "user"
 
@@ -33,8 +35,10 @@ object UserManager {
     }
 
     fun clearUser() {
+        Log.v(TAG, "Clearing user... ${getUser()?.firstName} [${getUser()?.id}]")
         val editor = prefs.edit()
         editor.remove(USER_KEY)
         editor.apply()
+        Log.v(TAG, "User cleared... ${getUser()}")
     }
 }

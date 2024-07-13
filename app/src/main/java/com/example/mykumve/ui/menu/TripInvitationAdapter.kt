@@ -24,6 +24,7 @@ class TripInvitationAdapter(
         fun bind(invitation: TripInvitation) {
             tripViewModel.getTripById(invitation.id)?.observe(lifecycleOwner, Observer { trip ->
                 if (trip != null) {
+                    Log.d(TAG, "Binding trip invitation, tripId ${invitation.tripId}")
                     binding.invitationTitle.text = trip.title
                     binding.invitationStatus.text = "Status: ${invitation.status}"
 

@@ -46,7 +46,6 @@ class PartnerListAdapter(
         val currentList = currentList.toMutableList()
         currentList.removeAt(position)
         submitList(currentList)
-
     }
 
     class DiffCallback : DiffUtil.ItemCallback<User>() {
