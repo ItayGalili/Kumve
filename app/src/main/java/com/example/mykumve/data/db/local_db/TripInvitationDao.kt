@@ -17,4 +17,8 @@ interface TripInvitationDao {
 
     @Query("SELECT * FROM trip_invitations WHERE tripId = :tripId")
     fun getTripInvitationsByTripId(tripId: Long): LiveData<List<TripInvitation>>
+
+    @Query("SELECT * FROM trip_invitations WHERE userId = :userId")
+    fun getTripInvitationsForUser(userId: Long): LiveData<List<TripInvitation>>
+
 }

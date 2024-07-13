@@ -31,10 +31,8 @@ class TripViewModel(
     private val _trips = MutableLiveData<List<Trip>>()
     val trips: LiveData<List<Trip>> get() = _trips
 
-    fun getTripById(id: Long) {
-        viewModelScope.launch {
-            _trip.postValue(tripRepository.getTripById(id)?.value)
-        }
+    fun getTripById(id: Long): LiveData<Trip>? {
+        return tripRepository.getTripById(id)
     }
 
     fun getTripInfoByTripId(tripId: Long) {
@@ -144,9 +142,27 @@ class TripViewModel(
         }
     }
 
+    fun respondToTripInvitation(
+        invitation: TripInvitation,
+        callback: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (invitation != null) {
+                val result = tripRepository.respondToTripInvitation(invitation)
+                callback(result)
+            } else {
+                callback(false)
+            }
+        }
+    }
+
     // Method to get trip invitations by trip ID
     fun getTripInvitationsByTripId(tripId: Long): LiveData<List<TripInvitation>>? {
         return tripRepository.getTripInvitationsByTripId(tripId)
+    }
+
+    fun getTripInvitationsForUser(userId: Long): LiveData<List<TripInvitation>>? {
+        return tripRepository.getTripInvitationsForUser(userId)
     }
 
     fun deleteTripInvitation(invitation: TripInvitation) {

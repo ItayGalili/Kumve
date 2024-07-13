@@ -113,5 +113,10 @@ class TripRepository(application: Application,): CoroutineScope {
         return tripInvitationDao?.getTripInvitationsByTripId(tripId)
     }
 
+    fun getTripInvitationsForUser(userId: Long): LiveData<List<TripInvitation>>? {
+        return tripInvitationDao?.getTripInvitationsForUser(userId)
+    }
+
+
 }
 
