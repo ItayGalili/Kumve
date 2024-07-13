@@ -9,10 +9,12 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -62,10 +64,18 @@ class MainScreenManager : Fragment() {
             findNavController().navigate(R.id.action_mainScreenManager_to_networkManager)
         }
 
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            clearFragmentBackStack()
+            findNavController().navigate(R.id.mainScreenManager)
+        }
+
         return binding.root
     }
 
 
+    private fun clearFragmentBackStack() {
+        parentFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -238,6 +248,20 @@ class MainScreenManager : Fragment() {
         val dialog: AlertDialog = builder.create()
         dialog.show()
     }
+
+//    private fun setAlertsBadgeCount(count: Int) {
+//        val menuItem = toolbar.menu.findItem(R.id.menuAlerts)
+//        val actionView = menuItem?.actionView ?: return
+//
+//        val badge = actionView.findViewById<TextView>(R.id.badge)
+//
+//        if (count > 0) {
+//            badge.text = "+$count"
+//            badge.visibility = View.VISIBLE
+//        } else {
+//            badge.visibility = View.GONE
+//        }
+//    }
 
 
 

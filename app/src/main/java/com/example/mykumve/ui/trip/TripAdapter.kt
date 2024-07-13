@@ -24,8 +24,8 @@ class TripAdapter(
 
     init {
         if (sharedViewModel.isCreatingTripMode) {
-            sharedViewModel.equipmentList.observeForever { equipmentList ->
-                equipmentList?.let {
+            sharedViewModel.trip.observeForever { trip ->
+                trip?.equipment?.let {
                     val tripIndex =
                             trips.indexOfFirst { it.id == sharedViewModel.trip.value?.id }
                     if (tripIndex != -1) {

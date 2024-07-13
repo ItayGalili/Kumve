@@ -70,7 +70,7 @@ class EquipmentFragment : Fragment() {
 
     private fun loadTripData() {
         if (sharedTripViewModel.isCreatingTripMode) {
-            if (sharedTripViewModel.equipmentList.value == null) {
+            if (sharedTripViewModel.trip.value?.equipment == null) {
                 sharedTripViewModel.updateEquipment(mutableListOf())
             }
         }

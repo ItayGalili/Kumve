@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -21,6 +22,7 @@ import com.example.mykumve.databinding.TravelManagerViewBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.ImagePickerUtil
+import com.example.mykumve.util.NavigationArgs
 import com.example.mykumve.util.ShareLevel
 import com.example.mykumve.util.UserManager
 import com.example.mykumve.util.Utility.timestampToString
@@ -46,9 +48,9 @@ class TripManager : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // Logic to determine if it's a new trip creation
         val isCreatingNewTrip =
-            true // todo - verify; is it always true? arguments?.getBoolean(NavigationArgs.IS_CREATING_NEW_TRIP.key, false) ?: false
+            arguments?.getBoolean(NavigationArgs.IS_CREATING_NEW_TRIP.key, false) ?: false
 
-        if (isCreatingNewTrip && sharedViewModel.trip.value == null) {
+        if (isCreatingNewTrip) {
             // There is no cached trip and in creating trip fragment then reset state
             sharedViewModel.resetNewTripState()
         }
@@ -60,6 +62,11 @@ class TripManager : Fragment() {
             binding.description.setText(trip.description.toString())
             binding.dateStartPick.text = timestampToString(trip.gatherTime)
             binding.dateEndPick.text = timestampToString(trip.endDate)
+        }
+
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            findNavController().navigate(R.id.action_travelManager_to_mainScreenManager)
         }
     }
 
@@ -105,9 +112,9 @@ class TripManager : Fragment() {
         binding.NextBtn.setOnClickListener {
             // Check if currentUser is not null
             currentUser?.let { user ->
-                sharedViewModel.equipmentList.observe(
+                sharedViewModel.trip.observe(
                     viewLifecycleOwner,
-                    Observer { equipmentList ->
+                    Observer { trip ->
                         if (verifyTripForm()) {
                             cacheTrip()
                             findNavController().navigate(R.id.action_travelManager_to_routeManager)

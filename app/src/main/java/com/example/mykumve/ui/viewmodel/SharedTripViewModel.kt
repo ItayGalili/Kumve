@@ -14,8 +14,8 @@ class SharedTripViewModel : ViewModel() {
     val TAG = SharedTripViewModel::class.java.simpleName
     private val _selectedExistingTrip = MutableLiveData<Trip?>()
     private lateinit var tripViewModel: TripViewModel
-    private val _tempEquipmentList = MutableLiveData<List<Equipment>?>()
-    val equipmentList: MutableLiveData<List<Equipment>?> get() = _tempEquipmentList
+//    private val _tempEquipmentList = MutableLiveData<List<Equipment>?>()
+//    val equipmentList: MutableLiveData<List<Equipment>?> get() = _tempEquipmentList
     var isCreatingTripMode: Boolean = true
     private val _partialTrip = MutableLiveData<Trip?>()
     val trip: LiveData<Trip?> get() = if(isCreatingTripMode) _partialTrip else _selectedExistingTrip
@@ -52,29 +52,28 @@ class SharedTripViewModel : ViewModel() {
 
     fun selectExistingTrip(trip: Trip) {
         _selectedExistingTrip.value = trip
-        _tempEquipmentList.value = trip.equipment // Load the trip's equipment list when selected
+//        _tempEquipmentList.value = trip.equipment // Load the trip's equipment list when selected
         isCreatingTripMode = false
     }
 
     fun updateEquipment(equipment: MutableList<Equipment>?) {
         trip.value?.equipment =
             equipment?.toMutableList() // Ensure the trip's equipment list is updated
-        if (isCreatingTripMode) {
-            _tempEquipmentList.value = equipment
-        } else try {
-            trip.value?.let {
-                tripViewModel.updateTrip(it) // Call TripViewModel to update the trip
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error with update equipment \n${e.message.toString()}")
+        if (!isCreatingTripMode) {
+            try {
+                trip.value?.let {
+                    tripViewModel.updateTrip(it) // Call TripViewModel to update the trip
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error with update equipment \n${e.message.toString()}")
 
+            }
         }
     }
 
     fun resetNewTripState() {
         _selectedExistingTrip.value = null
         _partialTrip.value = null
-        _tempEquipmentList.value = mutableListOf()
         isCreatingTripMode = true
     }
 
