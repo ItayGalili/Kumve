@@ -7,5 +7,6 @@
     <color name="back">#000000</color>
     <color name="no">#DE6A6D</color>
     <color name="btn">#FF9800</color>
+    <color name="lightGrey">#A9A9A9</color>
 
 </resources>
