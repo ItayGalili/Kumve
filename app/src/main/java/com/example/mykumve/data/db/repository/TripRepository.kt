@@ -1,9 +1,12 @@
 package com.example.mykumve.data.db.repository
 
 import android.app.Application
+import android.database.sqlite.SQLiteConstraintException
+import android.util.Log
 import com.example.mykumve.data.db.local_db.TripDao
 import com.example.mykumve.data.model.Trip
 import androidx.lifecycle.LiveData
+import androidx.room.Transaction
 import com.example.mykumve.data.db.local_db.AppDatabase
 import com.example.mykumve.data.db.local_db.TripInfoDao
 import com.example.mykumve.data.db.local_db.TripInvitationDao
@@ -13,9 +16,7 @@ import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.util.TripInvitationStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
 
@@ -58,8 +59,32 @@ class TripRepository(application: Application,): CoroutineScope {
         }
     }
 
+    @Transaction
     suspend fun insertTripWithInfo(trip: Trip, tripInfo: TripInfo) {
-        tripDao?.insertTripWithInfo(trip, tripInfo, tripInfoDao)
+        try {
+            // Step 1: Insert Trip first without TripInfoId
+            val tripId = tripDao?.insertTrip(trip)
+            Log.d("TripRepository", "Inserted Trip with ID: $tripId")
+            if (tripId != null){
+
+                // Step 2: Insert TripInfo with the TripId from the inserted Trip
+                val modifiedTripInfo = tripInfo.copy(tripId = tripId)
+                val tripInfoId = tripInfoDao?.insertTripInfo(modifiedTripInfo)
+                Log.d("TripRepository", "Inserted TripInfo with ID: $tripInfoId")
+
+                // Step 3: Update the Trip with the newly created TripInfoId
+                val updatedTrip = trip.copy(id = tripId, tripInfoId = tripInfoId)
+                tripDao?.updateTrip(updatedTrip)
+                Log.d("TripRepository", "Updated Trip with TripInfo ID: ${updatedTrip.tripInfoId}")
+
+            }
+        } catch (e: SQLiteConstraintException) {
+            Log.e("TripRepository", "Foreign Key constraint failed: ${e.message}")
+            throw e
+        } catch (e: Exception) {
+            Log.e("TripRepository", "Failed to insert trip and trip info: ${e.message}")
+            throw e
+        }
     }
 
     fun updateTrip(trip: Trip)  {
@@ -68,9 +93,10 @@ class TripRepository(application: Application,): CoroutineScope {
 
     fun deleteTrip(trip: Trip) {
         launch {
-            tripDao?.deleteTrip(trip)
+            tripDao?.deleteTripAndRelatedData(trip, tripInfoDao!!, tripInvitationDao!!)
         }
     }
+
     fun deleteTripInvitation(invitation: TripInvitation) {
         val trip = getTripById(invitation.tripId)?.value?.let { trip ->
             trip.invitations.removeAll { it.tripId == invitation.tripId }

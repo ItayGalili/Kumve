@@ -22,5 +22,6 @@ data class TripInfo(
     @ColumnInfo(name = "length") var length: Float?,
     @ColumnInfo(name = "tags") var tags: List<String>?,
     @ColumnInfo(name = "is_circular") var isCircular: Boolean?,
-    @ColumnInfo(name = "likes") var likes: Int?
+    @ColumnInfo(name = "likes") var likes: Int?,
+    @ColumnInfo(name = "trip_id") var tripId: Long
 )

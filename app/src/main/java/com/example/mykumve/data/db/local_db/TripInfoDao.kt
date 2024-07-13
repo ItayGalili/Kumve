@@ -9,13 +9,6 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.mykumve.data.model.TripInfo
 
-/**
- * DAO interface for trip-related database operations.
- * Defines methods for querying, inserting, updating, and deleting trips.
- *
- * TODO: Add methods for complex queries if necessary.
- */
-
 @Dao
 interface TripInfoDao {
 

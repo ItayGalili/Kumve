@@ -11,15 +11,6 @@ import androidx.room.Update
 import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.TripInfo
 
-import com.example.mykumve.util.DifficultyLevel
-
-/**
- * DAO interface for trip-related database operations.
- * Defines methods for querying, inserting, updating, and deleting trips.
- *
- * TODO: Add methods for complex queries if necessary.
- */
-
 @Dao
 interface TripDao {
 
@@ -35,7 +26,7 @@ interface TripDao {
     @Transaction
     suspend fun insertTripWithInfo(trip: Trip, tripInfo: TripInfo, tripInfoDao: TripInfoDao?) {
         val tripId = insertTrip(trip)
-        val modifiedTripInfo = tripInfo.copy(id = tripId) // Create a copy with the updated tripId
+        val modifiedTripInfo = tripInfo.copy(tripId = tripId)
         tripInfoDao?.insertTripInfo(modifiedTripInfo)
     }
 
@@ -44,6 +35,19 @@ interface TripDao {
 
     @Delete
     fun deleteTrip(trip: Trip)
+
+    @Query("DELETE FROM trip_info WHERE trip_id = :tripId")
+    fun deleteTripInfoByTripId(tripId: Long)
+
+    @Query("DELETE FROM trip_invitations WHERE tripId = :tripId")
+    fun deleteTripInvitationsByTripId(tripId: Long)
+
+    @Transaction
+    suspend fun deleteTripAndRelatedData(trip: Trip, tripInfoDao: TripInfoDao, tripInvitationDao: TripInvitationDao) {
+        deleteTripInfoByTripId(trip.id)
+        deleteTripInvitationsByTripId(trip.id)
+        deleteTrip(trip)
+    }
 
     @Query("SELECT * FROM trips WHERE user_id = :userId")
     fun getTripsByUserId(userId: Long): LiveData<List<Trip>>

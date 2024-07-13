@@ -79,6 +79,7 @@ class RouteManager : Fragment() {
                     tags = tags,
                     isCircular = isCircular,
                     likes = likes,
+                    tripId = trip.id,
                 )
                 tripViewModel.addTripWithInfo(trip, tripInfo)
             }
