@@ -56,14 +56,13 @@ class TripAdapter(
                     .into(binding.itemImage)
             }
 
+            sharedViewModel.selectExistingTrip(trip)
+//            sharedViewModel.updateEquipment(trip.equipment)
             binding.participantListCardBtn.setOnClickListener {
-                sharedViewModel.selectExistingTrip(trip)
-                sharedViewModel.updateEquipment(trip.equipment)
                 it.findNavController().navigate(R.id.action_mainScreenManager_to_equipmentFragment)
             }
 
             binding.partnersCard.setOnClickListener {
-                sharedViewModel.selectExistingTrip(trip)
                 it.findNavController().navigate(R.id.action_mainScreenManager_to_partnerListFragment)
             }
         }

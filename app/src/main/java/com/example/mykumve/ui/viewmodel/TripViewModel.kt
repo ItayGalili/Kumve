@@ -8,10 +8,13 @@ import com.example.mykumve.data.db.repository.TripRepository
 import com.example.mykumve.data.model.Trip
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import com.example.mykumve.data.data_classes.Equipment
+import com.example.mykumve.data.db.repository.UserRepository
 import com.example.mykumve.data.model.TripInfo
 import com.example.mykumve.data.model.TripInvitation
+import com.example.mykumve.data.model.User
 import com.example.mykumve.util.TripInvitationStatus
 import kotlinx.coroutines.launch
 
@@ -19,7 +22,9 @@ import kotlinx.coroutines.launch
 class TripViewModel(
     application: Application,
 ) : AndroidViewModel(application) {
+    val TAG = TripViewModel::class.java.simpleName
     private var tripRepository: TripRepository = TripRepository(application)
+    private var userRepository: UserRepository = UserRepository(application)
     private var tripInfoRepository: TripInfoRepository = TripInfoRepository(application)
 
     private val _trip = MutableLiveData<Trip>()
@@ -106,6 +111,20 @@ class TripViewModel(
         return tripRepository.getTripsByUserId(userId)
     }
 
+    fun getTripsByParticipantUserId(userId: Long): LiveData<List<Trip>> {
+        val allTrips = tripRepository.getAllTrips()
+        val filteredTrips = MutableLiveData<List<Trip>>()
+
+        allTrips?.observeForever { trips ->
+            filteredTrips.value = trips.filter { trip ->
+                trip.participants?.any { it.id == userId } == true
+            }
+        }
+
+        return filteredTrips
+    }
+
+
     fun sendTripInvitation(tripId: Long, userId: Long, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             val invitation = TripInvitation(tripId = tripId, userId = userId)
@@ -122,37 +141,66 @@ class TripViewModel(
         }
     }
 
-    // Method to respond to a trip invitation
-    fun respondToTripInvitation(
-        tripId: Long,
-        invitationId: Long,
-        status: TripInvitationStatus,
-        callback: (Boolean) -> Unit
-    ) {
+    fun respondToTripInvitation(invitation: TripInvitation, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val invitation =
-                tripRepository.getTripInvitationsByTripId(tripId)?.value?.find { it.id == invitationId }
-            if (invitation != null) {
-                invitation.status = status
-                val result = tripRepository.respondToTripInvitation(invitation)
-                callback(result)
-            } else {
+            try {
+                val status = invitation.status
+                Log.d(TAG, "Updating trip invitation with status: ${status}, TripId ${invitation.tripId}")
+                tripRepository.updateTripInvitation(invitation)
+
+                if (status == TripInvitationStatus.APPROVED) {
+                    handleApprovedInvitation(invitation, callback)
+                } else {
+                    callback(true)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to respond to trip invitation: ${e.message}")
                 callback(false)
             }
         }
     }
 
-    fun respondToTripInvitation(
-        invitation: TripInvitation,
-        callback: (Boolean) -> Unit
-    ) {
-        viewModelScope.launch {
-            if (invitation != null) {
-                val result = tripRepository.respondToTripInvitation(invitation)
-                callback(result)
-            } else {
-                callback(false)
+    private fun handleApprovedInvitation(invitation: TripInvitation, callback: (Boolean) -> Unit) {
+        val tripLiveData = tripRepository.getTripById(invitation.tripId)
+        val userLiveData = userRepository.getUserById(invitation.userId)
+
+        val tripObserver = object : Observer<Trip?> {
+            override fun onChanged(trip: Trip?) {
+                if (trip != null) {
+                    tripLiveData?.removeObserver(this)
+                    addUserToTrip(trip, userLiveData, callback)
+                }
             }
+        }
+
+        val userObserver = object : Observer<User?> {
+            override fun onChanged(user: User?) {
+                if (user != null) {
+                    userLiveData?.removeObserver(this)
+                    tripLiveData?.value?.let { trip ->
+                        addUserToTrip(trip, userLiveData, callback)
+                    }
+                }
+            }
+        }
+
+        tripLiveData?.observeForever(tripObserver)
+        userLiveData?.observeForever(userObserver)
+    }
+
+    private fun addUserToTrip(trip: Trip, userLiveData: LiveData<User?>?, callback: (Boolean) -> Unit) {
+        val user = userLiveData?.value
+        if (trip != null && user != null) {
+            trip.participants?.add(user)
+            Log.d(TAG, "Adding user ${user.firstName} to trip participants ${trip.participants}")
+            viewModelScope.launch {
+                tripRepository.updateTrip(trip)
+                callback(true)
+            }
+        } else {
+            val error = "Failed to respond to trip invitation"
+            Log.e(TAG, if (trip == null) error + ", Trip is null" else error + ", user is null")
+            callback(false)
         }
     }
 

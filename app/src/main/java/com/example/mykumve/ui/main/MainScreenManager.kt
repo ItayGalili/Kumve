@@ -65,19 +65,7 @@ class MainScreenManager : Fragment() {
         return binding.root
     }
 
-    private fun observeUserTripInvitations(userId: Long) {
-        tripViewModel.getTripInvitationsForUser(userId)?.observe(viewLifecycleOwner) { invitations ->
-            // Handle the trip invitations
-            val pendingInvitations = invitations.filter { it.status == TripInvitationStatus.PENDING }
-            val pendingInvitationsCount = pendingInvitations.size
-            if (pendingInvitationsCount == 0) {
-                Toast.makeText(requireContext(), "No new invitations", Toast.LENGTH_SHORT).show()
-            } else {
-                // Show notifications or update UI with the invitations
-                Toast.makeText(requireContext(), "You have ${pendingInvitationsCount} new invitations", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -105,7 +93,7 @@ class MainScreenManager : Fragment() {
                     _firstTimeShowingScreen = false
                 }
 
-                tripViewModel.getTripsByUserId(user.id)?.observe(viewLifecycleOwner) { trips ->
+                tripViewModel.getTripsByParticipantUserId(user.id).observe(viewLifecycleOwner) { trips ->
                     tripAdapter.trips = trips
                     tripAdapter.notifyDataSetChanged()
                     var welcome_msg=binding.informationWhileEmpty
@@ -195,6 +183,19 @@ class MainScreenManager : Fragment() {
         }
     }
 
+    private fun observeUserTripInvitations(userId: Long) {
+        tripViewModel.getTripInvitationsForUser(userId)?.observe(viewLifecycleOwner) { invitations ->
+            // Handle the trip invitations
+            val pendingInvitations = invitations.filter { it.status == TripInvitationStatus.PENDING }
+            val pendingInvitationsCount = pendingInvitations.size
+            if (pendingInvitationsCount == 0) {
+                Toast.makeText(requireContext(), "No new invitations", Toast.LENGTH_SHORT).show()
+            } else {
+                // Show notifications or update UI with the invitations
+                Toast.makeText(requireContext(), "You have ${pendingInvitationsCount} new invitations", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
     private fun showNotificationsFragment() {
         val notificationsFragment = NotificationsFragment()
         notificationsFragment.show(parentFragmentManager, notificationsFragment.tag)
