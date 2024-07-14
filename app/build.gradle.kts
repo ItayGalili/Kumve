@@ -67,6 +67,7 @@ tasks.named("preBuild") {
 }
 
 dependencies {
+    implementation ("com.google.code.gson:gson:2.8.9")
     implementation("com.google.maps.android:android-maps-utils:2.2.4")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("com.google.android.gms:play-services-maps:19.0.0")
