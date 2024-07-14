@@ -2,6 +2,7 @@ package com.example.mykumve.ui.menu
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 class MyProfile : Fragment(), CoroutineScope {
+    val TAG = MyProfile::class.java.simpleName
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO
@@ -68,20 +70,28 @@ class MyProfile : Fragment(), CoroutineScope {
     }
 
     private suspend fun updateUserProfilePic(uri: Uri) {
-        currentUser.photo = uri.toString()
-        userViewModel.updateUser(currentUser) { result ->
-            launch(Dispatchers.Main) {
-                if (result.success) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Update successfully",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    Toast.makeText(requireContext(), result.reason, Toast.LENGTH_SHORT).show()
-                    // Todo descriptive error
+        var error = ""
+        if ((::currentUser.isInitialized)) {
+            currentUser.photo = uri.toString()
+            userViewModel.updateUser(currentUser) { result ->
+                launch(Dispatchers.Main) {
+                    if (result.success) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Update successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        error = "Failed to update profile picture. ${result.reason}"
+                    }
                 }
             }
+        } else {
+            error = "Failed to update profile picture"
+        }
+        if (error.isNotEmpty()){
+            Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
+            Log.e(TAG, error)
         }
     }
 
