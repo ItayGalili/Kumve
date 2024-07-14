@@ -36,7 +36,7 @@ class   UserViewModel (
                 val salt = EncryptionUtils.generateSalt()
                 val passwordHashed = EncryptionUtils.hashPassword(password, salt)
                 val newUser = User(firstName, surname, email, photo, description, passwordHashed, salt)
-                val result = userRepository.insertUser(newUser).await()
+                val result = userRepository.insertUser(newUser)
                 if (result.success) {
                     UserManager.saveUser(newUser)
                 }
@@ -49,8 +49,8 @@ class   UserViewModel (
         user: User,
         callback: (Result) -> Unit
     ) {
-        viewModelScope.launch(Dispatchers.IO){
-            val result = userRepository.updateUser(user).await()
+        viewModelScope.launch{
+            val result = userRepository.updateUser(user)
             if (result.success) {
                 UserManager.saveUser(user)
             }
@@ -73,6 +73,4 @@ class   UserViewModel (
         Log.d("UserViewModel", "getAllUsers: ${users?.value}")
         return users
     }
-
-
 }

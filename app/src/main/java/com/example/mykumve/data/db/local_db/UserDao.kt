@@ -23,11 +23,11 @@ interface UserDao {
     fun getUserByPhone(phone: String): LiveData<User?>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    fun insertUser(user: User): Long
+    suspend fun insertUser(user: User): Long
 
     @Update
-    fun updateUser(user: User)
+    suspend fun updateUser(user: User)
 
     @Delete
-    fun deleteUser(vararg user: User)
+    suspend fun deleteUser(vararg user: User)
 }

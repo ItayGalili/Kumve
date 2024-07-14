@@ -13,24 +13,10 @@ import com.example.mykumve.data.db.local_db.TripInvitationDao
 import com.example.mykumve.data.db.local_db.UserDao
 import com.example.mykumve.data.model.TripInfo
 import com.example.mykumve.data.model.TripInvitation
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 
-/**
- * Implementation of TripRepository interface using Room.
- *
- * TODO: Add additional methods to handle complex trip operations if needed.
- */
-
-
-class TripRepository(application: Application,): CoroutineScope {
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO
-
-    private var tripDao:TripDao? = null
+class TripRepository(application: Application) {
+    private var tripDao: TripDao? = null
     private var userDao: UserDao? = null
     private var tripInvitationDao: TripInvitationDao? = null
     private var tripInfoDao: TripInfoDao? = null
@@ -53,10 +39,8 @@ class TripRepository(application: Application,): CoroutineScope {
         return tripDao?.getTripById(id)
     }
 
-    fun insertTrip(trip: Trip) {
-        launch {
-            tripDao?.insertTrip(trip)
-        }
+    suspend fun insertTrip(trip: Trip) {
+        tripDao?.insertTrip(trip)
     }
 
     @Transaction
@@ -65,7 +49,7 @@ class TripRepository(application: Application,): CoroutineScope {
             // Step 1: Insert Trip first without TripInfoId
             val tripId = tripDao?.insertTrip(trip)
             Log.d(TAG, "Inserted Trip with ID: $tripId")
-            if (tripId != null){
+            if (tripId != null) {
 
                 // Step 2: Insert TripInfo with the TripId from the inserted Trip
                 val modifiedTripInfo = tripInfo.copy(tripId = tripId)
@@ -76,7 +60,6 @@ class TripRepository(application: Application,): CoroutineScope {
                 val updatedTrip = trip.copy(id = tripId, tripInfoId = tripInfoId)
                 tripDao?.updateTrip(updatedTrip)
                 Log.d(TAG, "Updated Trip with TripInfo ID: ${updatedTrip.tripInfoId}")
-
             }
         } catch (e: SQLiteConstraintException) {
             Log.e(TAG, "Foreign Key constraint failed: ${e.message}")
@@ -87,25 +70,19 @@ class TripRepository(application: Application,): CoroutineScope {
         }
     }
 
-    fun updateTrip(trip: Trip)  {
+    suspend fun updateTrip(trip: Trip) {
         tripDao?.updateTrip(trip)
     }
 
-    fun deleteTrip(trip: Trip) {
-        launch {
-            tripDao?.deleteTripAndRelatedData(trip, tripInfoDao!!, tripInvitationDao!!)
-        }
+    suspend fun deleteTrip(trip: Trip) {
+        tripDao?.deleteTripAndRelatedData(trip, tripInfoDao!!, tripInvitationDao!!)
     }
 
-    fun deleteTripInvitation(invitation: TripInvitation) {
+    suspend fun deleteTripInvitation(invitation: TripInvitation) {
         val trip = getTripById(invitation.tripId)?.value?.let { trip ->
             trip.invitations.removeAll { it.tripId == invitation.tripId }
             tripDao?.updateTrip(trip)
         }
-    }
-
-    fun getTripsByUserId(userId: Long): LiveData<List<Trip>>? {
-        return tripDao?.getTripsByUserId(userId)
     }
 
     suspend fun sendTripInvitation(invitation: TripInvitation): Boolean {
@@ -130,6 +107,9 @@ class TripRepository(application: Application,): CoroutineScope {
         return tripInvitationDao?.getTripInvitationsForUser(userId)
     }
 
+    fun getTripsByUserId(userId: Long): LiveData<List<Trip>>? {
+        return tripDao?.getTripsByUserId(userId)
+    }
 
 }
 

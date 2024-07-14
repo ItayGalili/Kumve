@@ -3,13 +3,13 @@ package com.example.mykumve.ui.viewmodel
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.mykumve.data.db.repository.TripInfoRepository
 import com.example.mykumve.data.db.repository.TripRepository
 import com.example.mykumve.data.model.Trip
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.viewModelScope
 import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.data.db.repository.UserRepository
 import com.example.mykumve.data.model.TripInfo
@@ -81,9 +81,10 @@ class TripViewModel(
         }
     }
 
-
     fun updateTrip(trip: Trip) {
-        tripRepository.updateTrip(trip)
+        viewModelScope.launch {
+            tripRepository.updateTrip(trip)
+        }
     }
 
     fun updateTripInfo(tripInfo: TripInfo) {
@@ -160,6 +161,7 @@ class TripViewModel(
         }
     }
 
+    //todo live data scope
     private fun handleApprovedInvitation(invitation: TripInvitation, callback: (Boolean) -> Unit) {
         val tripLiveData = tripRepository.getTripById(invitation.tripId)
         val userLiveData = userRepository.getUserById(invitation.userId)

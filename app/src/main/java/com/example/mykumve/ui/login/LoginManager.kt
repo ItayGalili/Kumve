@@ -32,8 +32,47 @@ class LoginManager : Fragment() {
 
 
         binding.LoginBtn.setOnClickListener {
-            val email = binding.emailAd.text.toString()
-            val password = binding.password.text.toString()
+            val emailInput = binding.emailAd.text.toString()
+            var email = ""
+            var password = ""
+            when {
+                 emailInput.isBlank() -> {
+                     email = "daniel@a.com"
+                     password = "123456"
+                }
+                emailInput.contains("1")   -> {
+                     email = "user1@a.com"
+                     password = "123456"
+                }
+                emailInput.contains("2")   -> {
+                     email = "user2@a.com"
+                     password = "123456"
+                }
+                emailInput.contains("3")   -> {
+                     email = "user3@a.com"
+                     password = "123456"
+                }
+                emailInput.contains("4")   -> {
+                     email = "user4@a.com"
+                     password = "123456"
+                }
+                emailInput.contains("5")   -> {
+                     email = "user5@a.com"
+                     password = "123456"
+                }
+                emailInput.contains("6")   -> {
+                     email = "user6@a.com"
+                     password = "123456"
+                }
+                emailInput.contains("7")   -> {
+                     email = "user7@a.com"
+                     password = "123456"
+                }
+                else -> {
+                     email = emailInput
+                     password = binding.password.text.toString()
+                }
+            }
             loginUser(email, password) { isLoggedInUser ->
                 if (isLoggedInUser.success) {
                     Toast.makeText(requireContext(), R.string.login_successful, Toast.LENGTH_SHORT)

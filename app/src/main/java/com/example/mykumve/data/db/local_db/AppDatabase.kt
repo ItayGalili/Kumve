@@ -10,7 +10,7 @@ import com.example.mykumve.data.model.*
 
 @Database(
     entities = [User::class, Trip::class, TripInfo::class, TripInvitation::class, Area::class, SubArea::class],
-    version = 11)
+    version = 12)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun tripDao(): TripDao
@@ -27,7 +27,7 @@ abstract class AppDatabase : RoomDatabase() {
             return instance ?: synchronized(this) {
                 Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "kumve_db")
                     .fallbackToDestructiveMigration()
-                    .allowMainThreadQueries()
+//                    .allowMainThreadQueries()
                     .build().also { instance = it }
             }
         }

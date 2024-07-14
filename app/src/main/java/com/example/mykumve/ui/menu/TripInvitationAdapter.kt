@@ -68,12 +68,14 @@ class TripInvitationAdapter(
     }
 
     private fun handleAccept(invitation: TripInvitation) {
+        Log.d(TAG, "ACCEPT selected - Responding to trip invitation")
         invitation.status = TripInvitationStatus.APPROVED
         respondToTripInvitation(invitation)
     }
 
 
     private fun handleReject(invitation: TripInvitation) {
+        Log.d(TAG, "REJECT selected - Responding to trip invitation")
         invitation.status = TripInvitationStatus.REJECTED
         respondToTripInvitation(invitation)
     }

@@ -6,21 +6,9 @@ import androidx.lifecycle.LiveData
 import com.example.mykumve.data.db.local_db.AppDatabase
 import com.example.mykumve.data.db.local_db.AreaDao
 import com.example.mykumve.data.model.TripInfo
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 
-/**
- * Implementation of TripRepository interface using Room.
- *
- * TODO: Add additional methods to handle complex trip operations if needed.
- */
-
-class TripInfoRepository(application: Application): CoroutineScope {
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO
+class TripInfoRepository(application: Application) {
 
     private var tripInfoDao: TripInfoDao? = null
     private var areaDao: AreaDao? = null
@@ -32,7 +20,8 @@ class TripInfoRepository(application: Application): CoroutineScope {
         areaDao = db.areaDao()
     }
 
-
+    fun getAllAreas() = areaDao?.getAllAreas()
+    fun getSubAreasByAreaId(areaId: Int) = areaDao?.getSubAreasByAreaId(areaId)
     fun getAllTripInfo(): LiveData<List<TripInfo>>? {
         return tripInfoDao?.getAllTripInfo()
     }
@@ -41,27 +30,17 @@ class TripInfoRepository(application: Application): CoroutineScope {
         return tripInfoDao?.getTripInfoById(id)
     }
 
-    fun insertTripInfo(tripInfo: TripInfo) {
-        launch {
-            tripInfoDao?.insertTripInfo(tripInfo)
-        }
+    suspend fun insertTripInfo(tripInfo: TripInfo) {
+        tripInfoDao?.insertTripInfo(tripInfo)
     }
 
-    fun updateTripInfo(tripInfo: TripInfo) {
-        launch {
-            tripInfoDao?.updateTripInfo(tripInfo)
-        }
+    suspend fun updateTripInfo(tripInfo: TripInfo) {
+        tripInfoDao?.updateTripInfo(tripInfo)
     }
 
-    fun deleteTripInfo(tripInfo: TripInfo) {
-        launch {
-            tripInfoDao?.deleteTripInfo(tripInfo)
-        }
+    suspend fun deleteTripInfo(tripInfo: TripInfo) {
+        tripInfoDao?.deleteTripInfo(tripInfo)
     }
-
-    suspend fun getAllAreas() = areaDao?.getAllAreas()
-    suspend fun getSubAreasByAreaId(areaId: Int) = areaDao?.getSubAreasByAreaId(areaId)
-
 }
 
 
