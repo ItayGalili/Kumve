@@ -2,6 +2,7 @@ package com.example.mykumve.ui.trip
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,7 @@ import com.example.mykumve.util.DifficultyLevel
 
 class RouteManager : Fragment() {
     private var _binding : RouteBinding? = null
+    val TAG = RouteManager::class.java.simpleName
 
     private val binding get() = _binding!!
     private val sharedViewModel: SharedTripViewModel by activityViewModels()
@@ -82,6 +84,9 @@ class RouteManager : Fragment() {
                     tripId = trip.id,
                 )
                 tripViewModel.addTripWithInfo(trip, tripInfo)
+            }
+            else {
+                Log.e(TAG, "Error saving trip, trip object transferred from step 1 is null")
             }
         })
     }
