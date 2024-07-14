@@ -11,7 +11,6 @@ import androidx.activity.addCallback
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
 import com.example.mykumve.data.data_classes.Equipment
@@ -112,14 +111,14 @@ class TripManager : Fragment() {
         binding.NextBtn.setOnClickListener {
             // Check if currentUser is not null
             currentUser?.let { user ->
-                sharedViewModel.trip.observe(
-                    viewLifecycleOwner,
-                    Observer { trip ->
+//                sharedViewModel.trip.observe(
+//                    viewLifecycleOwner,
+//                    Observer { trip ->
                         if (verifyTripForm()) {
                             cacheTrip()
                             findNavController().navigate(R.id.action_travelManager_to_routeManager)
                         }
-                    })
+//                    })
             } ?: run {
                 // Handle the case where the user is not logged in or currentUser is null
                 Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()
