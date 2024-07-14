@@ -6,14 +6,24 @@ import android.content.Context
 
 object LocalProperties {
     fun getApiKey(context: Context): String {
-        val properties = Properties()
-        try {
-            context.assets.open("local.properties").use { inputStream ->
-                properties.load(inputStream)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        val properties = Properties().apply {
+            load(context.assets.open("local.properties"))
         }
-        return properties.getProperty("apiKey", "")
+        return properties.getProperty("apiKey")
     }
 }
+
+
+//object LocalProperties {
+//    fun getApiKey(context: Context): String {
+//        val properties = Properties()
+//        try {
+//            context.assets.open("local.properties").use { inputStream ->
+//                properties.load(inputStream)
+//            }
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//        return properties.getProperty("apiKey", "")
+//    }
+//}

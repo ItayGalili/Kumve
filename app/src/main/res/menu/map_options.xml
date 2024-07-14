@@ -6,17 +6,7 @@
         android:title="Normal Map"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/hybrid_map"
-        android:title="Hybrid Map"
-        app:showAsAction="never"/>
-    <item
         android:id="@+id/satellite_map"
         android:title="Satellite Map"
         app:showAsAction="never"/>
-    <item
-        android:id="@+id/terrain_map"
-        android:title="Terrain Map"
-        app:showAsAction="never"/>
-
-
 </menu>

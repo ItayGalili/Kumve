@@ -1,5 +1,7 @@
 package com.example.mykumve.ui.map
 
+
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +12,7 @@ import android.graphics.Color
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import com.example.mykumve.util.LocalProperties
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -50,8 +53,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         super.onViewCreated(view, savedInstanceState)
 
         // Initialize Places SDK
+        //val apiKey=R.string.myApi
         val apiKey=LocalProperties.getApiKey(requireContext())
-        Places.initialize(requireContext(),apiKey)
+        Places.initialize(requireContext(), apiKey)
 
         // Initialize Autocomplete fragment
         autocompleteFragment = childFragmentManager.findFragmentById(R.id.autocomplete_fragment)
@@ -93,6 +97,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
         val location = LatLng(31.771959, 35.217018) // Jerusalem
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 10f))
 
@@ -101,6 +106,19 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         mMap.setOnMapClickListener { latLng ->
             addMarker(latLng)
         }
+
+        // Enable the My Location button
+        if (ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.isMyLocationEnabled = true
+        } else {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 1)
+        }
+
+        // Configure map settings
+        val mapSettings = mMap.uiSettings
+        mapSettings.isZoomControlsEnabled = true
+        mapSettings.isCompassEnabled = true
+        mapSettings.isMyLocationButtonEnabled = true
 
     }
 
@@ -196,25 +214,11 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
     private fun changeMap(itemId: Int) {
         when (itemId) {
             R.id.normal_map -> mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
-            R.id.hybrid_map -> mMap.mapType = GoogleMap.MAP_TYPE_HYBRID
             R.id.satellite_map -> mMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
-            R.id.terrain_map -> mMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
         }
     }
 }
 
-
-//    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View? {
-//        val view = inflater.inflate(R.layout.map, container, false)
-//
-//
-//        // TODO: Implement Google Maps integration and display routes.
-//
-//        return view
-//    }
 
 
 
