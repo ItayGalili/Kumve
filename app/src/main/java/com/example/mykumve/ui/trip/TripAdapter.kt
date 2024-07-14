@@ -18,6 +18,7 @@ class TripAdapter(
     var trips: List<Trip>,
     private val sharedViewModel: SharedTripViewModel,
     var context: Context,
+    private val onItemLongClickListener: ((Trip) -> Unit)? = null
 ) : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
 
     val TAG = TripAdapter::class.java.simpleName
@@ -36,7 +37,7 @@ class TripAdapter(
             }
         }
     }
-    class TripViewHolder(private val binding: TravelCardBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class TripViewHolder(private val binding: TravelCardBinding) : RecyclerView.ViewHolder(binding.root) {
         val TAG = TripViewHolder::class.java.simpleName
 
         fun bind(trip: Trip, sharedViewModel: SharedTripViewModel) {
@@ -64,6 +65,11 @@ class TripAdapter(
 
             binding.partnersCard.setOnClickListener {
                 it.findNavController().navigate(R.id.action_mainScreenManager_to_partnerListFragment)
+            }
+
+            itemView.setOnLongClickListener {
+                onItemLongClickListener?.invoke(trip)
+                true
             }
         }
     }

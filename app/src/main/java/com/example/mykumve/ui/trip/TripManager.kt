@@ -143,7 +143,11 @@ class TripManager : Fragment() {
     private fun cacheTrip() {
         currentUser?.let { user ->
             val tempTrip = formToTripObject(user)
-            sharedViewModel.setPartialTrip(tempTrip)
+            if (sharedViewModel.isCreatingTripMode){
+                sharedViewModel.setPartialTrip(tempTrip)
+            } else {
+                sharedViewModel.selectExistingTrip(tempTrip)
+            }
         }
     }
 

@@ -22,12 +22,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mykumve.ui.trip.TripAdapter
 import com.example.mykumve.R
+import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.MainScreenBinding
 import com.example.mykumve.ui.notifications.NotificationsFragment
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
-import com.example.mykumve.ui.viewmodel.UserViewModel
 import com.example.mykumve.util.NavigationArgs
 import com.example.mykumve.util.TripInvitationStatus
 import com.example.mykumve.util.UserManager
@@ -79,7 +79,14 @@ class MainScreenManager : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tripAdapter = TripAdapter(emptyList(), sharedViewModel, requireContext())
+        tripAdapter = TripAdapter(
+            emptyList(),
+            sharedViewModel,
+            requireContext(),
+            onItemLongClickListener = { trip ->
+                onTripLongClicked(trip)
+            }
+        )
         binding.mainRecyclerView.adapter = tripAdapter
         binding.mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -142,6 +149,7 @@ class MainScreenManager : Fragment() {
             ): Boolean {
                 return false
             }
+
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 Toast.makeText(
@@ -263,6 +271,17 @@ class MainScreenManager : Fragment() {
 //        }
 //    }
 
+    private fun onTripLongClicked(trip: Trip) {
+        // This method will be called when an item is long-clicked.
+        // Handle the long click event here.
+        Toast.makeText(requireContext(), "Long-clicked on: ${trip.title}", Toast.LENGTH_SHORT).show()
+        val bundle = Bundle().apply {
+            putBoolean(NavigationArgs.IS_CREATING_NEW_TRIP.key, false)
+        }
+        sharedViewModel.selectExistingTrip(trip)
+//        findNavController().navigate(R.id.action_mainScreenManager_to_travelManager, bundle)
+
+    }
 
 
     override fun onDestroyView() {
