@@ -7,6 +7,7 @@
     android:orientation="vertical"
     android:padding="10dp"
     android:background="@color/black">
+
     <fragment
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -30,6 +31,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
         android:layout_height="50dp"
@@ -41,6 +43,7 @@
         app:layout_constraintEnd_toStartOf="@id/map_menu"
         app:layout_constraintTop_toTopOf="parent">
 
+
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/autocomplete_fragment"
             android:layout_width="match_parent"
@@ -48,5 +51,20 @@
             android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"/>
 
     </androidx.cardview.widget.CardView>
+
+    <Button
+        android:id="@+id/show_distance_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Distance"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        android:backgroundTint="@color/white"
+        android:textColor="@android:color/black" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,8 @@
 package com.example.mykumve.ui.map
 
 
+
+import com.google.maps.android.SphericalUtil
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +11,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.mykumve.R
 import android.graphics.Color
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -53,7 +56,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         super.onViewCreated(view, savedInstanceState)
 
         // Initialize Places SDK
-        //val apiKey=R.string.myApi
         val apiKey=LocalProperties.getApiKey(requireContext())
         Places.initialize(requireContext(), apiKey)
 
@@ -92,6 +94,11 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
             }
             // Show the PopupMenu
             popupMenu.show()
+        }
+
+        val showDistanceButton = view.findViewById<Button>(R.id.show_distance_button)
+        showDistanceButton.setOnClickListener {
+            showTotalDistance()
         }
     }
 
@@ -216,6 +223,25 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
             R.id.normal_map -> mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
             R.id.satellite_map -> mMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
         }
+    }
+
+    private fun showTotalDistance() {
+        if (points.size < 2) {
+            Toast.makeText(requireContext(), "Not enough points to calculate distance", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Calculate the total distance of the polyline
+        var totalDistance = 0.0
+        for (i in 0 until points.size - 1) {
+            totalDistance += SphericalUtil.computeDistanceBetween(points[i], points[i + 1])
+        }
+
+        // Convert distance to kilometers
+        totalDistance /= 1000
+
+        // Show the total distance in a Toast
+        Toast.makeText(requireContext(), "Total distance: %.2f km".format(totalDistance), Toast.LENGTH_SHORT).show()
     }
 }
 
