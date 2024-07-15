@@ -3,6 +3,7 @@ package com.example.mykumve.ui.map
 
 import com.google.gson.Gson
 import android.content.Context
+import android.content.Intent
 import com.google.maps.android.SphericalUtil
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -12,6 +13,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.mykumve.R
 import android.graphics.Color
+import android.net.Uri
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.PopupMenu
@@ -70,6 +72,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
                 val latLng = place.latLng
                 if (latLng != null) {
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12f))
+                    mMap.clear()
+                    addMarker(latLng)
                 }
             }
 
@@ -110,6 +114,11 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
         val loadMapButton = view.findViewById<Button>(R.id.load_map_btn)
         loadMapButton.setOnClickListener {
             loadMapState()
+        }
+
+        val navigateToFirstMarkerButton = view.findViewById<Button>(R.id.navigate_to_first_marker_btn)
+        navigateToFirstMarkerButton.setOnClickListener {
+            navigateToFirstMarker()
         }
     }
 
@@ -295,6 +304,22 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListe
             Toast.makeText(requireContext(), "Total distance: ${mapState.distance} km", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(requireContext(), "No saved map state found!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun navigateToFirstMarker() {
+        if (points.isNotEmpty()) {
+            val firstPoint = points.first()
+            val gmmIntentUri = Uri.parse("google.navigation:q=${firstPoint.latitude},${firstPoint.longitude}")
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+            mapIntent.setPackage("com.google.android.apps.maps") // Ensure that Google Maps is used
+            if (mapIntent.resolveActivity(requireContext().packageManager) != null) {
+                startActivity(mapIntent)
+            } else {
+                Toast.makeText(requireContext(), "Google Maps not installed!", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(requireContext(), "No markers available to navigate to!", Toast.LENGTH_SHORT).show()
         }
     }
 }
