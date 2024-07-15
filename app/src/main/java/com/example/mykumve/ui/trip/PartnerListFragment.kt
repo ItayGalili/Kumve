@@ -9,7 +9,9 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,8 +21,8 @@ import com.example.mykumve.data.model.User
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.ui.viewmodel.UserViewModel
-import com.example.mykumve.util.TripInvitationStatus
 import com.example.mykumve.util.UserManager
+import kotlinx.coroutines.launch
 
 
 class PartnerListFragment : Fragment() {
@@ -67,13 +69,16 @@ class PartnerListFragment : Fragment() {
     }
 
     private fun observeTripPartners() {
-        sharedTripViewModel.trip.observe(viewLifecycleOwner, Observer { trip ->
-            if (trip != null) {
-                val participants = trip.participants?.toMutableList() ?: mutableListOf()
-                partnerListAdapter.submitList(participants)
-
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                sharedTripViewModel.trip.collect { trip ->
+                    if (trip != null) {
+                        val participants = trip.participants?.toMutableList() ?: mutableListOf()
+                        partnerListAdapter.submitList(participants)
+                    }
+                }
             }
-        })
+        }
     }
 
 

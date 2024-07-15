@@ -11,7 +11,9 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,6 +27,7 @@ import com.example.mykumve.ui.viewmodel.UserViewModel
 import com.example.mykumve.util.TripInvitationStatus
 import com.example.mykumve.util.UserManager
 import com.example.mykumve.util.UserUtils
+import kotlinx.coroutines.launch
 
 
 class InvitationListFragment : Fragment() {
@@ -76,91 +79,93 @@ class InvitationListFragment : Fragment() {
             return
         Log.d("InvitePartner", "Phone number to invite: $phoneNumber")
 
-        userViewModel.getUserByPhone(phoneNumber)?.observe(viewLifecycleOwner, Observer { user ->
-            if (user != null) {
-                Log.d(
-                    "InvitePartner",
-                    "User found: ${UserUtils.getFullName(user)} with ID ${user.id}"
-                )
-                val currentTrip = sharedTripViewModel.trip.value
-                if (currentTrip != null) {
-                    if (sharedTripViewModel.isCreatingTripMode) {
-                        val newInvitation = TripInvitation(
-                            tripId = currentTrip.id,
-                            userId = user.id,
-                            status = TripInvitationStatus.UNSENT
+        userViewModel.fetchUserByPhone(phoneNumber) // Ensure this is called to fetch data
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                userViewModel.userByPhone.collect { user ->
+                    if (user != null) {
+                        Log.d(
+                            "InvitePartner",
+                            "User found: ${UserUtils.getFullName(user)} with ID ${user.id}"
                         )
-                        sharedTripViewModel.addInvitation(newInvitation)
-//                        partnerListAdapter.notifyDataSetChanged() // Update RecyclerView
-                        Toast.makeText(requireContext(), "Invitation added", Toast.LENGTH_SHORT).show()
-                    } else { // todo check?
-                        tripViewModel.sendTripInvitation(
-                            tripId = currentTrip.id,
-                            userId = user.id
-                        ) { result ->
-                            if (result) {
-                                Toast.makeText(requireContext(), "Sent", Toast.LENGTH_SHORT)
-                                    .show()
+                        val currentTrip = sharedTripViewModel.trip.value
+                        if (currentTrip != null) {
+                            if (sharedTripViewModel.isCreatingTripMode) {
+                                val newInvitation = TripInvitation(
+                                    tripId = currentTrip.id,
+                                    userId = user.id,
+                                    status = TripInvitationStatus.UNSENT
+                                )
+                                sharedTripViewModel.addInvitation(newInvitation)
+                                // partnerListAdapter.notifyDataSetChanged() // Update RecyclerView
+                                Toast.makeText(requireContext(), "Invitation added", Toast.LENGTH_SHORT).show()
                             } else {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Failed to send",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                tripViewModel.sendTripInvitation(
+                                    tripId = currentTrip.id,
+                                    userId = user.id
+                                ) { result ->
+                                    if (result) {
+                                        Toast.makeText(requireContext(), "Sent", Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        Toast.makeText(requireContext(), "Failed to send", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
                             }
+                        } else {
+                            Toast.makeText(requireContext(), "No current trip found.", Toast.LENGTH_SHORT).show()
                         }
+                    } else {
+                        Log.d("InvitePartner", "User not found for phone number: $phoneNumber")
+                        Toast.makeText(requireContext(), "Can't find user with this phone number", Toast.LENGTH_SHORT).show()
                     }
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "No current trip found.",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
-            } else {
-                Log.d("InvitePartner", "User not found for phone number: $phoneNumber")
-                Toast.makeText(
-                    requireContext(),
-                    "Can't find user with this phone number",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
-        })
+        }
     }
 
     private fun logPossiblePartner() {
-        userViewModel.getAllUsers()?.observe(viewLifecycleOwner, Observer { users ->
-            if (users != null) {
-                val currentUserId = UserManager.getUser()?.id
-                val filteredUsers = users.filter { it.id != currentUserId }
-                Log.d(
-                    "PartnerListFragment",
-                    filteredUsers.map { "${it.firstName}: ${it.phone}" }.toString()
-                )
-            } else {
-                Log.d("PartnerListFragment", "No users found.")
+        userViewModel.fetchAllUsers() // Ensure this is called to fetch data
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                userViewModel.allUsers.collect { users ->
+                    if (users != null) {
+                        val currentUserId = UserManager.getUser()?.id
+                        val filteredUsers = users.filter { it.id != currentUserId }
+                        Log.d(
+                            "PartnerListFragment",
+                            filteredUsers.map { "${it.firstName}: ${it.phone}" }.toString()
+                        )
+                    } else {
+                        Log.d("PartnerListFragment", "No users found.")
+                    }
+                }
             }
-        })
+        }
     }
 
-
     private fun observeTripInvitations() {
-        sharedTripViewModel.trip.observe(viewLifecycleOwner, Observer { trip ->
-            trip?.let {
-                if (sharedTripViewModel.isCreatingTripMode) {
-                    // For temporary trip (partialTrip)
-                    val partialTrip = it
-                    invitationListAdapter.submitList(partialTrip.invitations.toMutableList())
-                } else {
-                    // For existing trip (selectedExistingTrip)
-                    tripViewModel.getTripInvitationsByTripId(it.id)?.observe(viewLifecycleOwner, Observer { invitations ->
-                        invitationListAdapter.submitList(invitations.toMutableList())
-                    })
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                sharedTripViewModel.trip.collect { trip ->
+                    trip?.let {
+                        if (sharedTripViewModel.isCreatingTripMode) {
+                            // For temporary trip (partialTrip)
+                            val partialTrip = it
+                            invitationListAdapter.submitList(partialTrip.invitations.toMutableList())
+                        } else {
+                            tripViewModel.fetchTripInvitationsByTripId(it.id) // Ensure this is called to fetch data
+                            tripViewModel.tripInvitations.collect { invitations ->
+                                invitationListAdapter.submitList(invitations.toMutableList())
+                            }
+                        }
+                    } ?: run {
+                        invitationListAdapter.submitList(mutableListOf())
+                    }
                 }
-            } ?: run {
-                invitationListAdapter.submitList(mutableListOf())
             }
-        })
+        }
     }
 
 

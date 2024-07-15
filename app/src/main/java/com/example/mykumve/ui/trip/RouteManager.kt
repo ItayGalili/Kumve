@@ -9,7 +9,9 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
 import com.example.mykumve.data.data_classes.Point
@@ -19,6 +21,8 @@ import com.example.mykumve.databinding.RouteBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.DifficultyLevel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class RouteManager : Fragment() {
     private var _binding : RouteBinding? = null
@@ -43,6 +47,7 @@ class RouteManager : Fragment() {
         binding.seve.setOnClickListener {
             if(verifyRouteForm()){
                 saveTrip()
+                sharedViewModel.isEditingExistingTrip = false
                 sharedViewModel.resetNewTripState()
                 findNavController().navigate(R.id.action_routeManager_to_mainScreenManager)
             }
@@ -56,39 +61,42 @@ class RouteManager : Fragment() {
     }
 
     private fun saveTrip() {
-        sharedViewModel.trip.observe(viewLifecycleOwner, Observer { trip ->
-            if (trip != null) {
-                val title = ""
-                val points = listOf<Point>()
-                val areaId = -1
-                val subAreaId = -1
-                val description = ""
-                val routeDescription = ""
-                val difficulty = DifficultyLevel.UNSET
-                val length = 0.0f
-                val tags = listOf<String>()
-                val isCircular = false
-                val likes = 0
-                val tripInfo = TripInfo(
-                    title = title,
-                    points = points,
-                    areaId = areaId,
-                    subAreaId = subAreaId,
-                    description = description,
-                    routeDescription = routeDescription,
-                    difficulty = difficulty,
-                    length = length,
-                    tags = tags,
-                    isCircular = isCircular,
-                    likes = likes,
-                    tripId = trip.id,
-                )
-                tripViewModel.addTripWithInfo(trip, tripInfo)
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                sharedViewModel.trip.collectLatest { trip ->
+                    if (trip != null) {
+                        val title = ""
+                        val points = listOf<Point>()
+                        val areaId = -1
+                        val subAreaId = -1
+                        val description = ""
+                        val routeDescription = ""
+                        val difficulty = DifficultyLevel.UNSET
+                        val length = 0.0f
+                        val tags = listOf<String>()
+                        val isCircular = false
+                        val likes = 0
+                        val tripInfo = TripInfo(
+                            title = title,
+                            points = points,
+                            areaId = areaId,
+                            subAreaId = subAreaId,
+                            description = description,
+                            routeDescription = routeDescription,
+                            difficulty = difficulty,
+                            length = length,
+                            tags = tags,
+                            isCircular = isCircular,
+                            likes = likes,
+                            tripId = trip.id,
+                        )
+                        tripViewModel.addTripWithInfo(trip, tripInfo)
+                    } else {
+                        Log.e(TAG, "Error saving trip, trip object transferred from step 1 is null")
+                    }
+                }
             }
-            else {
-                Log.e(TAG, "Error saving trip, trip object transferred from step 1 is null")
-            }
-        })
+        }
     }
 
     private fun verifyRouteForm(): Boolean {
@@ -100,15 +108,6 @@ class RouteManager : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sharedTripViewModel.trip.observe(viewLifecycleOwner, Observer { trip ->
-            trip?.let {
-                // Use the trip data here
-                //binding.DifficultySpinner.setSelection(getDifficultyIndex(it.difficulty))
-                //binding.AreaSpinner.setSelection(getAreaIndex(it.areaId))
-                // Populate other UI elements with trip data
-
-            }
-        })
     }
 
     override fun onDestroyView() {

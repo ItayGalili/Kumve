@@ -4,6 +4,10 @@ import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -13,11 +17,13 @@ import com.example.mykumve.databinding.TravelCardBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.util.Converters
 import com.example.mykumve.util.Utility.toFormattedString
+import kotlinx.coroutines.launch
 
 class TripAdapter(
     var trips: List<Trip>,
     private val sharedViewModel: SharedTripViewModel,
     var context: Context,
+    private val lifecycleOwner: LifecycleOwner,
     private val onItemLongClickListener: ((Trip) -> Unit)? = null
 ) : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
 
@@ -25,13 +31,16 @@ class TripAdapter(
 
     init {
         if (sharedViewModel.isCreatingTripMode) {
-            sharedViewModel.trip.observeForever { trip ->
-                trip?.equipment?.let {
-                    val tripIndex =
-                            trips.indexOfFirst { it.id == sharedViewModel.trip.value?.id }
-                    if (tripIndex != -1) {
-                        trips[tripIndex].equipment = it.toMutableList()
-                        notifyItemChanged(tripIndex)
+            lifecycleOwner.lifecycleScope.launch {
+                lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    sharedViewModel.trip.collect { trip ->
+                        trip?.equipment?.let {
+                            val tripIndex = trips.indexOfFirst { it.id == trip.id }
+                            if (tripIndex != -1) {
+                                trips[tripIndex].equipment = it.toMutableList()
+                                notifyItemChanged(tripIndex)
+                            }
+                        }
                     }
                 }
             }

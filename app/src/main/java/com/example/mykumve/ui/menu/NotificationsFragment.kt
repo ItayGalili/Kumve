@@ -7,12 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.FragmentNotificationsBinding
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.UserManager
+import kotlinx.coroutines.launch
 
 class NotificationsFragment : DialogFragment() {
 
@@ -45,9 +48,15 @@ class NotificationsFragment : DialogFragment() {
     }
 
     private fun observeUserTripInvitations(userId: Long) {
-        tripViewModel.getTripInvitationsForUser(userId)?.observe(viewLifecycleOwner, Observer { invitations ->
-            tripInvitationAdapter.updateInvitations(invitations)
-        })
+        tripViewModel.fetchTripInvitationsForUser(userId) // Ensure this is called to fetch data
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                tripViewModel.tripInvitations.collect { invitations ->
+                    tripInvitationAdapter.updateInvitations(invitations)
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {

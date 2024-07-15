@@ -16,6 +16,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +34,7 @@ import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.NavigationArgs
 import com.example.mykumve.util.TripInvitationStatus
 import com.example.mykumve.util.UserManager
+import kotlinx.coroutines.launch
 
 class MainScreenManager : Fragment() {
     //toolbar
@@ -54,10 +58,8 @@ class MainScreenManager : Fragment() {
         _binding = MainScreenBinding.inflate(inflater, container, false)
 
         binding.addBtn.setOnClickListener {
-            val bundle = Bundle().apply {
-                putBoolean(NavigationArgs.IS_CREATING_NEW_TRIP.key, true)
-            }
-            findNavController().navigate(R.id.action_mainScreenManager_to_travelManager, bundle)
+            sharedViewModel.resetNewTripState()
+            findNavController().navigate(R.id.action_mainScreenManager_to_travelManager)
         }
 
         binding.partnersBtnMs.setOnClickListener {
@@ -65,7 +67,7 @@ class MainScreenManager : Fragment() {
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            clearFragmentBackStack()
+//            clearFragmentBackStack()
             findNavController().navigate(R.id.mainScreenManager)
         }
 
@@ -85,7 +87,8 @@ class MainScreenManager : Fragment() {
             requireContext(),
             onItemLongClickListener = { trip ->
                 onTripLongClicked(trip)
-            }
+            },
+            lifecycleOwner = viewLifecycleOwner,
         )
         binding.mainRecyclerView.adapter = tripAdapter
         binding.mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -100,7 +103,7 @@ class MainScreenManager : Fragment() {
 
         if (UserManager.isLoggedIn()) {
             currentUser = UserManager.getUser()
-            currentUser?.let {user ->
+            currentUser?.let { user ->
                 if (_firstTimeShowingScreen) {
                     Toast.makeText( // todo remove - only for debug
                         requireContext(),
@@ -110,17 +113,17 @@ class MainScreenManager : Fragment() {
                     _firstTimeShowingScreen = false
                 }
 
-                tripViewModel.getTripsByParticipantUserId(user.id).observe(viewLifecycleOwner) { trips ->
-                    tripAdapter.trips = trips
-                    tripAdapter.notifyDataSetChanged()
-                    var welcome_msg=binding.informationWhileEmpty
-                    if (tripAdapter.itemCount >0) {
-                        welcome_msg.alpha=0f
-                    }
-                    else{
-                        welcome_msg.alpha=1f
-                    }
+                viewLifecycleOwner.lifecycleScope.launch {
+                    repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        tripViewModel.fetchTripsByParticipantUserId(user.id)
 
+                        tripViewModel.trips.collect { trips ->
+                            tripAdapter.trips = trips
+                            tripAdapter.notifyDataSetChanged()
+                            val welcomeMsg = binding.informationWhileEmpty
+                            welcomeMsg.alpha = if (tripAdapter.itemCount > 0) 0f else 1f
+                        }
+                    }
                 }
 
                 // Observe trip invitations
@@ -202,15 +205,21 @@ class MainScreenManager : Fragment() {
     }
 
     private fun observeUserTripInvitations(userId: Long) {
-        tripViewModel.getTripInvitationsForUser(userId)?.observe(viewLifecycleOwner) { invitations ->
-            // Handle the trip invitations
-            val pendingInvitations = invitations.filter { it.status == TripInvitationStatus.PENDING }
-            val pendingInvitationsCount = pendingInvitations.size
-            if (pendingInvitationsCount == 0) {
-                Toast.makeText(requireContext(), "No new invitations", Toast.LENGTH_SHORT).show()
-            } else {
-                // Show notifications or update UI with the invitations
-                Toast.makeText(requireContext(), "You have ${pendingInvitationsCount} new invitations", Toast.LENGTH_SHORT).show()
+        tripViewModel.fetchTripInvitationsForUser(userId) // Ensure this is called to fetch data
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                tripViewModel.tripInvitations.collect { invitations ->
+                    // Handle the trip invitations
+                    val pendingInvitations = invitations.filter { it.status == TripInvitationStatus.PENDING }
+                    val pendingInvitationsCount = pendingInvitations.size
+                    if (pendingInvitationsCount == 0) {
+                        Toast.makeText(requireContext(), "No new invitations", Toast.LENGTH_SHORT).show()
+                    } else {
+                        // Show notifications or update UI with the invitations
+                        Toast.makeText(requireContext(), "You have $pendingInvitationsCount new invitations", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
     }
