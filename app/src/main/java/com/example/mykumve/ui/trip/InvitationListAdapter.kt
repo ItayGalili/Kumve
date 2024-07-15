@@ -2,17 +2,19 @@ package com.example.mykumve.ui.trip
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.databinding.ItemInvitationCardBinding
-import com.example.mykumve.databinding.ItemPartnerCardBinding
 import com.example.mykumve.ui.viewmodel.UserViewModel
 import com.example.mykumve.util.UserUtils
+import kotlinx.coroutines.launch
 
 class InvitationListAdapter(
     private val userViewModel: UserViewModel,
@@ -34,14 +36,20 @@ class InvitationListAdapter(
     inner class InvitationViewHolder(private val binding: ItemInvitationCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(invitation: TripInvitation) {
-            userViewModel.getUserById(invitation.userId)?.observe(lifecycleOwner, Observer { invitedUser ->
-                val userFullName = UserUtils.getFullName(invitedUser)
-                binding.textViewInvitedName.text = userFullName
-                binding.invitationStatus.text = invitation.status.toString()
-                Glide.with(binding.imageViewInvited.context)
-                    .load(invitedUser?.photo) // Assuming `photo` is the URL or path to the image
-                    .into(binding.imageViewInvited)
-            })
+            userViewModel.fetchUserById(invitation.userId) // Ensure this is called to fetch data
+
+            lifecycleOwner.lifecycleScope.launch {
+                lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    userViewModel.userById.collect { invitedUser ->
+                        val userFullName = UserUtils.getFullName(invitedUser)
+                        binding.textViewInvitedName.text = userFullName
+                        binding.invitationStatus.text = invitation.status.toString()
+                        Glide.with(binding.imageViewInvited.context)
+                            .load(invitedUser?.photo) // Assuming `photo` is the URL or path to the image
+                            .into(binding.imageViewInvited)
+                    }
+                }
+            }
         }
     }
 

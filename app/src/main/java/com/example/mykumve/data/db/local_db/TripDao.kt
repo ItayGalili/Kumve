@@ -20,6 +20,9 @@ interface TripDao {
     @Query("SELECT * FROM trips")
     fun getAllTrips(): LiveData<List<Trip>>
 
+    @Query("SELECT * FROM trips WHERE user_id = :userId")
+    fun getTripsByUserId(userId: Long): LiveData<List<Trip>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTrip(trip: Trip): Long
 
@@ -31,16 +34,16 @@ interface TripDao {
     }
 
     @Update
-    fun updateTrip(trip: Trip)
+    suspend fun updateTrip(trip: Trip)
 
     @Delete
-    fun deleteTrip(trip: Trip)
+    suspend fun deleteTrip(trip: Trip)
 
     @Query("DELETE FROM trip_info WHERE trip_id = :tripId")
-    fun deleteTripInfoByTripId(tripId: Long)
+    suspend fun deleteTripInfoByTripId(tripId: Long)
 
     @Query("DELETE FROM trip_invitations WHERE tripId = :tripId")
-    fun deleteTripInvitationsByTripId(tripId: Long)
+    suspend fun deleteTripInvitationsByTripId(tripId: Long)
 
     @Transaction
     suspend fun deleteTripAndRelatedData(trip: Trip, tripInfoDao: TripInfoDao, tripInvitationDao: TripInvitationDao) {
@@ -48,8 +51,5 @@ interface TripDao {
         deleteTripInvitationsByTripId(trip.id)
         deleteTrip(trip)
     }
-
-    @Query("SELECT * FROM trips WHERE user_id = :userId")
-    fun getTripsByUserId(userId: Long): LiveData<List<Trip>>
 
 }

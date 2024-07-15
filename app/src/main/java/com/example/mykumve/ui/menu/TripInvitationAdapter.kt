@@ -3,13 +3,16 @@ package com.example.mykumve.ui.notifications
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.databinding.ItemNotificationBinding
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.TripInvitationStatus
+import kotlinx.coroutines.launch
 
 class TripInvitationAdapter(
     private var invitations: List<TripInvitation>,
@@ -22,31 +25,38 @@ class TripInvitationAdapter(
     inner class TripInvitationViewHolder(private val binding: ItemNotificationBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(invitation: TripInvitation) {
-            tripViewModel.getTripById(invitation.id)?.observe(lifecycleOwner, Observer { trip ->
-                if (trip != null) {
-                    Log.d(TAG, "Binding trip invitation, tripId ${invitation.tripId}")
-                    binding.invitationTitle.text = trip.title
-                    binding.invitationStatus.text = "Status: ${invitation.status}"
+            tripViewModel.fetchTripById(invitation.tripId) // Ensure this is called to fetch data
 
-                    if (invitation.status in setOf(
-                            TripInvitationStatus.APPROVED,
-                            TripInvitationStatus.REJECTED
-                        )
-                    ) {
-                        binding.acceptButton.isEnabled = false
-                        binding.rejectButton.isEnabled = false
-                    } else {
-                        binding.acceptButton.setOnClickListener {
-                            handleAccept(invitation)
-                        }
-                        binding.rejectButton.setOnClickListener {
-                            handleReject(invitation)
+            lifecycleOwner.lifecycleScope.launch {
+                lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    tripViewModel.trip.collect { trip ->
+                        if (trip != null) {
+                            Log.d(TAG, "Binding trip invitation, tripId ${invitation.tripId}")
+                            binding.invitationTitle.text = trip.title
+                            binding.invitationStatus.text = "Status: ${invitation.status}"
+
+                            if (invitation.status in setOf(
+                                    TripInvitationStatus.APPROVED,
+                                    TripInvitationStatus.REJECTED
+                                )
+                            ) {
+                                binding.acceptButton.isEnabled = false
+                                binding.rejectButton.isEnabled = false
+                            } else {
+                                binding.acceptButton.setOnClickListener {
+                                    handleAccept(invitation)
+                                }
+                                binding.rejectButton.setOnClickListener {
+                                    handleReject(invitation)
+                                }
+                            }
                         }
                     }
                 }
-            })
+            }
         }
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TripInvitationViewHolder {
         val binding =
@@ -68,12 +78,14 @@ class TripInvitationAdapter(
     }
 
     private fun handleAccept(invitation: TripInvitation) {
+        Log.d(TAG, "ACCEPT selected - Responding to trip invitation")
         invitation.status = TripInvitationStatus.APPROVED
         respondToTripInvitation(invitation)
     }
 
 
     private fun handleReject(invitation: TripInvitation) {
+        Log.d(TAG, "REJECT selected - Responding to trip invitation")
         invitation.status = TripInvitationStatus.REJECTED
         respondToTripInvitation(invitation)
     }

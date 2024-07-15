@@ -3,6 +3,7 @@ package com.example.mykumve.ui.trip
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,9 @@ import androidx.activity.addCallback
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
 import com.example.mykumve.data.data_classes.Equipment
@@ -21,17 +25,17 @@ import com.example.mykumve.databinding.TravelManagerViewBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.ImagePickerUtil
-import com.example.mykumve.util.NavigationArgs
 import com.example.mykumve.util.ShareLevel
 import com.example.mykumve.util.UserManager
 import com.example.mykumve.util.Utility.timestampToString
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
 class TripManager : Fragment() {
-
+    val TAG = TripManager::class.java.simpleName
     private var _binding: TravelManagerViewBinding? = null
     private val binding get() = _binding!!
     private val tripViewModel: TripViewModel by activityViewModels()
@@ -45,14 +49,8 @@ class TripManager : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "On view created")
         // Logic to determine if it's a new trip creation
-        val isCreatingNewTrip =
-            arguments?.getBoolean(NavigationArgs.IS_CREATING_NEW_TRIP.key, false) ?: false
-
-        if (isCreatingNewTrip) {
-            // There is no cached trip and in creating trip fragment then reset state
-            sharedViewModel.resetNewTripState()
-        }
 
         // Restore data if available
         sharedViewModel.trip.value?.let { trip ->
@@ -63,8 +61,10 @@ class TripManager : Fragment() {
             binding.dateEndPick.text = timestampToString(trip.endDate)
         }
 
+        sharedViewModel.isEditingExistingTrip = true
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            sharedViewModel.isEditingExistingTrip = false
             findNavController().navigate(R.id.action_travelManager_to_mainScreenManager)
         }
     }
@@ -75,13 +75,13 @@ class TripManager : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = TravelManagerViewBinding.inflate(inflater, container, false)
+        Log.d(TAG, "On create view")
 
         if (UserManager.isLoggedIn()) {
             currentUser = UserManager.getUser()
         } else {
             // Handle the case where the user is not logged in
             Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()
-
         }
 
         imagePickerUtil = ImagePickerUtil(this) { uri ->
@@ -109,21 +109,23 @@ class TripManager : Fragment() {
         }
 
         binding.NextBtn.setOnClickListener {
-            // Check if currentUser is not null
             currentUser?.let { user ->
-//                sharedViewModel.trip.observe(
-//                    viewLifecycleOwner,
-//                    Observer { trip ->
-                        if (verifyTripForm()) {
-                            cacheTrip()
-                            findNavController().navigate(R.id.action_travelManager_to_routeManager)
+                if (verifyTripForm()) {
+                    cacheTrip()
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        repeatOnLifecycle(Lifecycle.State.STARTED) {
+                            sharedViewModel.trip.collect { trip ->
+                                if (trip != null) {
+                                    findNavController().navigate(R.id.action_travelManager_to_routeManager)
+                                    return@collect
+                                }
+                            }
                         }
-//                    })
+                    }
+                }
             } ?: run {
-                // Handle the case where the user is not logged in or currentUser is null
                 Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()
             }
-
         }
 
         binding.tripImage.setOnClickListener {
@@ -142,8 +144,13 @@ class TripManager : Fragment() {
 
     private fun cacheTrip() {
         currentUser?.let { user ->
+            Log.d(TAG, "Caching trip." + if (sharedViewModel.isCreatingTripMode) " Creating trip mode" else " Selecting existing trip")
             val tempTrip = formToTripObject(user)
-            sharedViewModel.setPartialTrip(tempTrip)
+            if (sharedViewModel.isCreatingTripMode){
+                sharedViewModel.setPartialTrip(tempTrip)
+            } else {
+                sharedViewModel.selectExistingTrip(tempTrip)
+            }
         }
     }
 
@@ -247,8 +254,8 @@ class TripManager : Fragment() {
         ): Trip {
         val title = binding.nameTrip.text.toString()
         val description = binding.description.text.toString()
-        val gatherTime = startDate
-        val endTime = endDate
+        val gatherTime = startDate ?: sharedViewModel.trip.value?.gatherTime
+        val endTime = endDate ?: sharedViewModel.trip.value?.endDate
         val equipments = equipmentList?.takeIf { it.isNotEmpty() }?.toMutableList()
             ?: sharedViewModel.trip.value?.equipment?.toMutableList()
 
@@ -259,7 +266,7 @@ class TripManager : Fragment() {
             ?: sharedViewModel.trip.value?.invitations?.takeIf { it.isNotEmpty() }?.toMutableList()
             ?: mutableListOf()
 
-        val photo = imagePickerUtil.getImageUri()?.toString()
+        val photo = imagePickerUtil.getImageUri().toString().takeIf { it != "null" } ?: sharedViewModel.trip.value?.image
         val notes = null
 
         // Create a new Trip object with the provided details

@@ -15,8 +15,8 @@ import com.example.mykumve.util.DifficultyLevel
 @Dao
 interface AreaDao {
     @Query("SELECT * FROM areas")
-    suspend fun getAllAreas(): List<Area>
+    fun getAllAreas(): List<Area>
 
     @Query("SELECT * FROM sub_areas WHERE area_id = :areaId")
-    suspend fun getSubAreasByAreaId(areaId: Int): List<SubArea>
+    fun getSubAreasByAreaId(areaId: Int): List<SubArea>
 }

@@ -3,60 +3,64 @@ package com.example.mykumve.ui.viewmodel
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.mykumve.data.db.repository.TripInfoRepository
 import com.example.mykumve.data.db.repository.TripRepository
-import com.example.mykumve.data.model.Trip
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.viewModelScope
-import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.data.db.repository.UserRepository
+import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.TripInfo
 import com.example.mykumve.data.model.TripInvitation
-import com.example.mykumve.data.model.User
+import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.util.TripInvitationStatus
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-
 
 class TripViewModel(
     application: Application,
 ) : AndroidViewModel(application) {
+
     val TAG = TripViewModel::class.java.simpleName
     private var tripRepository: TripRepository = TripRepository(application)
     private var userRepository: UserRepository = UserRepository(application)
     private var tripInfoRepository: TripInfoRepository = TripInfoRepository(application)
 
-    private val _trip = MutableLiveData<Trip>()
-    val trip: LiveData<Trip> get() = _trip
+    private val _trip = MutableStateFlow<Trip?>(null)
+    val trip: StateFlow<Trip?> get() = _trip.asStateFlow()
 
-    private val _tripInfo = MutableLiveData<TripInfo>()
-    val tripInfo: LiveData<TripInfo> get() = _tripInfo
+    private val _tripInfo = MutableStateFlow<TripInfo?>(null)
+    val tripInfo: StateFlow<TripInfo?> get() = _tripInfo.asStateFlow()
 
-    private val _trips = MutableLiveData<List<Trip>>()
-    val trips: LiveData<List<Trip>> get() = _trips
+    private val _trips = MutableStateFlow<List<Trip>>(emptyList())
+    val trips: StateFlow<List<Trip>> get() = _trips.asStateFlow()
 
-    fun getTripById(id: Long): LiveData<Trip>? {
-        return tripRepository.getTripById(id)
+    private val _tripInvitations = MutableStateFlow<List<TripInvitation>>(emptyList())
+    val tripInvitations: StateFlow<List<TripInvitation>> get() = _tripInvitations.asStateFlow()
+
+    fun fetchTripById(id: Long) {
+        viewModelScope.launch {
+            _trip.emit(tripRepository.getTripById(id)?.value)
+        }
     }
 
-    fun getTripInfoByTripId(tripId: Long) {
+    fun fetchTripInfoByTripId(tripId: Long) {
         viewModelScope.launch {
             val trip = tripRepository.getTripById(tripId)?.value
             trip?.tripInfoId?.let {
-                _tripInfo.postValue(tripInfoRepository.getTripInfoById(it)?.value)
+                _tripInfo.emit(tripInfoRepository.getTripInfoById(it)?.value)
             }
         }
     }
 
-    fun getTripInfoById(id: Long) {
+    fun fetchTripInfoById(id: Long) {
         viewModelScope.launch {
-            _tripInfo.postValue(tripInfoRepository.getTripInfoById(id)?.value)
+            _tripInfo.emit(tripInfoRepository.getTripInfoById(id)?.value)
         }
     }
 
-    fun getAllTrips(): LiveData<List<Trip>>? {
-        return tripRepository.getAllTrips()
+    fun fetchAllTrips() {
+        viewModelScope.launch {
+            _trips.emit(tripRepository.getAllTrips()?.value ?: emptyList())
+        }
     }
 
     fun addTrip(trip: Trip) {
@@ -81,9 +85,10 @@ class TripViewModel(
         }
     }
 
-
     fun updateTrip(trip: Trip) {
-        tripRepository.updateTrip(trip)
+        viewModelScope.launch {
+            tripRepository.updateTrip(trip)
+        }
     }
 
     fun updateTripInfo(tripInfo: TripInfo) {
@@ -107,23 +112,18 @@ class TripViewModel(
         }
     }
 
-    fun getTripsByUserId(userId: Long): LiveData<List<Trip>>? {
-        return tripRepository.getTripsByUserId(userId)
-    }
-
-    fun getTripsByParticipantUserId(userId: Long): LiveData<List<Trip>> {
-        val allTrips = tripRepository.getAllTrips()
-        val filteredTrips = MutableLiveData<List<Trip>>()
-
-        allTrips?.observeForever { trips ->
-            filteredTrips.value = trips.filter { trip ->
-                trip.participants?.any { it.id == userId } == true
-            }
+    fun fetchTripsByUserId(userId: Long) {
+        viewModelScope.launch {
+            _trips.emit(tripRepository.getTripsByUserId(userId)?.value ?: emptyList())
         }
-
-        return filteredTrips
     }
 
+    fun fetchTripsByParticipantUserId(userId: Long) {
+        viewModelScope.launch {
+            val allTrips = tripRepository.getAllTrips()?.value ?: emptyList()
+            _trips.emit(allTrips.filter { trip -> trip.participants?.any { it.id == userId } == true })
+        }
+    }
 
     fun sendTripInvitation(tripId: Long, userId: Long, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
@@ -161,83 +161,54 @@ class TripViewModel(
     }
 
     private fun handleApprovedInvitation(invitation: TripInvitation, callback: (Boolean) -> Unit) {
-        val tripLiveData = tripRepository.getTripById(invitation.tripId)
-        val userLiveData = userRepository.getUserById(invitation.userId)
+        viewModelScope.launch {
+            val trip = tripRepository.getTripById(invitation.tripId)?.value
+            val user = userRepository.getUserById(invitation.userId)?.value
 
-        val tripObserver = object : Observer<Trip?> {
-            override fun onChanged(trip: Trip?) {
-                if (trip != null) {
-                    tripLiveData?.removeObserver(this)
-                    addUserToTrip(trip, userLiveData, callback)
-                }
-            }
-        }
-
-        val userObserver = object : Observer<User?> {
-            override fun onChanged(user: User?) {
-                if (user != null) {
-                    userLiveData?.removeObserver(this)
-                    tripLiveData?.value?.let { trip ->
-                        addUserToTrip(trip, userLiveData, callback)
-                    }
-                }
-            }
-        }
-
-        tripLiveData?.observeForever(tripObserver)
-        userLiveData?.observeForever(userObserver)
-    }
-
-    private fun addUserToTrip(trip: Trip, userLiveData: LiveData<User?>?, callback: (Boolean) -> Unit) {
-        val user = userLiveData?.value
-        if (trip != null && user != null) {
-            trip.participants?.add(user)
-            Log.d(TAG, "Adding user ${user.firstName} to trip participants ${trip.participants}")
-            viewModelScope.launch {
+            if (trip != null && user != null) {
+                trip.participants?.add(user)
+                Log.d(TAG, "Adding user ${user.firstName} to trip participants ${trip.participants}")
                 tripRepository.updateTrip(trip)
                 callback(true)
+            } else {
+                val error = "Failed to respond to trip invitation"
+                Log.e(TAG, if (trip == null) error + ", Trip is null" else error + ", user is null")
+                callback(false)
             }
-        } else {
-            val error = "Failed to respond to trip invitation"
-            Log.e(TAG, if (trip == null) error + ", Trip is null" else error + ", user is null")
-            callback(false)
         }
     }
 
-    // Method to get trip invitations by trip ID
-    fun getTripInvitationsByTripId(tripId: Long): LiveData<List<TripInvitation>>? {
-        return tripRepository.getTripInvitationsByTripId(tripId)
-    }
+    fun fetchTripInvitationsByTripId(tripId: Long): StateFlow<List<TripInvitation>> = flow {
+        emit(tripRepository.getTripInvitationsByTripId(tripId)?.value ?: emptyList())
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    fun getTripInvitationsForUser(userId: Long): LiveData<List<TripInvitation>>? {
-        return tripRepository.getTripInvitationsForUser(userId)
+    fun fetchTripInvitationsForUser(userId: Long) {
+        viewModelScope.launch {
+            _tripInvitations.emit(tripRepository.getTripInvitationsForUser(userId)?.value ?: emptyList())
+        }
     }
 
     fun deleteTripInvitation(invitation: TripInvitation) {
-        viewModelScope.launch{
+        viewModelScope.launch {
             tripRepository.deleteTripInvitation(invitation)
         }
     }
 
-    // Method to check if a user has pending invitations for a specific trip
     fun hasPendingInvitations(userId: Long, tripId: Long, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             val invitations = tripRepository.getTripInvitationsByTripId(tripId)?.value
-            val hasPending =
-                invitations?.any { it.userId == userId && it.status == TripInvitationStatus.PENDING } == true
+            val hasPending = invitations?.any { it.userId == userId && it.status == TripInvitationStatus.PENDING } == true
             callback(hasPending)
         }
     }
 
-
-    // CRUD methods for equipments
     fun addEquipment(tripId: Long, equipment: Equipment, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             val trip = tripRepository.getTripById(tripId)?.value
             if (trip != null) {
                 trip.equipment = trip.equipment.orEmpty().toMutableList().apply { add(equipment) }
-                val result = tripRepository.updateTrip(trip)
-                callback(true) // todo refactor async and  return true result
+                tripRepository.updateTrip(trip)
+                callback(true)
             } else {
                 callback(false)
             }
@@ -248,10 +219,9 @@ class TripViewModel(
         viewModelScope.launch {
             val trip = tripRepository.getTripById(tripId)?.value
             if (trip != null) {
-                trip.equipment =
-                    trip.equipment.orEmpty().toMutableList().apply { remove(equipment) }
-                val result = tripRepository.updateTrip(trip)
-                callback(true) // todo refactor async and  return true result
+                trip.equipment = trip.equipment.orEmpty().toMutableList().apply { remove(equipment) }
+                tripRepository.updateTrip(trip)
+                callback(true)
             } else {
                 callback(false)
             }
@@ -273,12 +243,11 @@ class TripViewModel(
                         set(index, newEquipment)
                     }
                 }
-                val result = tripRepository.updateTrip(trip)
-                callback(true) // todo refactor async and  return true result
+                tripRepository.updateTrip(trip)
+                callback(true)
             } else {
                 callback(false)
             }
         }
-
     }
 }

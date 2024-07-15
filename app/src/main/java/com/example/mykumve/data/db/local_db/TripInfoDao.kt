@@ -22,8 +22,8 @@ interface TripInfoDao {
     suspend fun insertTripInfo(tripInfo: TripInfo): Long
 
     @Update
-    fun updateTripInfo(tripInfo: TripInfo)
+    suspend fun updateTripInfo(tripInfo: TripInfo)
 
     @Delete
-    fun deleteTripInfo(tripInfo: TripInfo)
+    suspend fun deleteTripInfo(tripInfo: TripInfo)
 }
