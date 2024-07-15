@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.data.model.Trip
+import com.example.mykumve.data.model.TripInfo
 import com.example.mykumve.data.model.TripInvitation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,12 +15,15 @@ class SharedTripViewModel : ViewModel() {
     val TAG = SharedTripViewModel::class.java.simpleName
 
     private val _selectedExistingTrip = MutableStateFlow<Trip?>(null)
+    private val _selectedExistingTripInfo = MutableStateFlow<TripInfo?>(null)
     private lateinit var tripViewModel: TripViewModel
     var isCreatingTripMode: Boolean = true
     var isEditingExistingTrip: Boolean = false
 
     private val _partialTrip = MutableStateFlow<Trip?>(null)
+    private val _partialTripInfo = MutableStateFlow<TripInfo?>(null)
     val trip: StateFlow<Trip?> get() = if (isCreatingTripMode) _partialTrip else _selectedExistingTrip
+    val tripInfo: StateFlow<TripInfo?> get() = if (isCreatingTripMode) _partialTripInfo else _selectedExistingTripInfo
 
 
     fun setPartialTrip(trip: Trip) {
@@ -65,6 +69,14 @@ class SharedTripViewModel : ViewModel() {
             Log.v(TAG, "_selectedExistingTrip and trip is the same ${trip.title} ${trip.id}")
         }
     }
+    fun selectExistingTripInfo(tripInfo: TripInfo) {
+        if (_selectedExistingTripInfo.value != tripInfo) {
+            Log.v(TAG, "Selecting existing tripInfo ${tripInfo.title} ${tripInfo.id}")
+            _selectedExistingTripInfo.value = tripInfo
+        } else {
+            Log.v(TAG, "_selectedExistingTripInfo and trip is the same ${tripInfo.title} ${tripInfo.id}")
+        }
+    }
 
 
     fun updateEquipment(equipment: MutableList<Equipment>?) {
@@ -84,7 +96,9 @@ class SharedTripViewModel : ViewModel() {
         if (!isEditingExistingTrip){
             Log.d(TAG, "Resetting new trip state: ${_selectedExistingTrip.value?.title}")
             _selectedExistingTrip.value = null
+            _selectedExistingTripInfo.value = null
             _partialTrip.value = null
+            _partialTripInfo.value = null
             isCreatingTripMode = true
         }
     }

@@ -17,11 +17,11 @@ import com.example.mykumve.R
 import com.example.mykumve.data.data_classes.Point
 import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.TripInfo
+import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.RouteBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.DifficultyLevel
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class RouteManager : Fragment() {
@@ -65,31 +65,7 @@ class RouteManager : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 sharedViewModel.trip.collect { trip ->
                     if (trip != null) {
-                        val title = ""
-                        val points = listOf<Point>()
-                        val areaId = -1
-                        val subAreaId = -1
-                        val description = ""
-                        val routeDescription = ""
-                        val difficulty = DifficultyLevel.UNSET
-                        val length = 0.0f
-                        val tags = listOf<String>()
-                        val isCircular = false
-                        val likes = 0
-                        val tripInfo = TripInfo(
-                            title = title,
-                            points = points,
-                            areaId = areaId,
-                            subAreaId = subAreaId,
-                            description = description,
-                            routeDescription = routeDescription,
-                            difficulty = difficulty,
-                            length = length,
-                            tags = tags,
-                            isCircular = isCircular,
-                            likes = likes,
-                            tripId = trip.id,
-                        )
+                        val tripInfo = formToTripInfoObject()
                         tripViewModel.addTripWithInfo(trip, tripInfo)
                         result = true //todo add conditioning
                     } else {
@@ -101,14 +77,57 @@ class RouteManager : Fragment() {
         return result
     }
 
+    private fun formToTripInfoObject(): TripInfo {
+        val title = binding.RouteTitle.toString().takeIf { it.isNotEmpty() } ?: sharedViewModel.tripInfo.value?.title?.takeIf { it.isNotEmpty() } ?: ""
+        val points = listOf<Point>() ?: sharedViewModel.tripInfo.value?.points
+        val selectedArea = 1 // binding.AreaSpinner.selectedItem
+        val areaId = selectedArea ?: sharedViewModel.tripInfo.value?.areaId ?: -1 //todo check
+        val subAreaId = selectedArea ?: sharedViewModel.tripInfo.value?.areaId ?: -1 //todo check
+        val difficulty = binding.DifficultySpinner.selectedItem as DifficultyLevel? //todo check
+            ?: sharedViewModel.tripInfo.value?.difficulty
+            ?: DifficultyLevel.UNSET
+        val routeDescription = binding.RouteDescription.toString().takeIf { it.isNotEmpty() }
+            ?: sharedViewModel.tripInfo.value?.routeDescription  //todo check
+        val length = 0.0f
+        val tags = listOf<String>()
+        val isCircular = false
+        val likes = 0
+        val description = ""
+        val tripInfo = TripInfo(
+            title = title,
+            points = points,
+            areaId = areaId,
+            subAreaId = subAreaId,
+            description = description,
+            routeDescription = routeDescription,
+            difficulty = difficulty,
+            length = length,
+            tags = tags,
+            isCircular = isCircular,
+            likes = likes,
+            tripId = trip.id,
+        )
+        return tripInfo
+    }
+
     private fun verifyRouteForm(): Boolean {
-        return true
-        TODO("Not yet implemented")
+        return binding.RouteTitle.toString().isNotEmpty()
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Restore data if available
+        sharedViewModel.tripInfo.value?.let { tripInfo ->
+            loadFormData(tripInfo)
+        }
+    }
+
+    private fun loadFormData(tripInfo: TripInfo) {
+        binding.RouteTitle
+        binding.AreaSpinner
+        binding.RouteDescription
+        binding.DifficultySpinner
 
     }
 

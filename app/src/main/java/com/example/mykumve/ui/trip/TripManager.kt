@@ -54,11 +54,7 @@ class TripManager : Fragment() {
 
         // Restore data if available
         sharedViewModel.trip.value?.let { trip ->
-            binding.tripImage.setImageURI(trip.image?.toUri())
-            binding.nameTrip.setText(trip.title)
-            binding.description.setText(trip.description.toString())
-            binding.dateStartPick.text = timestampToString(trip.gatherTime)
-            binding.dateEndPick.text = timestampToString(trip.endDate)
+            loadFormData(trip)
         }
 
         sharedViewModel.isEditingExistingTrip = true
@@ -67,6 +63,14 @@ class TripManager : Fragment() {
             sharedViewModel.isEditingExistingTrip = false
             findNavController().navigate(R.id.action_travelManager_to_mainScreenManager)
         }
+    }
+
+    private fun loadFormData(trip: Trip) {
+        binding.tripImage.setImageURI(trip.image?.toUri())
+        binding.nameTrip.setText(trip.title)
+        binding.description.setText(trip.description.toString())
+        binding.dateStartPick.text = timestampToString(trip.gatherTime)
+        binding.dateEndPick.text = timestampToString(trip.endDate)
     }
 
     override fun onCreateView(
