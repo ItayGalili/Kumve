@@ -2,10 +2,10 @@ package com.example.mykumve.data.db.repository
 
 import android.app.Application
 import com.example.mykumve.data.db.local_db.TripInfoDao
-import androidx.lifecycle.LiveData
 import com.example.mykumve.data.db.local_db.AppDatabase
 import com.example.mykumve.data.db.local_db.AreaDao
 import com.example.mykumve.data.model.TripInfo
+import kotlinx.coroutines.flow.Flow
 
 
 class TripInfoRepository(application: Application) {
@@ -22,11 +22,11 @@ class TripInfoRepository(application: Application) {
 
     fun getAllAreas() = areaDao?.getAllAreas()
     fun getSubAreasByAreaId(areaId: Int) = areaDao?.getSubAreasByAreaId(areaId)
-    fun getAllTripInfo(): LiveData<List<TripInfo>>? {
+    fun getAllTripInfo(): Flow<List<TripInfo>>? {
         return tripInfoDao?.getAllTripInfo()
     }
 
-    fun getTripInfoById(id: Long): LiveData<TripInfo>? {
+    fun getTripInfoById(id: Long): Flow<TripInfo>? {
         return tripInfoDao?.getTripInfoById(id)
     }
 

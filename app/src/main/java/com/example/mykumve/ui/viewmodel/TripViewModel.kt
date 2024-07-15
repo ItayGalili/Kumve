@@ -15,14 +15,12 @@ import com.example.mykumve.util.TripInvitationStatus
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class TripViewModel(
-    application: Application,
-) : AndroidViewModel(application) {
+class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     val TAG = TripViewModel::class.java.simpleName
-    private var tripRepository: TripRepository = TripRepository(application)
-    private var userRepository: UserRepository = UserRepository(application)
-    private var tripInfoRepository: TripInfoRepository = TripInfoRepository(application)
+    private val tripRepository: TripRepository = TripRepository(application)
+    private val userRepository: UserRepository = UserRepository(application)
+    private val tripInfoRepository: TripInfoRepository = TripInfoRepository(application)
 
     private val _trip = MutableStateFlow<Trip?>(null)
     val trip: StateFlow<Trip?> get() = _trip.asStateFlow()
@@ -38,28 +36,37 @@ class TripViewModel(
 
     fun fetchTripById(id: Long) {
         viewModelScope.launch {
-            _trip.emit(tripRepository.getTripById(id)?.value)
+            tripRepository.getTripById(id)?.collect { trip ->
+                _trip.value = trip
+            }
         }
     }
 
     fun fetchTripInfoByTripId(tripId: Long) {
         viewModelScope.launch {
-            val trip = tripRepository.getTripById(tripId)?.value
-            trip?.tripInfoId?.let {
-                _tripInfo.emit(tripInfoRepository.getTripInfoById(it)?.value)
+            tripRepository.getTripById(tripId)?.collect { trip ->
+                trip?.tripInfoId?.let { tripInfoId ->
+                    tripInfoRepository.getTripInfoById(tripInfoId)?.collect { tripInfo ->
+                        _tripInfo.value = tripInfo
+                    }
+                }
             }
         }
     }
 
     fun fetchTripInfoById(id: Long) {
         viewModelScope.launch {
-            _tripInfo.emit(tripInfoRepository.getTripInfoById(id)?.value)
+            tripInfoRepository.getTripInfoById(id)?.collect { tripInfo ->
+                _tripInfo.value = tripInfo
+            }
         }
     }
 
     fun fetchAllTrips() {
         viewModelScope.launch {
-            _trips.emit(tripRepository.getAllTrips()?.value ?: emptyList())
+            tripRepository.getAllTrips()?.collect { trips ->
+                _trips.value = trips
+            }
         }
     }
 
@@ -93,7 +100,8 @@ class TripViewModel(
 
     fun updateTripInfo(tripInfo: TripInfo) {
         viewModelScope.launch {
-            val trip = tripRepository.getTripById(tripInfo.id)?.value ?: throw Exception("Trip not found")
+            val trip = tripRepository.getTripById(tripInfo.id)?.firstOrNull()
+                ?: throw Exception("Trip not found")
             trip.tripInfoId = tripInfo.id
             tripRepository.updateTrip(trip)
             tripInfoRepository.updateTripInfo(tripInfo)
@@ -114,14 +122,17 @@ class TripViewModel(
 
     fun fetchTripsByUserId(userId: Long) {
         viewModelScope.launch {
-            _trips.emit(tripRepository.getTripsByUserId(userId)?.value ?: emptyList())
+            tripRepository.getTripsByUserId(userId)?.collect { trips ->
+                _trips.value = trips
+            }
         }
     }
 
     fun fetchTripsByParticipantUserId(userId: Long) {
         viewModelScope.launch {
-            val allTrips = tripRepository.getAllTrips()?.value ?: emptyList()
-            _trips.emit(allTrips.filter { trip -> trip.participants?.any { it.id == userId } == true })
+            tripRepository.getAllTrips()?.collect { allTrips ->
+                _trips.value = allTrips.filter { trip -> trip.participants?.any { it.id == userId } == true }
+            }
         }
     }
 
@@ -162,8 +173,8 @@ class TripViewModel(
 
     private fun handleApprovedInvitation(invitation: TripInvitation, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val trip = tripRepository.getTripById(invitation.tripId)?.value
-            val user = userRepository.getUserById(invitation.userId)?.value
+            val trip = tripRepository.getTripById(invitation.tripId)?.firstOrNull()
+            val user = userRepository.getUserById(invitation.userId)?.firstOrNull()
 
             if (trip != null && user != null) {
                 trip.participants?.add(user)
@@ -178,13 +189,19 @@ class TripViewModel(
         }
     }
 
-    fun fetchTripInvitationsByTripId(tripId: Long): StateFlow<List<TripInvitation>> = flow {
-        emit(tripRepository.getTripInvitationsByTripId(tripId)?.value ?: emptyList())
-    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    fun fetchTripInvitationsByTripId(tripId: Long) {
+        viewModelScope.launch {
+            tripRepository.getTripInvitationsByTripId(tripId)?.collect { invitations ->
+                _tripInvitations.value = invitations
+            }
+        }
+    }
 
     fun fetchTripInvitationsForUser(userId: Long) {
         viewModelScope.launch {
-            _tripInvitations.emit(tripRepository.getTripInvitationsForUser(userId)?.value ?: emptyList())
+            tripRepository.getTripInvitationsForUser(userId)?.collect { invitations ->
+                _tripInvitations.value = invitations
+            }
         }
     }
 
@@ -196,7 +213,7 @@ class TripViewModel(
 
     fun hasPendingInvitations(userId: Long, tripId: Long, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val invitations = tripRepository.getTripInvitationsByTripId(tripId)?.value
+            val invitations = tripRepository.getTripInvitationsByTripId(tripId)?.firstOrNull()
             val hasPending = invitations?.any { it.userId == userId && it.status == TripInvitationStatus.PENDING } == true
             callback(hasPending)
         }
@@ -204,7 +221,7 @@ class TripViewModel(
 
     fun addEquipment(tripId: Long, equipment: Equipment, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val trip = tripRepository.getTripById(tripId)?.value
+            val trip = tripRepository.getTripById(tripId)?.firstOrNull()
             if (trip != null) {
                 trip.equipment = trip.equipment.orEmpty().toMutableList().apply { add(equipment) }
                 tripRepository.updateTrip(trip)
@@ -217,7 +234,7 @@ class TripViewModel(
 
     fun removeEquipment(tripId: Long, equipment: Equipment, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val trip = tripRepository.getTripById(tripId)?.value
+            val trip = tripRepository.getTripById(tripId)?.firstOrNull()
             if (trip != null) {
                 trip.equipment = trip.equipment.orEmpty().toMutableList().apply { remove(equipment) }
                 tripRepository.updateTrip(trip)
@@ -235,7 +252,7 @@ class TripViewModel(
         callback: (Boolean) -> Unit
     ) {
         viewModelScope.launch {
-            val trip = tripRepository.getTripById(tripId)?.value
+            val trip = tripRepository.getTripById(tripId)?.firstOrNull()
             if (trip != null) {
                 trip.equipment = trip.equipment.orEmpty().toMutableList().apply {
                     val index = indexOf(oldEquipment)

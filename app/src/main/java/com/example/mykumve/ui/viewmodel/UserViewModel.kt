@@ -1,6 +1,7 @@
 package com.example.mykumve.ui.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mykumve.data.db.repository.UserRepository
@@ -16,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class UserViewModel(application: Application) : AndroidViewModel(application) {
 
-    private var userRepository: UserRepository = UserRepository(application)
+    private val userRepository: UserRepository = UserRepository(application)
 
     private val _userByEmail = MutableStateFlow<User?>(null)
     val userByEmail: StateFlow<User?> get() = _userByEmail.asStateFlow()
@@ -39,19 +40,21 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         description: String?,
         callback: (Result) -> Unit
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val existingUser = userRepository.getUserByEmail(email)?.value
-            if (existingUser != null) {
-                callback(Result(false, "User already registered.")) // Todo string
-            } else {
-                val salt = EncryptionUtils.generateSalt()
-                val passwordHashed = EncryptionUtils.hashPassword(password, salt)
-                val newUser = User(firstName, surname, email, photo, description, passwordHashed, salt)
-                val result = userRepository.insertUser(newUser)
-                if (result.success) {
-                    UserManager.saveUser(newUser)
+        viewModelScope.launch {
+            userRepository.getUserByEmail(email)?.collect { existingUser ->
+                if (existingUser != null) {
+                    callback(Result(false, "User already registered.")) // Todo string
+                } else {
+                    val salt = EncryptionUtils.generateSalt()
+                    val passwordHashed = EncryptionUtils.hashPassword(password, salt)
+                    val newUser =
+                        User(firstName, surname, email, photo, description, passwordHashed, salt)
+                    val result = userRepository.insertUser(newUser)
+                    if (result.success) {
+                        UserManager.saveUser(newUser)
+                    }
+                    callback(result)
                 }
-                callback(result)
             }
         }
     }
@@ -71,29 +74,35 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchUserByEmail(email: String) {
         viewModelScope.launch {
-            val user = userRepository.getUserByEmail(email)?.value
-            _userByEmail.emit(user)
+            userRepository.getUserByEmail(email)?.collect { user ->
+                _userByEmail.emit(user)
+            }
         }
     }
 
     fun fetchUserByPhone(phone: String) {
         viewModelScope.launch {
-            val user = userRepository.getUserByPhone(phone)?.value
-            _userByPhone.emit(user)
+            userRepository.getUserByPhone(phone)?.collect { user ->
+                _userByPhone.emit(user)
+            }
         }
     }
 
     fun fetchUserById(id: Long) {
         viewModelScope.launch {
-            val user = userRepository.getUserById(id)?.value
-            _userById.emit(user)
+            userRepository.getUserById(id)?.collect { user ->
+                _userById.emit(user)
+            }
         }
     }
 
     fun fetchAllUsers() {
         viewModelScope.launch {
-            val users = userRepository.getAllUsers()?.value ?: emptyList()
-            _allUsers.emit(users)
+            userRepository.getAllUsers()?.collect { users ->
+                Log.d("UserRepository", "getAllUsers: ${users.size}")
+                _allUsers.emit(users)
+            }
         }
     }
 }
+

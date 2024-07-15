@@ -63,7 +63,7 @@ class RegisterManager : Fragment(), CoroutineScope {
         return binding.root
     }
 
-    private suspend fun registerUser(registerBtn: View?) {
+    private fun registerUser(registerBtn: View?) {
         val fullName = binding.name.text.toString()
         val password = binding.passwordRegister.text.toString()
         val email = binding.emailRegister.text.toString()
@@ -82,16 +82,18 @@ class RegisterManager : Fragment(), CoroutineScope {
             phone
         ) { result ->
             launch(Dispatchers.Main) {
-                if (result.success) {
-                    Toast.makeText(
-                        requireContext(),
-                        R.string.registration_successful,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    findNavController().navigate(R.id.action_registerManager_to_loginManager)
-                } else {
-                    Toast.makeText(requireContext(), result.reason, Toast.LENGTH_SHORT).show()
-                    // Todo descriptive error
+                if (isAdded) {
+                    if (result.success) {
+                        Toast.makeText(
+                            requireContext(),
+                            R.string.registration_successful,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        findNavController().navigate(R.id.action_registerManager_to_loginManager)
+                    } else {
+                        Toast.makeText(requireContext(), result.reason, Toast.LENGTH_SHORT).show()
+                        // Todo descriptive error
+                    }
                 }
             }
         }

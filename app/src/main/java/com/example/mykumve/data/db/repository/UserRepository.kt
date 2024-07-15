@@ -2,11 +2,11 @@ package com.example.mykumve.data.db.repository
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.LiveData
 import com.example.mykumve.data.db.local_db.AppDatabase
 import com.example.mykumve.data.db.local_db.UserDao
 import com.example.mykumve.data.model.User
 import com.example.mykumve.util.Result
+import kotlinx.coroutines.flow.Flow
 
 
 class UserRepository(application: Application) {
@@ -18,19 +18,18 @@ class UserRepository(application: Application) {
         val db = AppDatabase.getDatabase(application.applicationContext)
         userDao = db.userDao()
     }
-    fun getAllUsers(): LiveData<List<User>>? {
+    fun getAllUsers(): Flow<List<User>>? {
         val users = userDao?.getAllUsers()
-        Log.d("UserRepository", "getAllUsers: ${users?.value}")
         return users
     }
 
-    fun getUserById(id: Long): LiveData<User?>? =
+    fun getUserById(id: Long): Flow<User?>? =
         userDao?.getUserById(id)
 
-    fun getUserByEmail(email: String): LiveData<User?>? {
+    fun getUserByEmail(email: String): Flow<User?>? {
         return userDao?.getUserByEmail(email)
     }
-    fun getUserByPhone(phone: String): LiveData<User?>? {
+    fun getUserByPhone(phone: String): Flow<User?>? {
         return userDao?.getUserByPhone(phone)
     }
 

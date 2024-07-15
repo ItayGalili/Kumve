@@ -8,15 +8,16 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.mykumve.data.model.TripInfo
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TripInfoDao {
 
     @Query("SELECT * FROM trip_info WHERE id = :id")
-    fun getTripInfoById(id: Long): LiveData<TripInfo>
+    fun getTripInfoById(id: Long): Flow<TripInfo>
 
     @Query("SELECT * FROM trip_info")
-    fun getAllTripInfo(): LiveData<List<TripInfo>>
+    fun getAllTripInfo(): Flow<List<TripInfo>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTripInfo(tripInfo: TripInfo): Long

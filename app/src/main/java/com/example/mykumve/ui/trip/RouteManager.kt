@@ -45,8 +45,7 @@ class RouteManager : Fragment() {
         setupSpinners()
 
         binding.seve.setOnClickListener {
-            if(verifyRouteForm()){
-                saveTrip()
+            if(verifyRouteForm() and saveTrip()){
                 sharedViewModel.isEditingExistingTrip = false
                 sharedViewModel.resetNewTripState()
                 findNavController().navigate(R.id.action_routeManager_to_mainScreenManager)
@@ -60,10 +59,11 @@ class RouteManager : Fragment() {
         return binding.root
     }
 
-    private fun saveTrip() {
+    private fun saveTrip() : Boolean {
+        var result = false
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                sharedViewModel.trip.collectLatest { trip ->
+                sharedViewModel.trip.collect { trip ->
                     if (trip != null) {
                         val title = ""
                         val points = listOf<Point>()
@@ -91,12 +91,14 @@ class RouteManager : Fragment() {
                             tripId = trip.id,
                         )
                         tripViewModel.addTripWithInfo(trip, tripInfo)
+                        result = true //todo add conditioning
                     } else {
                         Log.e(TAG, "Error saving trip, trip object transferred from step 1 is null")
                     }
                 }
             }
         }
+        return result
     }
 
     private fun verifyRouteForm(): Boolean {

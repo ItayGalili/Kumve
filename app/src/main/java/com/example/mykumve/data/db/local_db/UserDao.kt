@@ -1,6 +1,5 @@
 package com.example.mykumve.data.db.local_db
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -8,19 +7,20 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.mykumve.data.model.User
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
     @Query("SELECT * FROM users ORDER BY id DESC")
-    fun getAllUsers(): LiveData<List<User>>?
+    fun getAllUsers(): Flow<List<User>>?
 
     @Query("SELECT * FROM users WHERE id = :id")
-    fun getUserById(id: Long): LiveData<User?>
+    fun getUserById(id: Long): Flow<User?>
 
     @Query("SELECT * FROM users WHERE email = :email")
-    fun getUserByEmail(email: String): LiveData<User?>
+    fun getUserByEmail(email: String): Flow<User?>
     @Query("SELECT * FROM users WHERE phone = :phone")
-    fun getUserByPhone(phone: String): LiveData<User?>
+    fun getUserByPhone(phone: String): Flow<User?>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertUser(user: User): Long

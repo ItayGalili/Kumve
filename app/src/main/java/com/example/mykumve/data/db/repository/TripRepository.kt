@@ -13,6 +13,7 @@ import com.example.mykumve.data.db.local_db.TripInvitationDao
 import com.example.mykumve.data.db.local_db.UserDao
 import com.example.mykumve.data.model.TripInfo
 import com.example.mykumve.data.model.TripInvitation
+import kotlinx.coroutines.flow.Flow
 
 
 class TripRepository(application: Application) {
@@ -31,11 +32,11 @@ class TripRepository(application: Application) {
         tripInfoDao = db.tripInfoDao()
     }
 
-    fun getAllTrips(): LiveData<List<Trip>>? {
+    fun getAllTrips(): Flow<List<Trip>>? {
         return tripDao?.getAllTrips()
     }
 
-    fun getTripById(id: Long): LiveData<Trip>? {
+    fun getTripById(id: Long): Flow<Trip>? {
         return tripDao?.getTripById(id)
     }
 
@@ -79,10 +80,10 @@ class TripRepository(application: Application) {
     }
 
     suspend fun deleteTripInvitation(invitation: TripInvitation) {
-        val trip = getTripById(invitation.tripId)?.value?.let { trip ->
-            trip.invitations.removeAll { it.tripId == invitation.tripId }
-            tripDao?.updateTrip(trip)
-        }
+//        val trip = getTripById(invitation.tripId)?.value?.let { trip ->
+//            trip.invitations.removeAll { it.tripId == invitation.tripId }
+//            tripDao?.updateTrip(trip)
+//        }
     }
 
     suspend fun sendTripInvitation(invitation: TripInvitation): Boolean {
@@ -99,15 +100,15 @@ class TripRepository(application: Application) {
         tripInvitationDao?.updateTripInvitation(invitation)
     }
 
-    fun getTripInvitationsByTripId(tripId: Long): LiveData<List<TripInvitation>>? {
+    fun getTripInvitationsByTripId(tripId: Long): Flow<List<TripInvitation>>? {
         return tripInvitationDao?.getTripInvitationsByTripId(tripId)
     }
 
-    fun getTripInvitationsForUser(userId: Long): LiveData<List<TripInvitation>>? {
+    fun getTripInvitationsForUser(userId: Long): Flow<List<TripInvitation>>? {
         return tripInvitationDao?.getTripInvitationsForUser(userId)
     }
 
-    fun getTripsByUserId(userId: Long): LiveData<List<Trip>>? {
+    fun getTripsByUserId(userId: Long): Flow<List<Trip>>? {
         return tripDao?.getTripsByUserId(userId)
     }
 

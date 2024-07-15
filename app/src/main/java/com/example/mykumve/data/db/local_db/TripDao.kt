@@ -1,6 +1,5 @@
 package com.example.mykumve.data.db.local_db
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -10,18 +9,19 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.TripInfo
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TripDao {
 
     @Query("SELECT * FROM trips WHERE id = :id")
-    fun getTripById(id: Long): LiveData<Trip>
+    fun getTripById(id: Long): Flow<Trip>
 
     @Query("SELECT * FROM trips")
-    fun getAllTrips(): LiveData<List<Trip>>
+    fun getAllTrips(): Flow<List<Trip>>
 
     @Query("SELECT * FROM trips WHERE user_id = :userId")
-    fun getTripsByUserId(userId: Long): LiveData<List<Trip>>
+    fun getTripsByUserId(userId: Long): Flow<List<Trip>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTrip(trip: Trip): Long
