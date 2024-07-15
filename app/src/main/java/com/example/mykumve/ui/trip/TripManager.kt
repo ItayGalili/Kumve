@@ -254,8 +254,8 @@ class TripManager : Fragment() {
         ): Trip {
         val title = binding.nameTrip.text.toString()
         val description = binding.description.text.toString()
-        val gatherTime = startDate
-        val endTime = endDate
+        val gatherTime = startDate ?: sharedViewModel.trip.value?.gatherTime
+        val endTime = endDate ?: sharedViewModel.trip.value?.endDate
         val equipments = equipmentList?.takeIf { it.isNotEmpty() }?.toMutableList()
             ?: sharedViewModel.trip.value?.equipment?.toMutableList()
 
