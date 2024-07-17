@@ -10,6 +10,7 @@ import com.example.mykumve.data.model.TripInfo
 import com.example.mykumve.data.model.TripInvitation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class SharedTripViewModel : ViewModel() {
     val TAG = SharedTripViewModel::class.java.simpleName
@@ -22,9 +23,8 @@ class SharedTripViewModel : ViewModel() {
 
     private val _partialTrip = MutableStateFlow<Trip?>(null)
     private val _partialTripInfo = MutableStateFlow<TripInfo?>(null)
-    val trip: StateFlow<Trip?> get() = if (isCreatingTripMode) _partialTrip else _selectedExistingTrip
-    val tripInfo: StateFlow<TripInfo?> get() = if (isCreatingTripMode) _partialTripInfo else _selectedExistingTripInfo
-
+    val trip: StateFlow<Trip?> get() = if (isCreatingTripMode) _partialTrip.asStateFlow() else _selectedExistingTrip.asStateFlow()
+    val tripInfo: StateFlow<TripInfo?> get() = if (isCreatingTripMode) _partialTripInfo.asStateFlow() else _selectedExistingTripInfo.asStateFlow()
 
     fun setPartialTrip(trip: Trip) {
         if (_partialTrip.value != trip) {
@@ -34,23 +34,6 @@ class SharedTripViewModel : ViewModel() {
             Log.v(TAG, "_partialTrip and trip is the same ${trip.title} ${trip.id}")
         }
     }
-
-//    fun updatePartialTrip(trip: Trip) {
-//        _partialTrip.value = _partialTrip.value?.copy(
-//            title = trip.title,
-//            description = trip.description,
-//            gatherTime = trip.gatherTime,
-//            participants = trip.participants,
-//            image = trip.image,
-//            equipment = trip.equipment,
-//            userId = trip.userId,
-//            tripInfoId = trip.tripInfoId,
-//            notes = trip.notes,
-//            endDate = trip.endDate,
-//            invitations = trip.invitations,
-//            shareLevel = trip.shareLevel
-//        )
-//    }
 
     fun addInvitation(invitation: TripInvitation) {
         _partialTrip.value?.invitations?.add(invitation)
@@ -69,6 +52,7 @@ class SharedTripViewModel : ViewModel() {
             Log.v(TAG, "_selectedExistingTrip and trip is the same ${trip.title} ${trip.id}")
         }
     }
+
     fun selectExistingTripInfo(tripInfo: TripInfo) {
         if (_selectedExistingTripInfo.value != tripInfo) {
             Log.v(TAG, "Selecting existing tripInfo ${tripInfo.title} ${tripInfo.id}")
@@ -77,7 +61,6 @@ class SharedTripViewModel : ViewModel() {
             Log.v(TAG, "_selectedExistingTripInfo and trip is the same ${tripInfo.title} ${tripInfo.id}")
         }
     }
-
 
     fun updateEquipment(equipment: MutableList<Equipment>?) {
         trip.value?.equipment = equipment?.toMutableList() // Ensure the trip's equipment list is updated
@@ -93,7 +76,7 @@ class SharedTripViewModel : ViewModel() {
     }
 
     fun resetNewTripState() {
-        if (!isEditingExistingTrip){
+        if (!isEditingExistingTrip) {
             Log.d(TAG, "Resetting new trip state: ${_selectedExistingTrip.value?.title}")
             _selectedExistingTrip.value = null
             _selectedExistingTripInfo.value = null
@@ -102,5 +85,4 @@ class SharedTripViewModel : ViewModel() {
             isCreatingTripMode = true
         }
     }
-
 }
