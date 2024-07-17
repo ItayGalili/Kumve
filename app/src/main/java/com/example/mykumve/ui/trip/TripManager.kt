@@ -53,9 +53,17 @@ class TripManager : Fragment() {
         Log.d(TAG, "On view created")
         // Logic to determine if it's a new trip creation
 
-        // Restore data if available
-        sharedViewModel.trip.value?.let { trip ->
-            loadFormData(trip)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                sharedViewModel.trip.collectLatest { trip ->
+                    if (trip != null) {
+                        Log.v(TAG, "Trip data loaded: ${trip.title}, ${trip.id}")
+                        loadFormData(trip)
+                    } else {
+                        Log.e(TAG, "No trip data to load.")
+                    }
+                }
+            }
         }
 
         sharedViewModel.isEditingExistingTrip = true
@@ -67,6 +75,7 @@ class TripManager : Fragment() {
     }
 
     private fun loadFormData(trip: Trip) {
+        Log.v(TAG, "Loading trip data into form: ${trip.title}, ${trip.id}")
         binding.tripImage.setImageURI(trip.image?.toUri())
         binding.nameTrip.setText(trip.title)
         binding.description.setText(trip.description.toString())
@@ -149,9 +158,12 @@ class TripManager : Fragment() {
 
     private fun cacheTrip() {
         currentUser?.let { user ->
-            Log.d(TAG, "Caching trip." + if (sharedViewModel.isCreatingTripMode) " Creating trip mode" else " Selecting existing trip")
+            Log.d(
+                TAG,
+                "Caching trip." + if (sharedViewModel.isCreatingTripMode) " Creating trip mode" else " Selecting existing trip"
+            )
             val tempTrip = formToTripObject(user)
-            if (sharedViewModel.isCreatingTripMode){
+            if (sharedViewModel.isCreatingTripMode) {
                 sharedViewModel.setPartialTrip(tempTrip)
             } else {
                 sharedViewModel.selectExistingTrip(tempTrip)
@@ -271,7 +283,8 @@ class TripManager : Fragment() {
             ?: sharedViewModel.trip.value?.invitations?.takeIf { it.isNotEmpty() }?.toMutableList()
             ?: mutableListOf()
 
-        val photo = imagePickerUtil.getImageUri().toString().takeIf { it != "null" } ?: sharedViewModel.trip.value?.image
+        val photo = imagePickerUtil.getImageUri().toString().takeIf { it != "null" }
+            ?: sharedViewModel.trip.value?.image
         val notes = null
 
         // Create a new Trip object with the provided details
@@ -290,6 +303,36 @@ class TripManager : Fragment() {
             shareLevel = ShareLevel.PUBLIC,
         )
         return trip
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.v(TAG, "onCreate called")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.v(TAG, "onStart called")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.v(TAG, "onResume called")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.v(TAG, "onPause called")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.v(TAG, "onStop called")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.v(TAG, "onDestroy called")
     }
 
     override fun onDestroyView() {

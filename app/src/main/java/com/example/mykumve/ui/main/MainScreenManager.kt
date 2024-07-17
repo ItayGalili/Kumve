@@ -28,10 +28,10 @@ import com.example.mykumve.R
 import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.MainScreenBinding
+import com.example.mykumve.ui.main.MainActivity.Companion.DEBUG_MODE
 import com.example.mykumve.ui.notifications.NotificationsFragment
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
-import com.example.mykumve.util.NavigationArgs
 import com.example.mykumve.util.TripInvitationStatus
 import com.example.mykumve.util.UserManager
 import kotlinx.coroutines.flow.collectLatest
@@ -353,15 +353,10 @@ class MainScreenManager : Fragment() {
 //    }
 
     private fun onTripLongClicked(trip: Trip) {
-        // This method will be called when an item is long-clicked.
-        // Handle the long click event here.
-        Toast.makeText(requireContext(), "Long-clicked on: ${trip.title}", Toast.LENGTH_SHORT)
-            .show()
-        val bundle = Bundle().apply {
-            putBoolean(NavigationArgs.IS_CREATING_NEW_TRIP.key, false)
-        }
+        Toast.makeText(requireContext(), "Long-clicked on: ${trip.title}", Toast.LENGTH_SHORT).show()
+
         sharedViewModel.selectExistingTrip(trip)
-//        findNavController().navigate(R.id.action_mainScreenManager_to_travelManager, bundle)
+        Log.v(TAG, "Navigating to travelManager with trip: ${trip.title}, ${trip.id}")
 
     }
 
