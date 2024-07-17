@@ -24,6 +24,7 @@ import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.TravelManagerViewBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
+import com.example.mykumve.ui.viewmodel.TripWithInfo
 import com.example.mykumve.util.ImagePickerUtil
 import com.example.mykumve.util.ShareLevel
 import com.example.mykumve.util.UserManager
@@ -161,13 +162,18 @@ class TripManager : Fragment() {
         currentUser?.let { user ->
             Log.d(
                 TAG,
-                "Caching trip." + if (sharedViewModel.isCreatingTripMode) " Creating trip mode" else " Selecting existing trip"
+                "Caching trip." + if (sharedViewModel.isCreatingTripMode)
+                    " Creating trip mode" else " Selecting existing trip"
             )
             val tempTrip = formToTripObject(user)
+            val tripInfo = sharedViewModel.tripInfo.value // Assuming tripInfo is already set
+
             if (sharedViewModel.isCreatingTripMode) {
                 sharedViewModel.setPartialTrip(tempTrip)
+                tripInfo?.let { sharedViewModel.setPartialTripInfo(it) }
             } else {
-                sharedViewModel.selectExistingTrip(tempTrip)
+                val existingTripWithInfo = TripWithInfo(tempTrip, tripInfo)
+                sharedViewModel.selectExistingTripWithInfo(existingTripWithInfo)
             }
         }
     }

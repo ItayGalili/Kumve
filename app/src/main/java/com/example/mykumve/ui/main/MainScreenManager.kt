@@ -32,6 +32,7 @@ import com.example.mykumve.ui.main.MainActivity.Companion.DEBUG_MODE
 import com.example.mykumve.ui.notifications.NotificationsFragment
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
+import com.example.mykumve.ui.viewmodel.TripWithInfo
 import com.example.mykumve.util.TripInvitationStatus
 import com.example.mykumve.util.UserManager
 import kotlinx.coroutines.flow.collectLatest
@@ -93,8 +94,8 @@ class MainScreenManager : Fragment() {
             emptyList(),
             sharedViewModel,
             requireContext(),
-            onItemLongClickListener = { trip ->
-                onTripLongClicked(trip)
+            onItemLongClickListener = { tripWithInfo ->
+                onTripLongClicked(tripWithInfo)
             },
             lifecycleOwner = viewLifecycleOwner,
         )
@@ -123,15 +124,14 @@ class MainScreenManager : Fragment() {
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        tripViewModel.fetchTripsByParticipantUserId(user.id)
-
-                        tripViewModel.trips.collectLatest { trips ->
-                            tripAdapter.trips = trips
+                        tripViewModel.fetchTripsByParticipantUserIdWithInfo(currentUser!!.id)
+                        tripViewModel.tripsWithInfo.collectLatest { tripsWithInfo ->
+                            tripAdapter.tripsWithInfo = tripsWithInfo
                             tripAdapter.notifyDataSetChanged()
                             val welcomeMsg = binding.informationWhileEmpty
                             welcomeMsg.alpha = if (tripAdapter.itemCount > 0) 0f else 1f
                             if (DEBUG_MODE) {
-                                logTrips(trips)
+                                logTripsWithInfo(tripsWithInfo)
                             }
                         }
                     }
@@ -171,63 +171,57 @@ class MainScreenManager : Fragment() {
                     "DELETING Trip...",
                     Toast.LENGTH_SHORT
                 ).show()
-                val trip = tripAdapter.trips[viewHolder.adapterPosition]
+                val tripWithInfo = tripAdapter.tripsWithInfo[viewHolder.adapterPosition]
+                val trip = tripWithInfo.trip
                 Log.d(
                     TAG, "Swipe action, deleting ${trip.title} " +
                             "on ${viewHolder.adapterPosition} index"
                 )
                 tripViewModel.deleteTrip(trip)
                 tripAdapter.notifyItemRemoved(viewHolder.adapterPosition)
-
-
             }
-
         }).attachToRecyclerView(binding.mainRecyclerView)
     }
 
-    private fun logTrips(trips: List<Trip>) {
-        trips.forEach { trip ->
-            tripViewModel.fetchTripInfoByTripId(trip.id)
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    tripViewModel.tripInfo.collectLatest { tripInfo ->
-                        val detailedTripInfo = tripInfo?.let {
-                            """
-                        |Trip Info:
-                        |    ID: ${it.id}
-                        |    Title: ${it.title}
-                        |    Points: ${it.points}
-                        |    Area ID: ${it.areaId}
-                        |    Sub Area ID: ${it.subAreaId}
-                        |    Description: ${it.description}
-                        |    Route Description: ${it.routeDescription}
-                        |    Difficulty: ${it.difficulty}
-                        |    Trip ID: ${it.tripId}
-                        """.trimMargin()
-                        } ?: "No trip info available"
+    private fun logTripsWithInfo(tripsWithInfo: List<TripWithInfo>) {
+        tripsWithInfo.forEach { tripWithInfo ->
+            val trip = tripWithInfo.trip
+            val tripInfo = tripWithInfo.tripInfo
+            val detailedTripInfo = tripInfo?.let {
+                """
+            |Trip Info:
+            |    ID: ${it.id}
+            |    Title: ${it.title}
+            |    Points: ${it.points}
+            |    Area ID: ${it.areaId}
+            |    Sub Area ID: ${it.subAreaId}
+            |    Description: ${it.description}
+            |    Route Description: ${it.routeDescription}
+            |    Difficulty: ${it.difficulty}
+            |    Trip ID: ${it.tripId}
+            """.trimMargin()
+            } ?: "No trip info available"
 
-                        val prettyTrip = """
-                                    |Trip
-                                    | id: ${trip.id},
-                                    |    title: ${trip.title},
-                                    |    description: ${trip.description},
-                                    |    gatherTime: ${trip.gatherTime},
-                                    |    tripInfoId: ${trip.tripInfoId},
-                                    |    endDate: ${trip.endDate},
-                                    |    participants: ${trip.participants?.size},
-                                    |    equipment: ${trip.equipment?.size},
-                                    |    invitations: ${trip.invitations.size},
-                                    |    shareLevel: ${trip.shareLevel}
-                                    |)
-                                    |$detailedTripInfo
-                                    """.trimMargin()
+            val prettyTrip = """
+        |Trip
+        | id: ${trip.id},
+        |    title: ${trip.title},
+        |    description: ${trip.description},
+        |    gatherTime: ${trip.gatherTime},
+        |    tripInfoId: ${trip.tripInfoId},
+        |    endDate: ${trip.endDate},
+        |    participants: ${trip.participants?.size},
+        |    equipment: ${trip.equipment?.size},
+        |    invitations: ${trip.invitations.size},
+        |    shareLevel: ${trip.shareLevel}
+        |)
+        |$detailedTripInfo
+        """.trimMargin()
 
-                        Log.d(TAG, prettyTrip)
-                    }
-                }
-            }
+            Log.d(TAG, prettyTrip)
         }
     }
+
 
 
     //toolbar
@@ -352,14 +346,13 @@ class MainScreenManager : Fragment() {
 //        }
 //    }
 
-    private fun onTripLongClicked(trip: Trip) {
-        Toast.makeText(requireContext(), "Long-clicked on: ${trip.title}", Toast.LENGTH_SHORT).show()
+    private fun onTripLongClicked(tripWithInfo: TripWithInfo) {
+        Toast.makeText(requireContext(), "Long-clicked on: ${tripWithInfo.trip.title}", Toast.LENGTH_SHORT).show()
 
-        sharedViewModel.selectExistingTrip(trip)
-        Log.v(TAG, "Navigating to travelManager with trip: ${trip.title}, ${trip.id}")
+        sharedViewModel.selectExistingTripWithInfo(tripWithInfo)
+        Log.v(TAG, "Navigating to travelManager with trip: ${tripWithInfo.trip.title}, ${tripWithInfo.trip.id}")
 
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

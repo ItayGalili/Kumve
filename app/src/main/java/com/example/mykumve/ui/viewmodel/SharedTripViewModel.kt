@@ -15,16 +15,25 @@ import kotlinx.coroutines.flow.asStateFlow
 class SharedTripViewModel : ViewModel() {
     val TAG = SharedTripViewModel::class.java.simpleName
 
-    private val _selectedExistingTrip = MutableStateFlow<Trip?>(null)
-    private val _selectedExistingTripInfo = MutableStateFlow<TripInfo?>(null)
+    private val _selectedExistingTripWithInfo = MutableStateFlow<TripWithInfo?>(null)
     private lateinit var tripViewModel: TripViewModel
     var isCreatingTripMode: Boolean = false
     var isEditingExistingTrip: Boolean = false
 
     private val _partialTrip = MutableStateFlow<Trip?>(null)
     private val _partialTripInfo = MutableStateFlow<TripInfo?>(null)
-    val trip: StateFlow<Trip?> get() = if (isCreatingTripMode) _partialTrip.asStateFlow() else _selectedExistingTrip.asStateFlow()
-    val tripInfo: StateFlow<TripInfo?> get() = if (isCreatingTripMode) _partialTripInfo.asStateFlow() else _selectedExistingTripInfo.asStateFlow()
+    val trip: StateFlow<Trip?>
+        get() = if (isCreatingTripMode) _partialTrip.asStateFlow() else _selectedExistingTripWithInfo.value?.trip?.let {
+            MutableStateFlow(
+                it
+            ).asStateFlow()
+        } ?: MutableStateFlow(null).asStateFlow()
+    val tripInfo: StateFlow<TripInfo?>
+        get() = if (isCreatingTripMode) _partialTripInfo.asStateFlow() else _selectedExistingTripWithInfo.value?.tripInfo?.let {
+            MutableStateFlow(
+                it
+            ).asStateFlow()
+        } ?: MutableStateFlow(null).asStateFlow()
 
     fun setPartialTrip(trip: Trip) {
         if (_partialTrip.value != trip) {
@@ -35,6 +44,19 @@ class SharedTripViewModel : ViewModel() {
         }
     }
 
+    fun setPartialTripInfo(tripInfo: TripInfo) {
+        if (_partialTripInfo.value != tripInfo) {
+            Log.v(TAG, "Setting partial trip info ${tripInfo.title} ${tripInfo.id}")
+            _partialTripInfo.value = tripInfo
+        } else {
+            Log.v(
+                TAG,
+                "_partialTripInfo and trip info is the same ${tripInfo.title} ${tripInfo.id}"
+            )
+        }
+    }
+
+
     fun addInvitation(invitation: TripInvitation) {
         _partialTrip.value?.invitations?.add(invitation)
         _partialTrip.value = _partialTrip.value // Notify observers of the change
@@ -44,26 +66,24 @@ class SharedTripViewModel : ViewModel() {
         tripViewModel = ViewModelProvider(viewModelStoreOwner).get(TripViewModel::class.java)
     }
 
-    fun selectExistingTrip(trip: Trip) {
-        if (_selectedExistingTrip.value != trip) {
-            Log.v(TAG, "Selecting existing trip. title: ${trip.title}, id: ${trip.id}")
-            _selectedExistingTrip.value = trip
+    fun selectExistingTripWithInfo(tripWithInfo: TripWithInfo) {
+        if (_selectedExistingTripWithInfo.value != tripWithInfo) {
+            Log.v(
+                TAG,
+                "Selecting existing trip with info. title: ${tripWithInfo.trip.title}, id: ${tripWithInfo.trip.id}"
+            )
+            _selectedExistingTripWithInfo.value = tripWithInfo
         } else {
-            Log.v(TAG, "Not selecting same existing trip. title: ${trip.title}, id: ${trip.id}")
-        }
-    }
-
-    fun selectExistingTripInfo(tripInfo: TripInfo) {
-        if (_selectedExistingTripInfo.value != tripInfo) {
-            Log.v(TAG, "Selecting existing tripInfo ${tripInfo.title} ${tripInfo.id}")
-            _selectedExistingTripInfo.value = tripInfo
-        } else {
-            Log.v(TAG, "_selectedExistingTripInfo and trip is the same ${tripInfo.title} ${tripInfo.id}")
+            Log.v(
+                TAG,
+                "Not selecting same existing trip with info. title: ${tripWithInfo.trip.title}, id: ${tripWithInfo.trip.id}"
+            )
         }
     }
 
     fun updateEquipment(equipment: MutableList<Equipment>?) {
-        trip.value?.equipment = equipment?.toMutableList() // Ensure the trip's equipment list is updated
+        trip.value?.equipment =
+            equipment?.toMutableList() // Ensure the trip's equipment list is updated
         if (!isCreatingTripMode) {
             try {
                 trip.value?.let {
@@ -77,9 +97,11 @@ class SharedTripViewModel : ViewModel() {
 
     fun resetNewTripState() {
         if (!isEditingExistingTrip) {
-            Log.d(TAG, "Resetting new trip state: ${_selectedExistingTrip.value?.title}")
-            _selectedExistingTrip.value = null
-            _selectedExistingTripInfo.value = null
+            Log.d(
+                TAG,
+                "Resetting new trip state: ${_selectedExistingTripWithInfo.value?.trip?.title}"
+            )
+            _selectedExistingTripWithInfo.value = null
             _partialTrip.value = null
             _partialTripInfo.value = null
             isCreatingTripMode = true

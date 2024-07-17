@@ -58,6 +58,13 @@ class RouteManager : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Restore data if available
+        loadFormData()
+    }
+
     private fun saveTrip() : Boolean {
         var result = false
         viewLifecycleOwner.lifecycleScope.launch {
@@ -120,21 +127,26 @@ class RouteManager : Fragment() {
     }
 
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        // Restore data if available
-        sharedViewModel.tripInfo.value?.let { tripInfo ->
-            loadFormData(tripInfo)
+
+    private fun loadFormData() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                Log.v(TAG, "Loading route data into form")
+                sharedViewModel.tripInfo.collectLatest { tripInfo ->
+                    if (tripInfo != null) {
+                        binding.RouteTitle.setText(sharedViewModel.tripInfo.value?.title)
+                        binding.RouteDescription.setText(sharedViewModel.tripInfo.value?.routeDescription)
+                        binding.AreaSpinner.setSelection(0)
+                        binding.DifficultySpinner.setSelection(0)
+                        Log.v(TAG, "Route data loaded: ${tripInfo.title}, ${tripInfo.id}")
+                    } else {
+                        Log.e(TAG, "No route data to load.")
+                    }
+                }
+            }
         }
     }
 
-    private fun loadFormData(tripInfo: TripInfo) {
-        binding.RouteTitle.setText(sharedViewModel.tripInfo.value?.title)
-        binding.RouteDescription.setText(sharedViewModel.tripInfo.value?.routeDescription)
-        binding.AreaSpinner.setSelection(0)
-        binding.DifficultySpinner.setSelection(0)
-
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -37,6 +37,45 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     private val _tripInvitations = MutableStateFlow<List<TripInvitation>>(emptyList())
     val tripInvitations: StateFlow<List<TripInvitation>> get() = _tripInvitations.asStateFlow()
 
+    private val _tripsWithInfo = MutableStateFlow<List<TripWithInfo>>(emptyList())
+    val tripsWithInfo: StateFlow<List<TripWithInfo>> get() = _tripsWithInfo.asStateFlow()
+
+    fun fetchTripsByParticipantUserIdWithInfo(userId: Long) {
+        viewModelScope.launch {
+            val allTrips = tripRepository.getAllTrips()
+                ?.firstOrNull() ?: emptyList()
+            val tripsByParticipant = allTrips.filter { trip ->
+                trip.participants?.any { it.id == userId } == true
+            }
+
+            val tripsWithInfoList = tripsByParticipant.map { trip ->
+                val tripInfo =
+                    trip.tripInfoId?.let { tripInfoRepository.getTripInfoById(it)
+                        ?.firstOrNull() }
+                TripWithInfo(trip, tripInfo)
+            }
+            _tripsWithInfo.emit(tripsWithInfoList)
+        }
+    }
+
+
+//    fun fetchTripsByParticipantUserIdWithInfo(userId: Long) {
+//        viewModelScope.launch {
+//            val allTrips = tripRepository.getAllTrips()
+//                ?.firstOrNull() ?: emptyList()
+//            val tripsByParticipant = allTrips.filter { trip ->
+//                trip.participants?.any { it.id == userId } == true
+//            }
+//
+//            val tripsWithInfoList = tripsByParticipant.map { trip ->
+//                val tripInfo =
+//                    trip.tripInfoId?.let { tripInfoRepository.getTripInfoById(it).firstOrNull() }
+//                TripWithInfo(trip, tripInfo)
+//            }
+//            _tripsWithInfo.emit(tripsWithInfoList)
+//        }
+//    }
+
     fun fetchTripById(id: Long) {
         viewModelScope.launch {
             tripRepository.getTripById(id)
@@ -163,13 +202,13 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun fetchTripsByParticipantUserId(userId: Long) {
-        viewModelScope.launch {
-            tripRepository.getAllTrips()?.collectLatest { allTrips ->
-                _trips.value = allTrips.filter { trip -> trip.participants?.any { it.id == userId } == true }
-            }
-        }
-    }
+//    fun fetchTripsByParticipantUserId(userId: Long) {
+//        viewModelScope.launch {
+//            tripRepository.getAllTrips()?.collectLatest { allTrips ->
+//                _trips.value = allTrips.filter { trip -> trip.participants?.any { it.id == userId } == true }
+//            }
+//        }
+//    }
 
     fun sendTripInvitation(tripId: Long, userId: Long, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
@@ -303,3 +342,8 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 }
+
+data class TripWithInfo(
+    val trip: Trip,
+    val tripInfo: TripInfo?
+)
