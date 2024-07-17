@@ -18,7 +18,7 @@ class SharedTripViewModel : ViewModel() {
     private val _selectedExistingTrip = MutableStateFlow<Trip?>(null)
     private val _selectedExistingTripInfo = MutableStateFlow<TripInfo?>(null)
     private lateinit var tripViewModel: TripViewModel
-    var isCreatingTripMode: Boolean = true
+    var isCreatingTripMode: Boolean = false
     var isEditingExistingTrip: Boolean = false
 
     private val _partialTrip = MutableStateFlow<Trip?>(null)
@@ -46,10 +46,10 @@ class SharedTripViewModel : ViewModel() {
 
     fun selectExistingTrip(trip: Trip) {
         if (_selectedExistingTrip.value != trip) {
-            Log.v(TAG, "Selecting existing trip ${trip.title} ${trip.id}")
+            Log.v(TAG, "Selecting existing trip. title: ${trip.title}, id: ${trip.id}")
             _selectedExistingTrip.value = trip
         } else {
-            Log.v(TAG, "_selectedExistingTrip and trip is the same ${trip.title} ${trip.id}")
+            Log.v(TAG, "Not selecting same existing trip. title: ${trip.title}, id: ${trip.id}")
         }
     }
 

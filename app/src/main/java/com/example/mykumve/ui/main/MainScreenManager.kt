@@ -72,7 +72,14 @@ class MainScreenManager : Fragment() {
             findNavController().navigate(R.id.mainScreenManager)
         }
 
+        initializeComponent()
         return binding.root
+    }
+
+    private fun initializeComponent() {
+        sharedViewModel.isEditingExistingTrip = false
+        sharedViewModel.isCreatingTripMode = false
+
     }
 
 
@@ -123,7 +130,9 @@ class MainScreenManager : Fragment() {
                             tripAdapter.notifyDataSetChanged()
                             val welcomeMsg = binding.informationWhileEmpty
                             welcomeMsg.alpha = if (tripAdapter.itemCount > 0) 0f else 1f
-                            logTrips(trips)
+                            if (DEBUG_MODE) {
+                                logTrips(trips)
+                            }
                         }
                     }
                 }
