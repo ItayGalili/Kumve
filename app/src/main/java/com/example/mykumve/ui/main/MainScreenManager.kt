@@ -1,3 +1,4 @@
+
 package com.example.mykumve.ui.main
 
 import android.os.Bundle
@@ -62,6 +63,10 @@ class MainScreenManager : Fragment() {
         binding.addBtn.setOnClickListener {
             sharedViewModel.resetNewTripState()
             findNavController().navigate(R.id.action_mainScreenManager_to_travelManager)
+        }
+
+        binding.reportsBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_mainScreenManager_to_UsersReports)
         }
 
         binding.partnersBtnMs.setOnClickListener {

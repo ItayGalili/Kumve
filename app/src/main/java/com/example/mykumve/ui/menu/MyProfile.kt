@@ -1,6 +1,3 @@
-
-
-
 package com.example.mykumve.ui.menu
 
 import android.net.Uri

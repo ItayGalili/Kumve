@@ -29,6 +29,10 @@ class SocialNetworkManager : Fragment() {
             findNavController().navigate(R.id.action_networkManager_to_mainScreenManager)
         }
 
+        binding.reportsBtn.setOnClickListener{
+            findNavController().navigate(R.id.action_networkManager_to_UsersReports)
+        }
+
         return binding.root
     }
 

@@ -11,9 +11,7 @@
         tools:layout="@layout/main_screen">
         <action
             android:id="@+id/action_mainScreenManager_to_UsersReports"
-            app:destination="@id/UserReports"
-            app:popUpTo="@id/mainScreenManager"
-            app:popUpToInclusive="true" />
+            app:destination="@id/UserReports" />
         <action
             android:id="@+id/action_mainScreenManager_to_networkManager"
             app:destination="@id/networkManager" />
@@ -80,9 +78,19 @@
 
     <fragment
         android:id="@+id/UserReports"
-        android:name="com.example.mykumve.ui.UsersReports"
+        android:name="com.example.mykumve.ui.reports.UsersReports"
         android:label="user_reports"
         tools:layout="@layout/reports">
+        <action
+            android:id="@+id/action_UsersReports_to_mainScreenManager"
+            app:destination="@id/mainScreenManager"
+            app:popUpTo="@id/mainScreenManager"
+            app:popUpToInclusive="true"
+            />
+        <action
+            android:id="@+id/action_UsersReports_to_networkManager"
+            app:destination="@id/networkManager"
+            />
 
     </fragment>
 
@@ -96,6 +104,10 @@
             app:destination="@id/mainScreenManager"
             app:popUpTo="@id/mainScreenManager"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_networkManager_to_UsersReports"
+            app:destination="@id/UserReports"/>
+
 
     </fragment>
 

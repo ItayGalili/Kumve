@@ -1,37 +1,30 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/add_report_dialog.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/report_image"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/account_circle" />
+        android:layout_height="200dp"
+        android:src="@drawable/my_alerts"/>
 
     <EditText
         android:id="@+id/report_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter report description"
-        android:maxLines="3" />
+        android:hint="Report Description"
+        android:padding="16dp"
+        android:inputType="textMultiLine"
+        android:maxLines="3"
+        android:scrollbars="vertical"/>
 
-    <TextView
-        android:id="@+id/report_time_stamp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
-        android:paddingTop="8dp" />
     <Button
         android:id="@+id/report_now"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Report Now"
-        android:backgroundTint="@color/lightGrey"
+        android:backgroundTint="@color/statusBarColor"
+        android:text="Report Now" />
 
-        />
 </LinearLayout>
