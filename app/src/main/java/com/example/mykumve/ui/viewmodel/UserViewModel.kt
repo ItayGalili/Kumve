@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class UserViewModel(application: Application) : AndroidViewModel(application) {
@@ -41,7 +42,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         callback: (Result) -> Unit
     ) {
         viewModelScope.launch {
-            userRepository.getUserByEmail(email)?.collect { existingUser ->
+            userRepository.getUserByEmail(email)?.collectLatest { existingUser ->
                 if (existingUser != null) {
                     callback(Result(false, "User already registered.")) // Todo string
                 } else {
@@ -74,7 +75,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchUserByEmail(email: String) {
         viewModelScope.launch {
-            userRepository.getUserByEmail(email)?.collect { user ->
+            userRepository.getUserByEmail(email)?.collectLatest { user ->
                 _userByEmail.emit(user)
             }
         }
@@ -82,7 +83,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchUserByPhone(phone: String) {
         viewModelScope.launch {
-            userRepository.getUserByPhone(phone)?.collect { user ->
+            userRepository.getUserByPhone(phone)?.collectLatest { user ->
                 _userByPhone.emit(user)
             }
         }
@@ -90,7 +91,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchUserById(id: Long) {
         viewModelScope.launch {
-            userRepository.getUserById(id)?.collect { user ->
+            userRepository.getUserById(id)?.collectLatest { user ->
                 _userById.emit(user)
             }
         }
@@ -98,7 +99,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchAllUsers() {
         viewModelScope.launch {
-            userRepository.getAllUsers()?.collect { users ->
+            userRepository.getAllUsers()?.collectLatest { users ->
                 Log.d("UserRepository", "getAllUsers: ${users.size}")
                 _allUsers.emit(users)
             }

@@ -36,7 +36,7 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchTripById(id: Long) {
         viewModelScope.launch {
-            tripRepository.getTripById(id)?.collect { trip ->
+            tripRepository.getTripById(id)?.collectLatest { trip ->
                 _trip.value = trip
             }
         }
@@ -44,9 +44,9 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchTripInfoByTripId(tripId: Long) {
         viewModelScope.launch {
-            tripRepository.getTripById(tripId)?.collect { trip ->
+            tripRepository.getTripById(tripId)?.collectLatest { trip ->
                 trip?.tripInfoId?.let { tripInfoId ->
-                    tripInfoRepository.getTripInfoById(tripInfoId)?.collect { tripInfo ->
+                    tripInfoRepository.getTripInfoById(tripInfoId)?.collectLatest { tripInfo ->
                         _tripInfo.value = tripInfo
                     }
                 }
@@ -56,7 +56,7 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchTripInfoById(id: Long) {
         viewModelScope.launch {
-            tripInfoRepository.getTripInfoById(id)?.collect { tripInfo ->
+            tripInfoRepository.getTripInfoById(id)?.collectLatest { tripInfo ->
                 _tripInfo.value = tripInfo
             }
         }
@@ -64,7 +64,7 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchAllTrips() {
         viewModelScope.launch {
-            tripRepository.getAllTrips()?.collect { trips ->
+            tripRepository.getAllTrips()?.collectLatest { trips ->
                 _trips.value = trips
             }
         }
@@ -122,7 +122,7 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchTripsByUserId(userId: Long) {
         viewModelScope.launch {
-            tripRepository.getTripsByUserId(userId)?.collect { trips ->
+            tripRepository.getTripsByUserId(userId)?.collectLatest { trips ->
                 _trips.value = trips
             }
         }
@@ -130,7 +130,7 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchTripsByParticipantUserId(userId: Long) {
         viewModelScope.launch {
-            tripRepository.getAllTrips()?.collect { allTrips ->
+            tripRepository.getAllTrips()?.collectLatest { allTrips ->
                 _trips.value = allTrips.filter { trip -> trip.participants?.any { it.id == userId } == true }
             }
         }
@@ -191,7 +191,7 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchTripInvitationsByTripId(tripId: Long) {
         viewModelScope.launch {
-            tripRepository.getTripInvitationsByTripId(tripId)?.collect { invitations ->
+            tripRepository.getTripInvitationsByTripId(tripId)?.collectLatest { invitations ->
                 _tripInvitations.value = invitations
             }
         }
@@ -199,7 +199,7 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchTripInvitationsForUser(userId: Long) {
         viewModelScope.launch {
-            tripRepository.getTripInvitationsForUser(userId)?.collect { invitations ->
+            tripRepository.getTripInvitationsForUser(userId)?.collectLatest { invitations ->
                 _tripInvitations.value = invitations
             }
         }
