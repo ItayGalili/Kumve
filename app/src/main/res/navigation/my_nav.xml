@@ -10,6 +10,11 @@
         android:label="main_screen"
         tools:layout="@layout/main_screen">
         <action
+            android:id="@+id/action_mainScreenManager_to_UsersReports"
+            app:destination="@id/UserReports"
+            app:popUpTo="@id/mainScreenManager"
+            app:popUpToInclusive="true" />
+        <action
             android:id="@+id/action_mainScreenManager_to_networkManager"
             app:destination="@id/networkManager" />
         <action
@@ -74,6 +79,14 @@
     </fragment>
 
     <fragment
+        android:id="@+id/UserReports"
+        android:name="com.example.mykumve.ui.UsersReports"
+        android:label="user_reports"
+        tools:layout="@layout/reports">
+
+    </fragment>
+
+    <fragment
         android:id="@+id/networkManager"
         android:name="com.example.mykumve.ui.SocialNetworkManager"
         android:label="travel_network"
@@ -83,6 +96,7 @@
             app:destination="@id/mainScreenManager"
             app:popUpTo="@id/mainScreenManager"
             app:popUpToInclusive="true" />
+
     </fragment>
 
     <fragment

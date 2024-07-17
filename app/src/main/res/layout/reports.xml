@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    tools:context=".ui.UsersReports"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFEFD2">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <Button
+        android:id="@+id/add_report"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="17dp"
+        android:backgroundTint="@color/btn"
+        android:text="add a report"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        >
+
+
+        <ImageButton
+            android:id="@+id/partners_btn_ms"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="1dp"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_corner_btn"
+            android:backgroundTint="#BBA886"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/network_no_bg_smashicons" />
+
+        <ImageButton
+            android:id="@+id/ms_btn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="1dp"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_corner_btn"
+            android:backgroundTint="#EFDBB8"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/my_trips_afif_fudina"
+
+            />
+
+        <ImageButton
+            android:id="@+id/reports_btn"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:layout_margin="1dp"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_corner_btn"
+            android:backgroundTint="#FFEFD2"
+            android:padding="7dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/annoucements_yogi_aprelliyanto" />
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

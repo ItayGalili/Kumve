@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/report_image"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/account_circle" />
+
+    <EditText
+        android:id="@+id/report_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter report description"
+        android:maxLines="3" />
+
+    <TextView
+        android:id="@+id/report_time_stamp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:paddingTop="8dp" />
+    <Button
+        android:id="@+id/report_now"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Report Now"
+        android:backgroundTint="@color/lightGrey"
+
+        />
+</LinearLayout>
