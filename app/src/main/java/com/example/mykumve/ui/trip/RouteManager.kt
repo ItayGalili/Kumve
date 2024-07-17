@@ -20,6 +20,7 @@ import com.example.mykumve.databinding.RouteBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.DifficultyLevel
+import com.example.mykumve.util.TripInfoUtils
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -75,22 +76,28 @@ class RouteManager : Fragment() {
         return result
     }
 
-    private fun formToTripInfoObject(): TripInfo {
-        val title = binding.RouteTitle.toString().takeIf { it.isNotEmpty() } ?: sharedViewModel.tripInfo.value?.title?.takeIf { it.isNotEmpty() } ?: ""
+    private fun formToTripInfoObject(passedTripId: Long? = null): TripInfo {
+        val title = binding.RouteTitle.text.toString().takeIf { it.isNotEmpty() } ?: sharedViewModel.tripInfo.value?.title?.takeIf { it.isNotEmpty() } ?: ""
         val points = listOf<Point>() ?: sharedViewModel.tripInfo.value?.points
-        val selectedArea = 1 // binding.AreaSpinner.selectedItem
-        val areaId = selectedArea ?: sharedViewModel.tripInfo.value?.areaId ?: -1 //todo check
-        val subAreaId = selectedArea ?: sharedViewModel.tripInfo.value?.areaId ?: -1 //todo check
-        val difficulty = binding.DifficultySpinner.selectedItem as DifficultyLevel? //todo check
+        val routeDescription = binding.RouteDescription.text.toString().takeIf { it.isNotEmpty() }
+            ?: sharedViewModel.tripInfo.value?.routeDescription  //todo check
+
+        val selectedDifficulty = binding.DifficultySpinner.selectedItem as String
+        val selectedArea = binding.AreaSpinner.selectedItem as String
+
+        val areaId = -1 //TripInfoUtils.mapAreaToModel(requireContext(), selectedArea)
+        val subAreaId = TripInfoUtils.mapAreaToModel(requireContext(), selectedArea)
+            ?: sharedViewModel.tripInfo.value?.areaId ?: -1 //todo check
+        val difficulty = TripInfoUtils.mapDifficultyToModel(requireContext(), selectedDifficulty).takeIf { it != DifficultyLevel.UNSET } //todo check
             ?: sharedViewModel.tripInfo.value?.difficulty
             ?: DifficultyLevel.UNSET
-        val routeDescription = binding.RouteDescription.toString().takeIf { it.isNotEmpty() }
-            ?: sharedViewModel.tripInfo.value?.routeDescription  //todo check
+
         val length = 0.0f
         val tags = listOf<String>()
         val isCircular = false
         val likes = 0
         val description = ""
+        val tripId = passedTripId ?: sharedViewModel.trip.value?.id ?: 0
         val tripInfo = TripInfo(
             title = title,
             points = points,
@@ -103,7 +110,7 @@ class RouteManager : Fragment() {
             tags = tags,
             isCircular = isCircular,
             likes = likes,
-            tripId = trip.id,
+            tripId = tripId
         )
         return tripInfo
     }
@@ -122,10 +129,10 @@ class RouteManager : Fragment() {
     }
 
     private fun loadFormData(tripInfo: TripInfo) {
-        binding.RouteTitle
-        binding.AreaSpinner
-        binding.RouteDescription
-        binding.DifficultySpinner
+        binding.RouteTitle.setText(sharedViewModel.tripInfo.value?.title)
+        binding.RouteDescription.setText(sharedViewModel.tripInfo.value?.routeDescription)
+        binding.AreaSpinner.setSelection(0)
+        binding.DifficultySpinner.setSelection(0)
 
     }
 
