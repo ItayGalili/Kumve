@@ -15,6 +15,7 @@ import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.FragmentNotificationsBinding
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.UserManager
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class NotificationsFragment : DialogFragment() {
@@ -52,7 +53,7 @@ class NotificationsFragment : DialogFragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                tripViewModel.tripInvitations.collect { invitations ->
+                tripViewModel.tripInvitations.collectLatest { invitations ->
                     tripInvitationAdapter.updateInvitations(invitations)
                 }
             }

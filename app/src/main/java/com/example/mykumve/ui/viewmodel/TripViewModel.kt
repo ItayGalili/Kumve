@@ -3,6 +3,9 @@ package com.example.mykumve.ui.viewmodel
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import com.example.mykumve.data.db.repository.TripInfoRepository
 import com.example.mykumve.data.db.repository.TripRepository
@@ -34,38 +37,109 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     private val _tripInvitations = MutableStateFlow<List<TripInvitation>>(emptyList())
     val tripInvitations: StateFlow<List<TripInvitation>> get() = _tripInvitations.asStateFlow()
 
+    private val _tripsWithInfo = MutableStateFlow<List<TripWithInfo>>(emptyList())
+    val tripsWithInfo: StateFlow<List<TripWithInfo>> get() = _tripsWithInfo.asStateFlow()
+
+    fun fetchTripsByParticipantUserIdWithInfo(userId: Long) {
+        viewModelScope.launch {
+            val allTrips = tripRepository.getAllTrips()
+                ?.firstOrNull() ?: emptyList()
+            val tripsByParticipant = allTrips.filter { trip ->
+                trip.participants?.any { it.id == userId } == true
+            }
+
+            val tripsWithInfoList = tripsByParticipant.map { trip ->
+                val tripInfo =
+                    trip.tripInfoId?.let { tripInfoRepository.getTripInfoById(it)
+                        ?.firstOrNull() }
+                TripWithInfo(trip, tripInfo)
+            }
+            _tripsWithInfo.emit(tripsWithInfoList)
+        }
+    }
+
+
+//    fun fetchTripsByParticipantUserIdWithInfo(userId: Long) {
+//        viewModelScope.launch {
+//            val allTrips = tripRepository.getAllTrips()
+//                ?.firstOrNull() ?: emptyList()
+//            val tripsByParticipant = allTrips.filter { trip ->
+//                trip.participants?.any { it.id == userId } == true
+//            }
+//
+//            val tripsWithInfoList = tripsByParticipant.map { trip ->
+//                val tripInfo =
+//                    trip.tripInfoId?.let { tripInfoRepository.getTripInfoById(it).firstOrNull() }
+//                TripWithInfo(trip, tripInfo)
+//            }
+//            _tripsWithInfo.emit(tripsWithInfoList)
+//        }
+//    }
+
     fun fetchTripById(id: Long) {
         viewModelScope.launch {
-            tripRepository.getTripById(id)?.collect { trip ->
-                _trip.value = trip
-            }
+            tripRepository.getTripById(id)
+                ?.stateIn(viewModelScope, SharingStarted.Lazily, null)
+                ?.collectLatest { trip ->
+                    _trip.value = trip
+                }
         }
     }
 
     fun fetchTripInfoByTripId(tripId: Long) {
         viewModelScope.launch {
-            tripRepository.getTripById(tripId)?.collect { trip ->
-                trip?.tripInfoId?.let { tripInfoId ->
-                    tripInfoRepository.getTripInfoById(tripInfoId)?.collect { tripInfo ->
-                        _tripInfo.value = tripInfo
+            tripRepository.getTripById(tripId)
+                ?.stateIn(viewModelScope, SharingStarted.Lazily, null)
+                ?.collectLatest { trip ->
+                    trip?.tripInfoId?.let { tripInfoId ->
+                        tripInfoRepository.getTripInfoById(tripInfoId)
+                            ?.stateIn(viewModelScope, SharingStarted.Lazily, null)
+                            ?.collectLatest { tripInfo ->
+                                _tripInfo.value = tripInfo
+                            }
                     }
                 }
-            }
         }
     }
 
     fun fetchTripInfoById(id: Long) {
         viewModelScope.launch {
-            tripInfoRepository.getTripInfoById(id)?.collect { tripInfo ->
-                _tripInfo.value = tripInfo
-            }
+            tripInfoRepository.getTripInfoById(id)
+                ?.stateIn(viewModelScope, SharingStarted.Lazily, null)
+                ?.collectLatest { tripInfo ->
+                    _tripInfo.value = tripInfo
+                }
         }
     }
 
     fun fetchAllTrips() {
         viewModelScope.launch {
-            tripRepository.getAllTrips()?.collect { trips ->
-                _trips.value = trips
+            tripRepository.getAllTrips()
+                ?.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+                ?.collectLatest { trips ->
+                    _trips.value = trips
+                }
+        }
+    }
+
+    // Other methods remain unchanged
+
+    fun observeTrips(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
+        lifecycleOwner.lifecycleScope.launch {
+            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                tripInfo.collectLatest { tripInfo ->
+                    // Handle tripInfo updates here
+                }
+            }
+        }
+    }
+
+    fun observeTripInfo(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
+        lifecycleOwner.lifecycleScope.launch {
+            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                trip.collectLatest { trip ->
+                    // Handle trip updates here
+                }
             }
         }
     }
@@ -122,19 +196,19 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchTripsByUserId(userId: Long) {
         viewModelScope.launch {
-            tripRepository.getTripsByUserId(userId)?.collect { trips ->
+            tripRepository.getTripsByUserId(userId)?.collectLatest { trips ->
                 _trips.value = trips
             }
         }
     }
 
-    fun fetchTripsByParticipantUserId(userId: Long) {
-        viewModelScope.launch {
-            tripRepository.getAllTrips()?.collect { allTrips ->
-                _trips.value = allTrips.filter { trip -> trip.participants?.any { it.id == userId } == true }
-            }
-        }
-    }
+//    fun fetchTripsByParticipantUserId(userId: Long) {
+//        viewModelScope.launch {
+//            tripRepository.getAllTrips()?.collectLatest { allTrips ->
+//                _trips.value = allTrips.filter { trip -> trip.participants?.any { it.id == userId } == true }
+//            }
+//        }
+//    }
 
     fun sendTripInvitation(tripId: Long, userId: Long, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
@@ -191,7 +265,7 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchTripInvitationsByTripId(tripId: Long) {
         viewModelScope.launch {
-            tripRepository.getTripInvitationsByTripId(tripId)?.collect { invitations ->
+            tripRepository.getTripInvitationsByTripId(tripId)?.collectLatest { invitations ->
                 _tripInvitations.value = invitations
             }
         }
@@ -199,7 +273,7 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchTripInvitationsForUser(userId: Long) {
         viewModelScope.launch {
-            tripRepository.getTripInvitationsForUser(userId)?.collect { invitations ->
+            tripRepository.getTripInvitationsForUser(userId)?.collectLatest { invitations ->
                 _tripInvitations.value = invitations
             }
         }
@@ -268,3 +342,8 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 }
+
+data class TripWithInfo(
+    val trip: Trip,
+    val tripInfo: TripInfo?
+)

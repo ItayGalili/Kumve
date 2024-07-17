@@ -79,7 +79,7 @@ class EquipmentFragment : Fragment() {
     private fun handleCloseButton() {
         if (saveCurrentEditedItem()) {
             saveData()
-            if (sharedTripViewModel.isCreatingTripMode) {
+            if (sharedTripViewModel.isCreatingTripMode || sharedTripViewModel.isEditingExistingTrip) {
                 findNavController().navigate(R.id.action_equipmentFragment_to_travelManager)
             } else {
                 sharedTripViewModel.resetNewTripState()

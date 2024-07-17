@@ -3,6 +3,7 @@
 ├── data
 │   ├── data_classes
 │   │   ├── Equipment.kt
+│   │   ├── MapState.kt
 │   │   └── Point.kt
 │   ├── db
 │   │   ├── local_db
@@ -32,14 +33,19 @@
 │   ├── main
 │   │   ├── MainActivity.kt
 │   │   ├── MainScreenManager.kt
-│   │   ├── MainViewModel.kt
-│   │   └── MyProfile.kt
+│   │   └── MainViewModel.kt
 │   ├── map
 │   │   └── MapFragment.kt
+│   ├── menu
+│   │   ├── MyProfile.kt
+│   │   ├── NotificationsFragment.kt
+│   │   └── TripInvitationAdapter.kt
 │   ├── register
 │   │   └── RegisterManager.kt
 │   ├── trip
 │   │   ├── EquipmentFragment.kt
+│   │   ├── InvitationListAdapter.kt
+│   │   ├── InvitationListFragment.kt
 │   │   ├── PartnerListAdapter.kt
 │   │   ├── PartnerListFragment.kt
 │   │   ├── RouteManager.kt
@@ -56,12 +62,13 @@
     ├── Converters.kt
     ├── EncryptionUtils.kt
     ├── Enums.kt
+    ├── ImagePickerUtil.kt
     ├── LocalProperties.kt
     ├── SharedPreferencesUtils.kt
     ├── UserManager.kt
     └── Utility.kt
 
-16 directories, 45 files
+17 directories, 51 files
 
 /Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/res
 /Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/res
@@ -81,6 +88,7 @@
 │   ├── annoucements_yogi_aprelliyanto.png
 │   ├── background_login.png
 │   ├── backpack_iconic_panda.png
+│   ├── badge_background.xml
 │   ├── baseline_add_24.xml
 │   ├── baseline_add_location_24.xml
 │   ├── baseline_backpack_24.xml
@@ -91,6 +99,7 @@
 │   ├── calendar.png
 │   ├── clock.png
 │   ├── fart.jpeg
+│   ├── floating_background.xml
 │   ├── flower.png
 │   ├── hills.jpg
 │   ├── ic_launcher_background.xml
@@ -121,11 +130,16 @@
 │   ├── activity_main.xml
 │   ├── equipment_card.xml
 │   ├── equipment_list.xml
+│   ├── fragment_invitation_list.xml
+│   ├── fragment_notifications.xml
 │   ├── fragment_partner_list.xml
+│   ├── item_invitation_card.xml
+│   ├── item_notification.xml
 │   ├── item_partner_card.xml
 │   ├── login.xml
 │   ├── main_screen.xml
 │   ├── map.xml
+│   ├── menu_item_with_badge.xml
 │   ├── my_profile_page.xml
 │   ├── register.xml
 │   ├── route.xml
@@ -172,4 +186,4 @@
     ├── backup_rules.xml
     └── data_extraction_rules.xml
 
-19 directories, 88 files
+19 directories, 95 files

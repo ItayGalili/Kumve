@@ -24,10 +24,12 @@ import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.TravelManagerViewBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
+import com.example.mykumve.ui.viewmodel.TripWithInfo
 import com.example.mykumve.util.ImagePickerUtil
 import com.example.mykumve.util.ShareLevel
 import com.example.mykumve.util.UserManager
 import com.example.mykumve.util.Utility.timestampToString
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -52,20 +54,34 @@ class TripManager : Fragment() {
         Log.d(TAG, "On view created")
         // Logic to determine if it's a new trip creation
 
-        // Restore data if available
-        sharedViewModel.trip.value?.let { trip ->
-            binding.tripImage.setImageURI(trip.image?.toUri())
-            binding.nameTrip.setText(trip.title)
-            binding.description.setText(trip.description.toString())
-            binding.dateStartPick.text = timestampToString(trip.gatherTime)
-            binding.dateEndPick.text = timestampToString(trip.endDate)
-        }
+        loadFormData()
+
 
         sharedViewModel.isEditingExistingTrip = true
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             sharedViewModel.isEditingExistingTrip = false
             findNavController().navigate(R.id.action_travelManager_to_mainScreenManager)
+        }
+    }
+
+    private fun loadFormData() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                Log.v(TAG, "Loading trip data into form")
+                sharedViewModel.trip.collectLatest { trip ->
+                    if (trip != null) {
+                        binding.tripImage.setImageURI(trip.image?.toUri())
+                        binding.nameTrip.setText(trip.title)
+                        binding.description.setText(trip.description.toString())
+                        binding.dateStartPick.text = timestampToString(trip.gatherTime)
+                        binding.dateEndPick.text = timestampToString(trip.endDate)
+                        Log.v(TAG, "Trip data loaded: ${trip.title}, ${trip.id}")
+                    } else {
+                        Log.e(TAG, "No trip data to load.")
+                    }
+                }
+            }
         }
     }
 
@@ -114,10 +130,10 @@ class TripManager : Fragment() {
                     cacheTrip()
                     viewLifecycleOwner.lifecycleScope.launch {
                         repeatOnLifecycle(Lifecycle.State.STARTED) {
-                            sharedViewModel.trip.collect { trip ->
+                            sharedViewModel.trip.collectLatest { trip ->
                                 if (trip != null) {
                                     findNavController().navigate(R.id.action_travelManager_to_routeManager)
-                                    return@collect
+                                    return@collectLatest
                                 }
                             }
                         }
@@ -144,12 +160,20 @@ class TripManager : Fragment() {
 
     private fun cacheTrip() {
         currentUser?.let { user ->
-            Log.d(TAG, "Caching trip." + if (sharedViewModel.isCreatingTripMode) " Creating trip mode" else " Selecting existing trip")
+            Log.d(
+                TAG,
+                "Caching trip." + if (sharedViewModel.isCreatingTripMode)
+                    " Creating trip mode" else " Selecting existing trip"
+            )
             val tempTrip = formToTripObject(user)
-            if (sharedViewModel.isCreatingTripMode){
+            val tripInfo = sharedViewModel.tripInfo.value // Assuming tripInfo is already set
+
+            if (sharedViewModel.isCreatingTripMode) {
                 sharedViewModel.setPartialTrip(tempTrip)
+                tripInfo?.let { sharedViewModel.setPartialTripInfo(it) }
             } else {
-                sharedViewModel.selectExistingTrip(tempTrip)
+                val existingTripWithInfo = TripWithInfo(tempTrip, tripInfo)
+                sharedViewModel.selectExistingTripWithInfo(existingTripWithInfo)
             }
         }
     }
@@ -266,7 +290,8 @@ class TripManager : Fragment() {
             ?: sharedViewModel.trip.value?.invitations?.takeIf { it.isNotEmpty() }?.toMutableList()
             ?: mutableListOf()
 
-        val photo = imagePickerUtil.getImageUri().toString().takeIf { it != "null" } ?: sharedViewModel.trip.value?.image
+        val photo = imagePickerUtil.getImageUri().toString().takeIf { it != "null" }
+            ?: sharedViewModel.trip.value?.image
         val notes = null
 
         // Create a new Trip object with the provided details
@@ -285,6 +310,36 @@ class TripManager : Fragment() {
             shareLevel = ShareLevel.PUBLIC,
         )
         return trip
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.v(TAG, "onCreate called")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.v(TAG, "onStart called")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.v(TAG, "onResume called")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.v(TAG, "onPause called")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.v(TAG, "onStop called")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.v(TAG, "onDestroy called")
     }
 
     override fun onDestroyView() {

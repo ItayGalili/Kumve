@@ -10,7 +10,7 @@ import com.example.mykumve.data.model.*
 
 @Database(
     entities = [User::class, Trip::class, TripInfo::class, TripInvitation::class, Area::class, SubArea::class],
-    version = 14)
+    version = 15)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun tripDao(): TripDao

@@ -27,6 +27,7 @@ import com.example.mykumve.ui.viewmodel.UserViewModel
 import com.example.mykumve.util.TripInvitationStatus
 import com.example.mykumve.util.UserManager
 import com.example.mykumve.util.UserUtils
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
@@ -83,7 +84,7 @@ class InvitationListFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                userViewModel.userByPhone.collect { user ->
+                userViewModel.userByPhone.collectLatest { user ->
                     if (user != null) {
                         Log.d(
                             "InvitePartner",
@@ -129,7 +130,7 @@ class InvitationListFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                userViewModel.allUsers.collect { users ->
+                userViewModel.allUsers.collectLatest { users ->
                     if (users != null) {
                         val currentUserId = UserManager.getUser()?.id
                         val filteredUsers = users.filter { it.id != currentUserId }
@@ -148,7 +149,7 @@ class InvitationListFragment : Fragment() {
     private fun observeTripInvitations() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                sharedTripViewModel.trip.collect { trip ->
+                sharedTripViewModel.trip.collectLatest { trip ->
                     trip?.let {
                         if (sharedTripViewModel.isCreatingTripMode) {
                             // For temporary trip (partialTrip)
@@ -156,7 +157,7 @@ class InvitationListFragment : Fragment() {
                             invitationListAdapter.submitList(partialTrip.invitations.toMutableList())
                         } else {
                             tripViewModel.fetchTripInvitationsByTripId(it.id) // Ensure this is called to fetch data
-                            tripViewModel.tripInvitations.collect { invitations ->
+                            tripViewModel.tripInvitations.collectLatest { invitations ->
                                 invitationListAdapter.submitList(invitations.toMutableList())
                             }
                         }

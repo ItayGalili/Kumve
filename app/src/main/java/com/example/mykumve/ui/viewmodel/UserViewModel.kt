@@ -3,16 +3,16 @@ package com.example.mykumve.ui.viewmodel
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import com.example.mykumve.data.db.repository.UserRepository
 import com.example.mykumve.data.model.User
 import com.example.mykumve.util.EncryptionUtils
 import com.example.mykumve.util.Result
 import com.example.mykumve.util.UserManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class UserViewModel(application: Application) : AndroidViewModel(application) {
@@ -41,21 +41,23 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         callback: (Result) -> Unit
     ) {
         viewModelScope.launch {
-            userRepository.getUserByEmail(email)?.collect { existingUser ->
-                if (existingUser != null) {
-                    callback(Result(false, "User already registered.")) // Todo string
-                } else {
-                    val salt = EncryptionUtils.generateSalt()
-                    val passwordHashed = EncryptionUtils.hashPassword(password, salt)
-                    val newUser =
-                        User(firstName, surname, email, photo, description, passwordHashed, salt)
-                    val result = userRepository.insertUser(newUser)
-                    if (result.success) {
-                        UserManager.saveUser(newUser)
+            userRepository.getUserByEmail(email)
+                ?.stateIn(viewModelScope, SharingStarted.Lazily, null)
+                ?.collectLatest { existingUser ->
+                    if (existingUser != null) {
+                        callback(Result(false, "User already registered.")) // Todo string
+                    } else {
+                        val salt = EncryptionUtils.generateSalt()
+                        val passwordHashed = EncryptionUtils.hashPassword(password, salt)
+                        val newUser =
+                            User(firstName, surname, email, photo, description, passwordHashed, salt)
+                        val result = userRepository.insertUser(newUser)
+                        if (result.success) {
+                            UserManager.saveUser(newUser)
+                        }
+                        callback(result)
                     }
-                    callback(result)
                 }
-            }
         }
     }
 
@@ -74,35 +76,82 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchUserByEmail(email: String) {
         viewModelScope.launch {
-            userRepository.getUserByEmail(email)?.collect { user ->
-                _userByEmail.emit(user)
-            }
+            userRepository.getUserByEmail(email)
+                ?.stateIn(viewModelScope, SharingStarted.Lazily, null)
+                ?.collectLatest { user ->
+                    _userByEmail.emit(user)
+                }
         }
     }
 
     fun fetchUserByPhone(phone: String) {
         viewModelScope.launch {
-            userRepository.getUserByPhone(phone)?.collect { user ->
-                _userByPhone.emit(user)
-            }
+            userRepository.getUserByPhone(phone)
+                ?.stateIn(viewModelScope, SharingStarted.Lazily, null)
+                ?.collectLatest { user ->
+                    _userByPhone.emit(user)
+                }
         }
     }
 
     fun fetchUserById(id: Long) {
         viewModelScope.launch {
-            userRepository.getUserById(id)?.collect { user ->
-                _userById.emit(user)
-            }
+            userRepository.getUserById(id)
+                ?.stateIn(viewModelScope, SharingStarted.Lazily, null)
+                ?.collectLatest { user ->
+                    _userById.emit(user)
+                }
         }
     }
 
     fun fetchAllUsers() {
         viewModelScope.launch {
-            userRepository.getAllUsers()?.collect { users ->
-                Log.d("UserRepository", "getAllUsers: ${users.size}")
-                _allUsers.emit(users)
+            userRepository.getAllUsers()
+                ?.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+                ?.collectLatest { users ->
+                    Log.d("UserRepository", "getAllUsers: ${users.size}")
+                    _allUsers.emit(users)
+                }
+        }
+    }
+
+    fun observeUserByEmail(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
+        lifecycleOwner.lifecycleScope.launch {
+            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                userByEmail.collectLatest { user ->
+                    // Handle user updates here
+                }
+            }
+        }
+    }
+
+    fun observeUserByPhone(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
+        lifecycleOwner.lifecycleScope.launch {
+            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                userByPhone.collectLatest { user ->
+                    // Handle user updates here
+                }
+            }
+        }
+    }
+
+    fun observeUserById(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
+        lifecycleOwner.lifecycleScope.launch {
+            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                userById.collectLatest { user ->
+                    // Handle user updates here
+                }
+            }
+        }
+    }
+
+    fun observeAllUsers(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
+        lifecycleOwner.lifecycleScope.launch {
+            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                allUsers.collectLatest { users ->
+                    // Handle users updates here
+                }
             }
         }
     }
 }
-

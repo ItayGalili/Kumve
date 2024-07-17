@@ -9,14 +9,19 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
 import com.example.mykumve.databinding.LoginBinding
+import com.example.mykumve.ui.main.MainActivity.Companion.DEBUG_MODE
 import com.example.mykumve.ui.viewmodel.UserViewModel
 import com.example.mykumve.util.EncryptionUtils
 import com.example.mykumve.util.UserManager
 import com.example.mykumve.util.Result
+import com.example.mykumve.util.UserUtils.getFullName
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class LoginManager : Fragment() {
@@ -66,13 +71,38 @@ class LoginManager : Fragment() {
             findNavController().navigate(R.id.action_loginManager_to_registerManager)
         }
 
+        if (DEBUG_MODE) {
+            logUsers()
+        }
         return binding.root
+    }
+
+    private fun logUsers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                userViewModel.fetchAllUsers()
+                userViewModel.allUsers.collectLatest { users ->
+                    Log.d(TAG, "Found ${users.size} users.")
+                    users.forEach { user ->
+                        val userInfo = """
+                                        User number ${user.id}:
+                                        Name: ${getFullName(user)}
+                                        Phone: ${user.phone}
+                                        Email: ${user.email}
+                                    """.trimIndent()
+                        Log.d(TAG, userInfo)
+                    }
+                }
+
+            }
+        }
     }
 
     private fun loginUser(email: String, password: String, callback: (Result) -> Unit) {
         viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
             userViewModel.fetchUserByEmail(email) // Make sure this method updates the flow
-            userViewModel.userByEmail.collect { user ->
+            userViewModel.userByEmail.collectLatest { user ->
                 val isLoggedInUser = if (user != null) {
                     val passwordHash = EncryptionUtils.hashPassword(password, user.salt)
                     if (passwordHash == user.hashedPassword) {
@@ -85,6 +115,7 @@ class LoginManager : Fragment() {
                     Result(false, getString(R.string.login_failed) + ": user not found") // todo
                 }
                 callback(isLoggedInUser)
+            }
             }
         }
     }

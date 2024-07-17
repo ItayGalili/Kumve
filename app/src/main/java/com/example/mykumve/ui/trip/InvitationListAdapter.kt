@@ -14,6 +14,7 @@ import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.databinding.ItemInvitationCardBinding
 import com.example.mykumve.ui.viewmodel.UserViewModel
 import com.example.mykumve.util.UserUtils
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class InvitationListAdapter(
@@ -40,7 +41,7 @@ class InvitationListAdapter(
 
             lifecycleOwner.lifecycleScope.launch {
                 lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    userViewModel.userById.collect { invitedUser ->
+                    userViewModel.userById.collectLatest { invitedUser ->
                         val userFullName = UserUtils.getFullName(invitedUser)
                         binding.textViewInvitedName.text = userFullName
                         binding.invitationStatus.text = invitation.status.toString()

@@ -20,6 +20,6 @@ interface TripInvitationDao {
     fun getTripInvitationsByTripId(tripId: Long): Flow<List<TripInvitation>>
 
     @Query("SELECT * FROM trip_invitations WHERE userId = :userId")
-    fun getTripInvitationsForUser(userId: Long): Flow       <List<TripInvitation>>
+    fun getTripInvitationsForUser(userId: Long): Flow<List<TripInvitation>>
 
 }
