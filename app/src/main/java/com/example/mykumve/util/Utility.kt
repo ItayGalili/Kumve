@@ -37,12 +37,12 @@ object TripInfoUtils {
         }
     }
 
-    fun mapDifficultyToString(context: Context, difficulty: DifficultyLevel): String {
+    fun mapDifficultyToString(context: Context, difficulty: DifficultyLevel?): String {
         return when (difficulty) {
             DifficultyLevel.EASY -> context.getString(R.string.difficulty_easy)
             DifficultyLevel.MEDIUM -> context.getString(R.string.difficulty_medium)
             DifficultyLevel.HARD -> context.getString(R.string.difficulty_hard)
-            DifficultyLevel.UNSET -> context.getString(R.string.difficulty_unset)
+            DifficultyLevel.UNSET, null -> context.getString(R.string.difficulty_unset)
         }
     }
 
@@ -69,4 +69,29 @@ object TripInfoUtils {
             else -> null // Default or error case
         }
     }
+
+    fun mapAreaToString(context: Context, areaId: Int?): String {
+        return when (areaId) {
+//        1 -> context.getString(R.string.north)
+            2 -> context.getString(R.string.upper_galilee)
+            3 -> context.getString(R.string.western_galilee)
+            4 -> context.getString(R.string.haifa_and_carmel)
+            5 -> context.getString(R.string.lower_galilee)
+//        6 -> context.getString(R.string.center)
+            7 -> context.getString(R.string.sharon)
+            8 -> context.getString(R.string.shfela)
+            9 -> context.getString(R.string.samaria)
+            10 -> context.getString(R.string.coastal_plain_and_gush_dan)
+//        11 -> context.getString(R.string.jerusalem_and_surroundings)
+            12 -> context.getString(R.string.jerusalem_hills_and_beit_shemesh)
+            13 -> context.getString(R.string.jerusalem)
+//        14 -> context.getString(R.string.south)
+            15 -> context.getString(R.string.dead_sea_and_judean_desert)
+            16 -> context.getString(R.string.northern_negev)
+            17 -> context.getString(R.string.central_negev_and_craters)
+            18 -> context.getString(R.string.southern_negev_and_eilat_mountains)
+            else -> context.getString(R.string.unknown_area)
+        }
+    }
+
 }
