@@ -9,7 +9,9 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
 import com.example.mykumve.databinding.LoginBinding
@@ -17,6 +19,7 @@ import com.example.mykumve.ui.viewmodel.UserViewModel
 import com.example.mykumve.util.EncryptionUtils
 import com.example.mykumve.util.UserManager
 import com.example.mykumve.util.Result
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class LoginManager : Fragment() {
@@ -71,8 +74,9 @@ class LoginManager : Fragment() {
 
     private fun loginUser(email: String, password: String, callback: (Result) -> Unit) {
         viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
             userViewModel.fetchUserByEmail(email) // Make sure this method updates the flow
-            userViewModel.userByEmail.collect { user ->
+            userViewModel.userByEmail.collectLatest { user ->
                 val isLoggedInUser = if (user != null) {
                     val passwordHash = EncryptionUtils.hashPassword(password, user.salt)
                     if (passwordHash == user.hashedPassword) {
@@ -85,6 +89,7 @@ class LoginManager : Fragment() {
                     Result(false, getString(R.string.login_failed) + ": user not found") // todo
                 }
                 callback(isLoggedInUser)
+            }
             }
         }
     }
