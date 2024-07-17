@@ -28,6 +28,7 @@ import com.example.mykumve.util.ImagePickerUtil
 import com.example.mykumve.util.ShareLevel
 import com.example.mykumve.util.UserManager
 import com.example.mykumve.util.Utility.timestampToString
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -118,10 +119,10 @@ class TripManager : Fragment() {
                     cacheTrip()
                     viewLifecycleOwner.lifecycleScope.launch {
                         repeatOnLifecycle(Lifecycle.State.STARTED) {
-                            sharedViewModel.trip.collect { trip ->
+                            sharedViewModel.trip.collectLatest { trip ->
                                 if (trip != null) {
                                     findNavController().navigate(R.id.action_travelManager_to_routeManager)
-                                    return@collect
+                                    return@collectLatest
                                 }
                             }
                         }

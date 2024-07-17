@@ -17,6 +17,7 @@ import com.example.mykumve.databinding.TravelCardBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.util.Converters
 import com.example.mykumve.util.Utility.toFormattedString
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class TripAdapter(
@@ -33,7 +34,7 @@ class TripAdapter(
         if (sharedViewModel.isCreatingTripMode) {
             lifecycleOwner.lifecycleScope.launch {
                 lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    sharedViewModel.trip.collect { trip ->
+                    sharedViewModel.trip.collectLatest { trip ->
                         trip?.equipment?.let {
                             val tripIndex = trips.indexOfFirst { it.id == trip.id }
                             if (tripIndex != -1) {

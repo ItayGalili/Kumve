@@ -34,6 +34,7 @@ import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.NavigationArgs
 import com.example.mykumve.util.TripInvitationStatus
 import com.example.mykumve.util.UserManager
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class MainScreenManager : Fragment() {
@@ -117,7 +118,7 @@ class MainScreenManager : Fragment() {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
                         tripViewModel.fetchTripsByParticipantUserId(user.id)
 
-                        tripViewModel.trips.collect { trips ->
+                        tripViewModel.trips.collectLatest { trips ->
                             tripAdapter.trips = trips
                             tripAdapter.notifyDataSetChanged()
                             val welcomeMsg = binding.informationWhileEmpty
@@ -187,14 +188,17 @@ class MainScreenManager : Fragment() {
                 findNavController().navigate(R.id.action_mainScreenManager_to_myProfile)
                 return true
             }
+
             R.id.menuAlerts -> {
                 showNotificationsFragment()
                 return true
             }
+
             R.id.log_out -> {
                 showLogoutDialog()
                 return true
             }
+
             R.id.debug_delete_db -> {
                 showDeleteDbDialog()
                 return true
@@ -209,7 +213,7 @@ class MainScreenManager : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                tripViewModel.tripInvitations.collect { invitations ->
+                tripViewModel.tripInvitations.collectLatest { invitations ->
                     // Handle the trip invitations
                     val pendingInvitations = invitations.filter { it.status == TripInvitationStatus.PENDING }
                     val pendingInvitationsCount = pendingInvitations.size

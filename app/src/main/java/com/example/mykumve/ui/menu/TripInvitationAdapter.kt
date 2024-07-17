@@ -12,6 +12,7 @@ import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.databinding.ItemNotificationBinding
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.TripInvitationStatus
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class TripInvitationAdapter(
@@ -29,7 +30,7 @@ class TripInvitationAdapter(
 
             lifecycleOwner.lifecycleScope.launch {
                 lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    tripViewModel.trip.collect { trip ->
+                    tripViewModel.trip.collectLatest { trip ->
                         if (trip != null) {
                             Log.d(TAG, "Binding trip invitation, tripId ${invitation.tripId}")
                             binding.invitationTitle.text = trip.title

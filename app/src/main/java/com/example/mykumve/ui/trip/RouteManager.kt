@@ -15,13 +15,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
 import com.example.mykumve.data.data_classes.Point
-import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.TripInfo
-import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.RouteBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.DifficultyLevel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class RouteManager : Fragment() {
@@ -33,7 +32,6 @@ class RouteManager : Fragment() {
     private lateinit var sharedPreferences: SharedPreferences
     private val sharedTripViewModel: SharedTripViewModel by activityViewModels()
     private val tripViewModel: TripViewModel by activityViewModels()
-    lateinit var trip : Trip
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,7 +61,7 @@ class RouteManager : Fragment() {
         var result = false
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                sharedViewModel.trip.collect { trip ->
+                sharedViewModel.trip.collectLatest { trip ->
                     if (trip != null) {
                         val tripInfo = formToTripInfoObject()
                         tripViewModel.addTripWithInfo(trip, tripInfo)
