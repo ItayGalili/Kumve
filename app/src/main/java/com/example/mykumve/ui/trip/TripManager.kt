@@ -53,18 +53,8 @@ class TripManager : Fragment() {
         Log.d(TAG, "On view created")
         // Logic to determine if it's a new trip creation
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                sharedViewModel.trip.collectLatest { trip ->
-                    if (trip != null) {
-                        Log.v(TAG, "Trip data loaded: ${trip.title}, ${trip.id}")
-                        loadFormData(trip)
-                    } else {
-                        Log.e(TAG, "No trip data to load.")
-                    }
-                }
-            }
-        }
+        loadFormData()
+
 
         sharedViewModel.isEditingExistingTrip = true
 
@@ -74,13 +64,24 @@ class TripManager : Fragment() {
         }
     }
 
-    private fun loadFormData(trip: Trip) {
-        Log.v(TAG, "Loading trip data into form: ${trip.title}, ${trip.id}")
-        binding.tripImage.setImageURI(trip.image?.toUri())
-        binding.nameTrip.setText(trip.title)
-        binding.description.setText(trip.description.toString())
-        binding.dateStartPick.text = timestampToString(trip.gatherTime)
-        binding.dateEndPick.text = timestampToString(trip.endDate)
+    private fun loadFormData() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                Log.v(TAG, "Loading trip data into form")
+                sharedViewModel.trip.collectLatest { trip ->
+                    if (trip != null) {
+                        binding.tripImage.setImageURI(trip.image?.toUri())
+                        binding.nameTrip.setText(trip.title)
+                        binding.description.setText(trip.description.toString())
+                        binding.dateStartPick.text = timestampToString(trip.gatherTime)
+                        binding.dateEndPick.text = timestampToString(trip.endDate)
+                        Log.v(TAG, "Trip data loaded: ${trip.title}, ${trip.id}")
+                    } else {
+                        Log.e(TAG, "No trip data to load.")
+                    }
+                }
+            }
+        }
     }
 
     override fun onCreateView(
