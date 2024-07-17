@@ -123,6 +123,7 @@ class MainScreenManager : Fragment() {
                             tripAdapter.notifyDataSetChanged()
                             val welcomeMsg = binding.informationWhileEmpty
                             welcomeMsg.alpha = if (tripAdapter.itemCount > 0) 0f else 1f
+                            logTrips(trips)
                         }
                     }
                 }
@@ -162,8 +163,10 @@ class MainScreenManager : Fragment() {
                     Toast.LENGTH_SHORT
                 ).show()
                 val trip = tripAdapter.trips[viewHolder.adapterPosition]
-                Log.d(TAG, "Swipe action, deleting ${trip.title} " +
-                        "on ${viewHolder.adapterPosition} index")
+                Log.d(
+                    TAG, "Swipe action, deleting ${trip.title} " +
+                            "on ${viewHolder.adapterPosition} index"
+                )
                 tripViewModel.deleteTrip(trip)
                 tripAdapter.notifyItemRemoved(viewHolder.adapterPosition)
 
@@ -172,6 +175,51 @@ class MainScreenManager : Fragment() {
 
         }).attachToRecyclerView(binding.mainRecyclerView)
     }
+
+    private fun logTrips(trips: List<Trip>) {
+        trips.forEach { trip ->
+            tripViewModel.fetchTripInfoByTripId(trip.id)
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    tripViewModel.tripInfo.collectLatest { tripInfo ->
+                        val detailedTripInfo = tripInfo?.let {
+                            """
+                        |Trip Info:
+                        |    ID: ${it.id}
+                        |    Title: ${it.title}
+                        |    Points: ${it.points}
+                        |    Area ID: ${it.areaId}
+                        |    Sub Area ID: ${it.subAreaId}
+                        |    Description: ${it.description}
+                        |    Route Description: ${it.routeDescription}
+                        |    Difficulty: ${it.difficulty}
+                        |    Trip ID: ${it.tripId}
+                        """.trimMargin()
+                        } ?: "No trip info available"
+
+                        val prettyTrip = """
+                                    |Trip
+                                    | id: ${trip.id},
+                                    |    title: ${trip.title},
+                                    |    description: ${trip.description},
+                                    |    gatherTime: ${trip.gatherTime},
+                                    |    tripInfoId: ${trip.tripInfoId},
+                                    |    endDate: ${trip.endDate},
+                                    |    participants: ${trip.participants?.size},
+                                    |    equipment: ${trip.equipment?.size},
+                                    |    invitations: ${trip.invitations.size},
+                                    |    shareLevel: ${trip.shareLevel}
+                                    |)
+                                    |$detailedTripInfo
+                                    """.trimMargin()
+
+                        Log.d(TAG, prettyTrip)
+                    }
+                }
+            }
+        }
+    }
+
 
     //toolbar
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -215,18 +263,25 @@ class MainScreenManager : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 tripViewModel.tripInvitations.collectLatest { invitations ->
                     // Handle the trip invitations
-                    val pendingInvitations = invitations.filter { it.status == TripInvitationStatus.PENDING }
+                    val pendingInvitations =
+                        invitations.filter { it.status == TripInvitationStatus.PENDING }
                     val pendingInvitationsCount = pendingInvitations.size
                     if (pendingInvitationsCount == 0) {
-                        Toast.makeText(requireContext(), "No new invitations", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "No new invitations", Toast.LENGTH_SHORT)
+                            .show()
                     } else {
                         // Show notifications or update UI with the invitations
-                        Toast.makeText(requireContext(), "You have $pendingInvitationsCount new invitations", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "You have $pendingInvitationsCount new invitations",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
         }
     }
+
     private fun showNotificationsFragment() {
         val notificationsFragment = NotificationsFragment()
         notificationsFragment.show(parentFragmentManager, notificationsFragment.tag)
@@ -240,7 +295,11 @@ class MainScreenManager : Fragment() {
                 // delete the database
                 UserManager.clearUser()
                 requireContext().deleteDatabase("kumve_db")
-                Toast.makeText(requireContext(), "Database deleted. Restarting app...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Database deleted. Restarting app...",
+                    Toast.LENGTH_SHORT
+                ).show()
                 // restart the app
                 val intent = requireActivity().intent
                 requireActivity().finish()
@@ -287,7 +346,8 @@ class MainScreenManager : Fragment() {
     private fun onTripLongClicked(trip: Trip) {
         // This method will be called when an item is long-clicked.
         // Handle the long click event here.
-        Toast.makeText(requireContext(), "Long-clicked on: ${trip.title}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), "Long-clicked on: ${trip.title}", Toast.LENGTH_SHORT)
+            .show()
         val bundle = Bundle().apply {
             putBoolean(NavigationArgs.IS_CREATING_NEW_TRIP.key, false)
         }
