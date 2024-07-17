@@ -61,7 +61,7 @@ class PartnerListFragment : Fragment() {
 
     private fun handleCloseButton() {
         //            saveData() todo (save to db / cached the removed ones also)
-        if (sharedTripViewModel.isCreatingTripMode) {
+        if (sharedTripViewModel.isCreatingTripMode || sharedTripViewModel.isEditingExistingTrip) {
             findNavController().navigate(R.id.action_partnerListFragment_to_travelManager)
         } else {
             sharedTripViewModel.resetNewTripState()
