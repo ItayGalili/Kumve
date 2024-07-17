@@ -16,6 +16,8 @@ import com.example.mykumve.databinding.TravelCardBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.ui.viewmodel.TripWithInfo
 import com.example.mykumve.util.Converters
+import com.example.mykumve.util.TripInfoUtils.mapAreaToString
+import com.example.mykumve.util.TripInfoUtils.mapDifficultyToString
 import com.example.mykumve.util.Utility.toFormattedString
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -56,9 +58,9 @@ class TripAdapter(
             val tripInfo = tripWithInfo.tripInfo
             Log.d(TAG, "Binding trip ${trip.title}, with total ${trip.invitations.size} invitations and ${trip.participants?.size} participants")
             binding.tripTitle.text = trip.title
-            binding.areaCard.text = tripInfo?.areaId?.toString() ?: "Unknown Area"
+            binding.areaCard.text = mapAreaToString(context, tripInfo?.subAreaId)
             binding.dateCard.text = Converters().toDate(trip.gatherTime?.toString()?.toLong())?.toFormattedString()
-            binding.levelCard.text = tripInfo?.difficulty?.toString() ?: "Unknown Difficulty"
+            binding.difficultyCard.text = mapDifficultyToString(context, tripInfo?.difficulty)
 
             //image up load:
             if (trip.image != null) {
