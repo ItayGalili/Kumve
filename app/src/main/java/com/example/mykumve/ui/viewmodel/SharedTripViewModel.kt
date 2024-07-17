@@ -67,8 +67,9 @@ class SharedTripViewModel : ViewModel() {
     }
 
     fun selectExistingTripWithInfo(tripWithInfo: TripWithInfo) {
+        isEditingExistingTrip = true
         if (_selectedExistingTripWithInfo.value != tripWithInfo) {
-            Log.v(
+            Log.d(
                 TAG,
                 "Selecting existing trip with info. title: ${tripWithInfo.trip.title}, id: ${tripWithInfo.trip.id}"
             )

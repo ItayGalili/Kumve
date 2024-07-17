@@ -43,11 +43,27 @@ class RouteManager : Fragment() {
 
         setupSpinners()
 
-        binding.seve.setOnClickListener {
-            if(verifyRouteForm() and saveTrip()){
-                sharedViewModel.isEditingExistingTrip = false
-                sharedViewModel.resetNewTripState()
-                findNavController().navigate(R.id.action_routeManager_to_mainScreenManager)
+        binding.routeSaveButton.setOnClickListener {
+            if (verifyRouteForm()) {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    val saveResult = saveTrip()
+                    Log.d(TAG, "Save result: $saveResult")
+                }
+                // Observe the operation result
+                viewLifecycleOwner.lifecycleScope.launch {
+                    repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        tripViewModel.operationResult.collectLatest { result ->
+                            if (result?.success == true) {
+                                Log.d(TAG, "Operation succeeded: ${result.reason}")
+                                sharedViewModel.isEditingExistingTrip = false
+                                sharedViewModel.resetNewTripState()
+                                findNavController().navigate(R.id.action_routeManager_to_mainScreenManager)
+                            } else {
+                                Log.e(TAG, "Operation failed: ${result?.reason}")
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -63,27 +79,28 @@ class RouteManager : Fragment() {
 
         // Restore data if available
         loadFormData()
+        Log.d(TAG, "Creating mode: ${sharedViewModel.isCreatingTripMode}\nEditing mode: ${sharedViewModel.isEditingExistingTrip}")
     }
 
-    private fun saveTrip() : Boolean {
+    private suspend fun saveTrip(): Boolean {
         var result = false
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                sharedViewModel.trip.collectLatest { trip ->
-                    if (trip != null) {
-                        val tripInfo = formToTripInfoObject()
-                        tripViewModel.addTripWithInfo(trip, tripInfo)
-                        result = true //todo add conditioning
-                    } else {
-                        Log.e(TAG, "Error saving trip, trip object transferred from step 1 is null")
-                    }
+        sharedViewModel.trip.collectLatest { trip ->
+            if (trip != null) {
+                val tripInfo = formToTripInfoObject(passedTripId = trip.id)
+
+                if (!sharedViewModel.isEditingExistingTrip) { // creating new trip
+                    tripViewModel.addTripWithInfo(trip, tripInfo, viewLifecycleOwner)
+                } else {
+                    tripViewModel.updateTripWithInfo(trip, tripInfo, viewLifecycleOwner)
                 }
+                result = true
             }
         }
         return result
     }
 
     private fun formToTripInfoObject(passedTripId: Long? = null): TripInfo {
+        val id = sharedViewModel.tripInfo.value?.id ?: 0
         val title = binding.RouteTitle.text.toString().takeIf { it.isNotEmpty() } ?: sharedViewModel.tripInfo.value?.title?.takeIf { it.isNotEmpty() } ?: ""
         val points = listOf<Point>() ?: sharedViewModel.tripInfo.value?.points
         val routeDescription = binding.RouteDescription.text.toString().takeIf { it.isNotEmpty() }
@@ -106,6 +123,7 @@ class RouteManager : Fragment() {
         val description = ""
         val tripId = passedTripId ?: sharedViewModel.trip.value?.id ?: 0
         val tripInfo = TripInfo(
+            id = id,
             title = title,
             points = points,
             areaId = areaId,
@@ -134,17 +152,36 @@ class RouteManager : Fragment() {
                 Log.v(TAG, "Loading route data into form")
                 sharedViewModel.tripInfo.collectLatest { tripInfo ->
                     if (tripInfo != null) {
-                        binding.RouteTitle.setText(sharedViewModel.tripInfo.value?.title)
-                        binding.RouteDescription.setText(sharedViewModel.tripInfo.value?.routeDescription)
-                        binding.AreaSpinner.setSelection(0)
-                        binding.DifficultySpinner.setSelection(0)
-                        Log.v(TAG, "Route data loaded: ${tripInfo.title}, ${tripInfo.id}")
+                        binding.RouteTitle.setText(tripInfo.title)
+                        binding.RouteDescription.setText(tripInfo.routeDescription)
+                        setArea(tripInfo.subAreaId)
+                        setDifficulty(tripInfo.difficulty)
+                        Log.d(TAG, "Route data loaded. title: ${tripInfo.title}, id: ${tripInfo.id}")
+                        Log.d(TAG, "Trip data: ${sharedViewModel.trip.value?.title}, id: ${sharedViewModel.trip.value?.id}")
                     } else {
                         Log.e(TAG, "No route data to load.")
                     }
                 }
             }
         }
+    }
+
+    private fun setArea(subAreaId: Int? = 0) {
+        binding.AreaSpinner.setSelection(
+            (binding.AreaSpinner.adapter as ArrayAdapter<String>).getPosition(
+                TripInfoUtils.mapAreaToString(requireContext(), subAreaId)
+            )
+        )
+    }
+
+    private fun setDifficulty(difficulty: DifficultyLevel?) {
+        binding.DifficultySpinner.setSelection(
+            (binding.DifficultySpinner.adapter as ArrayAdapter<String>).getPosition(
+                TripInfoUtils.mapDifficultyToString(requireContext(), difficulty)
+            ).takeIf { it != -1 } ?: (binding.DifficultySpinner.adapter as ArrayAdapter<String>).getPosition(
+                getString(R.string.difficulty_unset)
+            )
+        )
     }
 
 
@@ -156,7 +193,8 @@ class RouteManager : Fragment() {
     private fun setupSpinners() {
         // Load difficulty options from strings.xml
         val difficultyOptions = resources.getStringArray(R.array.difficulty_options)
-        val difficultyAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, difficultyOptions)
+        val filteredDifficultyOptions = difficultyOptions.filter { it != getString(R.string.difficulty_unset) }.toTypedArray()
+        val difficultyAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, filteredDifficultyOptions)
         difficultyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.DifficultySpinner.adapter = difficultyAdapter
 
@@ -166,4 +204,5 @@ class RouteManager : Fragment() {
         areaAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.AreaSpinner.adapter = areaAdapter
     }
+
 }

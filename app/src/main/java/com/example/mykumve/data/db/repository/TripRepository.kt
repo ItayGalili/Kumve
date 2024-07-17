@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import com.example.mykumve.data.db.local_db.TripDao
 import com.example.mykumve.data.model.Trip
-import androidx.lifecycle.LiveData
 import androidx.room.Transaction
 import com.example.mykumve.data.db.local_db.AppDatabase
 import com.example.mykumve.data.db.local_db.TripInfoDao
@@ -13,6 +12,7 @@ import com.example.mykumve.data.db.local_db.TripInvitationDao
 import com.example.mykumve.data.db.local_db.UserDao
 import com.example.mykumve.data.model.TripInfo
 import com.example.mykumve.data.model.TripInvitation
+import com.example.mykumve.util.Result
 import kotlinx.coroutines.flow.Flow
 
 
@@ -45,7 +45,7 @@ class TripRepository(application: Application) {
     }
 
     @Transaction
-    suspend fun insertTripWithInfo(trip: Trip, tripInfo: TripInfo) {
+    suspend fun insertTripWithInfo(trip: Trip, tripInfo: TripInfo, callback: (Result) -> Unit) {
         try {
             // Step 1: Insert Trip first without TripInfoId
             val tripId = tripDao?.insertTrip(trip)
@@ -61,15 +61,56 @@ class TripRepository(application: Application) {
                 val updatedTrip = trip.copy(id = tripId, tripInfoId = tripInfoId)
                 tripDao?.updateTrip(updatedTrip)
                 Log.d(TAG, "Updated Trip with TripInfo ID: ${updatedTrip.tripInfoId}")
+
+                callback(
+                    Result(
+                        true,
+                        "Trip and TripInfo inserted successfully"
+                    )
+                )
+            } else {
+                callback(Result(false, "Failed to insert Trip"))
             }
         } catch (e: SQLiteConstraintException) {
             Log.e(TAG, "Foreign Key constraint failed: ${e.message}")
-            throw e
+            callback(Result(false, "Foreign Key constraint failed: ${e.message}"))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to insert trip and trip info: ${e.message}")
-            throw e
+            callback(Result(false, "Failed to insert trip and trip info: ${e.message}"))
         }
     }
+
+
+    @Transaction
+    suspend fun updateTripWithInfo(trip: Trip, tripInfo: TripInfo, callback: (Result) -> Unit) {
+        var result: Result? = null
+        try {
+            Log.d(TAG, "Starting updateTripWithInfo")
+
+            // Step 1: Update Trip first
+            tripDao?.updateTrip(trip)
+            Log.d(TAG, "Updated Trip with ID: ${trip.id}")
+
+            // Step 2: Update TripInfo
+            val modifiedTripInfo = tripInfo.copy(tripId = trip.id)
+            tripInfoDao?.updateTripInfo(modifiedTripInfo)
+            Log.d(TAG, "Updated TripInfo with ID: ${tripInfo.id}")
+
+            result = Result(true, "Trip and TripInfo updated successfully")
+        } catch (e: SQLiteConstraintException) {
+            Log.e(TAG, "Foreign Key constraint failed: ${e.message}")
+            result = Result(false, "Foreign Key constraint failed: ${e.message}")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to update trip and trip info: ${e.message}")
+            result = Result(false, "Failed to update trip and trip info: ${e.message}")
+        } finally {
+            Log.d(TAG, "Completed updateTripWithInfo")
+        }
+        callback(result ?: Result(false, "General Error"))
+    }
+
+
+
 
     suspend fun updateTrip(trip: Trip) {
         tripDao?.updateTrip(trip)
