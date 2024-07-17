@@ -9,7 +9,7 @@ import com.example.mykumve.R
 
 object Utility {
     fun Date.toFormattedString(): String {
-        val format = SimpleDateFormat("dd/MM/yyyy hh:mm", Locale.getDefault())
+        val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
         return format.format(this)
     }
 
@@ -34,6 +34,15 @@ object TripInfoUtils {
             context.getString(R.string.difficulty_medium) -> DifficultyLevel.MEDIUM
             context.getString(R.string.difficulty_hard) -> DifficultyLevel.HARD
             else -> DifficultyLevel.UNSET
+        }
+    }
+
+    fun mapDifficultyToString(context: Context, difficulty: DifficultyLevel): String {
+        return when (difficulty) {
+            DifficultyLevel.EASY -> context.getString(R.string.difficulty_easy)
+            DifficultyLevel.MEDIUM -> context.getString(R.string.difficulty_medium)
+            DifficultyLevel.HARD -> context.getString(R.string.difficulty_hard)
+            DifficultyLevel.UNSET -> context.getString(R.string.difficulty_unset)
         }
     }
 
