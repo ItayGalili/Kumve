@@ -24,6 +24,7 @@ class SharedTripViewModel : ViewModel() {
     private lateinit var tripViewModel: TripViewModel
     var isCreatingTripMode: Boolean = false
     var isEditingExistingTrip: Boolean = false
+    var isNavigatedFromTripList: Boolean = false
 
     private val _partialTrip = MutableStateFlow<Trip?>(null)
     private val _partialTripInfo = MutableStateFlow<TripInfo?>(null)

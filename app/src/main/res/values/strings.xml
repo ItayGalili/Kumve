@@ -88,4 +88,5 @@
         <item>@string/southern_negev_and_eilat_mountains</item>
     </string-array>
     <string name="unknown_area">unkown area</string>
+    <string name="trip_invitation_list_title">Invitation List</string>
 </resources>

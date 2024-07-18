@@ -61,6 +61,7 @@ class TripManager : Fragment() {
             findNavController().navigate(R.id.action_travelManager_to_mainScreenManager)
         }
         Log.d(TAG, "Creating mode: ${sharedViewModel.isCreatingTripMode}\nEditing mode: ${sharedViewModel.isEditingExistingTrip}")
+        sharedViewModel.isNavigatedFromTripList = false
     }
 
     private fun loadFormData() {

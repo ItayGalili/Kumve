@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import com.example.mykumve.util.UserManager
 import android.view.LayoutInflater
 import android.view.View
@@ -36,6 +37,7 @@ class EquipmentFragment : Fragment() {
     private lateinit var adapter: EquipmentAdapter
     private lateinit var sharedPreferences: SharedPreferences
     private val sharedTripViewModel: SharedTripViewModel by activityViewModels()
+    private val TAG = EquipmentFragment::class.java.simpleName
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,8 +45,8 @@ class EquipmentFragment : Fragment() {
     ): View? {
         _binding = EquipmentListBinding.inflate(inflater, container, false)
         sharedTripViewModel.initTripViewModel(this) // Initialize TripViewModel
-        sharedPreferences =
-            requireContext().getSharedPreferences("equipment_prefs", Context.MODE_PRIVATE)
+        sharedPreferences = requireContext().getSharedPreferences("equipment_prefs", Context.MODE_PRIVATE)
+        Log.d(TAG, "onCreateView: View created")
         return binding.root
     }
 
@@ -70,16 +72,23 @@ class EquipmentFragment : Fragment() {
             handleCloseButton()
         }
 
-        loadTripData()
+        viewLifecycleOwner.lifecycleScope.launch {
+            loadTripData()
+        }
+        Log.d(TAG, "Creating mode: ${sharedTripViewModel.isCreatingTripMode}\nEditing mode: ${sharedTripViewModel.isEditingExistingTrip}")
     }
 
-    private fun loadTripData() {
+    private suspend fun loadTripData() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 sharedTripViewModel.trip.collectLatest { trip ->
-                    trip?.equipment?.let { equipmentList ->
-                        adapter.updateEquipmentList(equipmentList.toMutableList())
+                    if (trip != null) {
+                            trip.equipment?.let { equipmentList ->
+                            Log.d(TAG, "loadTripData: Equipment list loaded with size ${equipmentList.size}")
+                            adapter.updateEquipmentList(equipmentList.toMutableList())
+                        } ?: Log.e(TAG, "loadTripData: Equipment list is null or empty")
                     }
+                    else Log.e(TAG, "loadTripData: trip is null or empty")
                 }
             }
         }
@@ -88,15 +97,14 @@ class EquipmentFragment : Fragment() {
     private fun handleCloseButton() {
         if (saveCurrentEditedItem()) {
             saveData()
-            if (sharedTripViewModel.isCreatingTripMode || sharedTripViewModel.isEditingExistingTrip) {
-                findNavController().navigate(R.id.action_equipmentFragment_to_travelManager)
-            } else {
+            if (sharedTripViewModel.isNavigatedFromTripList) {
                 sharedTripViewModel.resetNewTripState()
                 findNavController().navigate(R.id.action_equipmentFragment_to_mainScreenManager)
+            } else {
+                findNavController().navigate(R.id.action_equipmentFragment_to_travelManager)
             }
         }
     }
-
 
     private fun addNewEquipment() {
         if (saveCurrentEditedItem()) {
@@ -104,58 +112,55 @@ class EquipmentFragment : Fragment() {
             val position = adapter.addEquipment(newEquipment)
             binding.invitationList.post {
                 binding.invitationList.scrollToPosition(position) // Scroll to the new item
-                val lastViewHolder =
-                    binding.invitationList.findViewHolderForAdapterPosition(position) as? EquipmentAdapter.EquipmentViewHolder
+                val lastViewHolder = binding.invitationList.findViewHolderForAdapterPosition(position) as? EquipmentAdapter.EquipmentViewHolder
                 lastViewHolder?.binding?.equipmentName?.requestFocus()
             }
+            Log.d(TAG, "addNewEquipment: New equipment added at position $position")
         }
     }
 
     private fun saveCurrentEditedItem(): Boolean {
         val lastPosition = adapter.itemCount - 1
-        val lastViewHolder =
-            binding.invitationList.findViewHolderForAdapterPosition(lastPosition) as? EquipmentAdapter.EquipmentViewHolder
+        val lastViewHolder = binding.invitationList.findViewHolderForAdapterPosition(lastPosition) as? EquipmentAdapter.EquipmentViewHolder
 
         lastViewHolder?.binding?.equipmentName?.let {
             val equipmentName = it.text.toString()
-            val updatedEquipment =
-                adapter.getEquipmentList()[lastPosition].copy(name = equipmentName)
+            val updatedEquipment = adapter.getEquipmentList()[lastPosition].copy(name = equipmentName)
             adapter.updateEquipment(lastPosition, updatedEquipment)
             it.clearFocus()
             val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(it.windowToken, 0)
+            Log.d(TAG, "saveCurrentEditedItem: Equipment item updated at position $lastPosition with name $equipmentName")
         }
 
-        return if (adapter.getEquipmentList().isNotEmpty() && adapter.getEquipmentList()
-                .lastOrNull()?.name.isNullOrEmpty()
-        ) {
-            Toast.makeText(context, "Please fill the last equipment item.", Toast.LENGTH_SHORT)
-                .show()
+        return if (adapter.getEquipmentList().isNotEmpty() && adapter.getEquipmentList().lastOrNull()?.name.isNullOrEmpty()) {
+            Toast.makeText(context, "Please fill the last equipment item.", Toast.LENGTH_SHORT).show()
             false
         } else {
             true
         }
     }
 
-
     private fun saveData() {
-        val filteredList = adapter.getEquipmentList().filter { it.name.isNotEmpty() }
-            .toMutableList() //don't save empty items
+        val filteredList = adapter.getEquipmentList().filter { it.name.isNotEmpty() }.toMutableList() //don't save empty items
         sharedTripViewModel.updateEquipment(filteredList)
+        Log.d(TAG, "saveData: Equipment data saved with size ${filteredList.size}")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        Log.d(TAG, "onDestroyView: View destroyed")
     }
 }
 
 class EquipmentAdapter(private val equipmentList: MutableList<Equipment>) :
     RecyclerView.Adapter<EquipmentAdapter.EquipmentViewHolder>() {
 
+    private val TAG = EquipmentAdapter::class.java.simpleName
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EquipmentViewHolder {
-        val binding =
-            EquipmentCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = EquipmentCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return EquipmentViewHolder(binding)
     }
 
@@ -163,6 +168,7 @@ class EquipmentAdapter(private val equipmentList: MutableList<Equipment>) :
         equipmentList.clear()
         equipmentList.addAll(newEquipmentList)
         notifyDataSetChanged()
+        Log.d(TAG, "updateEquipmentList: Equipment list updated with size ${equipmentList.size}")
     }
 
     override fun onBindViewHolder(holder: EquipmentViewHolder, position: Int) {
@@ -176,12 +182,14 @@ class EquipmentAdapter(private val equipmentList: MutableList<Equipment>) :
         equipmentList.add(equipment)
         val position = equipmentList.size - 1
         notifyItemInserted(equipmentList.size - 1)
+        Log.d(TAG, "addEquipment: Equipment added at position $position")
         return position
     }
 
     fun removeEquipment(position: Int) {
         equipmentList.removeAt(position)
         notifyItemRemoved(position)
+        Log.d(TAG, "removeEquipment: Equipment removed from position $position")
     }
 
     fun getEquipmentList(): MutableList<Equipment> {
@@ -191,25 +199,24 @@ class EquipmentAdapter(private val equipmentList: MutableList<Equipment>) :
     fun updateEquipment(position: Int, updatedEquipment: Equipment) {
         equipmentList[position] = updatedEquipment
         notifyItemChanged(position)
+        Log.d(TAG, "updateEquipment: Equipment updated at position $position with name ${updatedEquipment.name}")
     }
 
     class EquipmentViewHolder(internal val binding: EquipmentCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+        private val TAG = EquipmentViewHolder::class.java.simpleName
+
         fun bind(equipment: Equipment, adapter: EquipmentAdapter) {
             UserManager.getUser()?.let {
                 val userId = it.id
                 val equipmentName = Editable.Factory.getInstance().newEditable(equipment.name)
-                if (equipmentName.isBlank()) binding.equipmentName.hint =
-                    "New Equipment ${adapter.itemCount}"
+                if (equipmentName.isBlank()) binding.equipmentName.hint = "New Equipment ${adapter.itemCount}"
 
                 val userFullName = if (equipment.done) UserUtils.getFullName(it) else ""
                 binding.equipmentName.text = equipmentName
                 binding.nameRes.text = userFullName
                 binding.equipmentResponsibility.isChecked = equipment.done
-
-                // Reset the background color based on the done status
-
 
                 binding.equipmentResponsibility.setOnClickListener {
                     val newDoneStatus = !equipment.done
@@ -225,15 +232,17 @@ class EquipmentAdapter(private val equipmentList: MutableList<Equipment>) :
                         userId = if (newDoneStatus) userId else null
                     )
                     adapter.updateEquipment(adapterPosition, updatedEquipment)
+                    Log.d(TAG, "bind: Equipment responsibility toggled for item at position $adapterPosition")
                 }
             }
         }
-
     }
 }
 
 class SwipeToDeleteCallback(private val adapter: EquipmentAdapter) :
     ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+
+    private val TAG = SwipeToDeleteCallback::class.java.simpleName
 
     override fun onMove(
         recyclerView: RecyclerView,
@@ -246,5 +255,6 @@ class SwipeToDeleteCallback(private val adapter: EquipmentAdapter) :
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         val position = viewHolder.adapterPosition
         adapter.removeEquipment(position)
+        Log.d(TAG, "onSwiped: Equipment swiped and removed at position $position")
     }
 }

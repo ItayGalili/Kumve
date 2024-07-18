@@ -71,18 +71,20 @@ class TripAdapter(
                     .into(binding.itemImage)
             }
 
-//            sharedViewModel.selectExistingTripWithInfo(tripWithInfo)
-//            tripInfo?.let { sharedViewModel.selectExistingTripInfo(it) }
-
             binding.participantListCardBtn.setOnClickListener {
+                sharedViewModel.isNavigatedFromTripList = true
+                sharedViewModel.selectExistingTripWithInfo(tripWithInfo)
                 it.findNavController().navigate(R.id.action_mainScreenManager_to_equipmentFragment)
             }
 
             binding.partnersCard.setOnClickListener {
+                sharedViewModel.isNavigatedFromTripList = true
+                sharedViewModel.selectExistingTripWithInfo(tripWithInfo)
                 it.findNavController().navigate(R.id.action_mainScreenManager_to_partnerListFragment)
             }
 
             itemView.setOnLongClickListener {
+                sharedViewModel.isNavigatedFromTripList = true
                 onItemLongClickListener?.invoke(tripWithInfo)
                 true
             }

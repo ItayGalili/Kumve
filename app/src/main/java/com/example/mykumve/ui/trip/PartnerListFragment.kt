@@ -3,6 +3,7 @@ package com.example.mykumve.ui.trip
 import androidx.recyclerview.widget.RecyclerView
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +29,7 @@ import kotlinx.coroutines.launch
 
 class PartnerListFragment : Fragment() {
 
+    val TAG = PartnerListFragment::class.java.simpleName
     private lateinit var binding: FragmentPartnerListBinding
     private lateinit var partnerListAdapter: PartnerListAdapter
     private lateinit var currentUser: User
@@ -56,15 +58,16 @@ class PartnerListFragment : Fragment() {
         binding.showInvitationBtn.setOnClickListener{
             findNavController().navigate(R.id.action_partnerListFragment_to_invitationListFragment)
         }
+        Log.d(TAG, "Creating mode: ${sharedTripViewModel.isCreatingTripMode}\nEditing mode: ${sharedTripViewModel.isEditingExistingTrip}")
         return binding.root
     }
 
     private fun handleCloseButton() {
-        if (sharedTripViewModel.isCreatingTripMode || sharedTripViewModel.isEditingExistingTrip) {
-            findNavController().navigate(R.id.action_partnerListFragment_to_travelManager)
-        } else {
+        if (sharedTripViewModel.isNavigatedFromTripList) {
             sharedTripViewModel.resetNewTripState()
             findNavController().navigate(R.id.action_partnerListFragment_to_mainScreenManager)
+        } else {
+            findNavController().navigate(R.id.action_partnerListFragment_to_travelManager)
         }
     }
 

@@ -87,7 +87,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     fun fetchUserByPhone(phone: String) {
         viewModelScope.launch {
             userRepository.getUserByPhone(phone)
-                ?.stateIn(viewModelScope, SharingStarted.Lazily, null)
+                ?.distinctUntilChanged()
                 ?.collectLatest { user ->
                     _userByPhone.emit(user)
                 }
