@@ -1,4 +1,3 @@
-
 package com.example.mykumve.ui.main
 
 import android.os.Bundle
@@ -357,6 +356,7 @@ class MainScreenManager : Fragment() {
         sharedViewModel.selectExistingTripWithInfo(tripWithInfo)
         Log.v(TAG, "Navigating to travelManager with trip: ${tripWithInfo.trip.title}, ${tripWithInfo.trip.id}")
 
+        findNavController().navigate(R.id.action_mainScreenManager_to_travelManager)
     }
 
     override fun onDestroyView() {
