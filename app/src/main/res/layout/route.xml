@@ -107,6 +107,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="save"
-        android:id="@+id/save"
+        android:id="@+id/route_save_button"
         />
 </LinearLayout>

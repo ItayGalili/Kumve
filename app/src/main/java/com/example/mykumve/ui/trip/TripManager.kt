@@ -56,13 +56,11 @@ class TripManager : Fragment() {
 
         loadFormData()
 
-
-        sharedViewModel.isEditingExistingTrip = true
-
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             sharedViewModel.isEditingExistingTrip = false
             findNavController().navigate(R.id.action_travelManager_to_mainScreenManager)
         }
+        Log.d(TAG, "Creating mode: ${sharedViewModel.isCreatingTripMode}\nEditing mode: ${sharedViewModel.isEditingExistingTrip}")
     }
 
     private fun loadFormData() {
@@ -76,10 +74,13 @@ class TripManager : Fragment() {
                         binding.description.setText(trip.description.toString())
                         binding.dateStartPick.text = timestampToString(trip.gatherTime)
                         binding.dateEndPick.text = timestampToString(trip.endDate)
-                        Log.v(TAG, "Trip data loaded: ${trip.title}, ${trip.id}")
+                        Log.d(TAG, "Trip data loaded. title: ${trip.title}, id: ${trip.id}")
                     } else {
                         Log.e(TAG, "No trip data to load.")
                     }
+                sharedViewModel.tripInfo.collectLatest { tripInfo ->
+                    Log.d(TAG, "loadFromData, trip info title: ${tripInfo?.title}, trip info id: ${tripInfo?.id}")
+                }
                 }
             }
         }
@@ -165,9 +166,11 @@ class TripManager : Fragment() {
                 "Caching trip." + if (sharedViewModel.isCreatingTripMode)
                     " Creating trip mode" else " Selecting existing trip"
             )
+
             val tempTrip = formToTripObject(user)
             val tripInfo = sharedViewModel.tripInfo.value // Assuming tripInfo is already set
 
+            Log.d(TAG, "Caching trip id: ${tempTrip.id} and tripInfo: ${tripInfo?.id}")
             if (sharedViewModel.isCreatingTripMode) {
                 sharedViewModel.setPartialTrip(tempTrip)
                 tripInfo?.let { sharedViewModel.setPartialTripInfo(it) }
@@ -276,6 +279,7 @@ class TripManager : Fragment() {
         invitationList: List<TripInvitation>? = null,
 
         ): Trip {
+        val id = sharedViewModel.trip.value?.id ?: 0
         val title = binding.nameTrip.text.toString()
         val description = binding.description.text.toString()
         val gatherTime = startDate ?: sharedViewModel.trip.value?.gatherTime
@@ -296,6 +300,7 @@ class TripManager : Fragment() {
 
         // Create a new Trip object with the provided details
         val trip = Trip(
+            id = id,
             title = title,
             gatherTime = gatherTime,
             endDate = endTime,

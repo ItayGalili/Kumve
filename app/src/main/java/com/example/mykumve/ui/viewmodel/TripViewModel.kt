@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
@@ -12,6 +13,7 @@ import com.example.mykumve.data.db.repository.TripRepository
 import com.example.mykumve.data.db.repository.UserRepository
 import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.TripInfo
+import com.example.mykumve.util.Result
 import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.util.TripInvitationStatus
@@ -39,6 +41,9 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _tripsWithInfo = MutableStateFlow<List<TripWithInfo>>(emptyList())
     val tripsWithInfo: StateFlow<List<TripWithInfo>> get() = _tripsWithInfo.asStateFlow()
+
+    private val _operationResult = MutableSharedFlow<Result?>()
+    val operationResult: SharedFlow<Result?> get() = _operationResult
 
     fun fetchTripsByParticipantUserIdWithInfo(userId: Long) {
         viewModelScope.launch {
@@ -114,11 +119,16 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchAllTrips() {
         viewModelScope.launch {
-            tripRepository.getAllTrips()
-                ?.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-                ?.collectLatest { trips ->
-                    _trips.value = trips
-                }
+            try {
+                tripRepository.getAllTrips()
+                    ?.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+                    ?.collectLatest { trips ->
+                        _trips.value = trips
+                        _operationResult.emit(Result(true, "Fetched all trips successfully"))
+                    }
+            } catch (e: Exception) {
+                _operationResult.emit(Result(false, "Failed to fetch trips: ${e.message}"))
+            }
         }
     }
 
@@ -155,16 +165,54 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
             tripInfoRepository.insertTripInfo(tripInfo)
         }
     }
+    fun addTripWithInfo(
+        trip: Trip,
+        tripInfo: TripInfo,
+        lifecycleOwner: LifecycleOwner
+    ) {
+        Log.d(TAG, "Starting addTripWithInfo")
 
-    fun addTripWithInfo(trip: Trip, tripInfo: TripInfo) {
-        viewModelScope.launch {
+        lifecycleOwner.lifecycleScope.launch {
             try {
-                tripRepository.insertTripWithInfo(trip, tripInfo)
+                tripRepository.insertTripWithInfo(trip, tripInfo) { result ->
+                    lifecycleOwner.lifecycleScope.launch {
+                        _operationResult.emit(result)
+                    }
+                }
             } catch (e: Exception) {
-                Log.e("TripViewModel", "Failed to insert trip and trip info: ${e.message}")
+                Log.e(TAG, "Failed to insert trip and trip info: ${e.message}")
+                lifecycleOwner.lifecycleScope.launch {
+                    _operationResult.emit(Result(false, "Failed to insert trip and trip info: ${e.message}"))
+                }
             }
         }
     }
+
+    fun updateTripWithInfo(
+        trip: Trip,
+        tripInfo: TripInfo,
+        lifecycleOwner: LifecycleOwner
+    ) {
+        Log.d(TAG, "Starting updateTripWithInfo")
+
+        lifecycleOwner.lifecycleScope.launch {
+            try {
+                tripRepository.updateTripWithInfo(trip, tripInfo) { result ->
+                    lifecycleOwner.lifecycleScope.launch {
+                        _operationResult.emit(result)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to update trip and trip info: ${e.message}")
+                lifecycleOwner.lifecycleScope.launch {
+                    _operationResult.emit(Result(false, "Failed to update trip and trip info: ${e.message}"))
+                }
+            }
+        }
+    }
+
+
+
 
     fun updateTrip(trip: Trip) {
         viewModelScope.launch {
@@ -184,9 +232,16 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     fun deleteTrip(trip: Trip) {
         viewModelScope.launch {
-            tripRepository.deleteTrip(trip)
+            try {
+                tripRepository.deleteTrip(trip)
+                _operationResult.emit(Result(true, "Trip deleted successfully"))
+                fetchAllTrips() // Ensure the trip list is updated after deletion
+            } catch (e: Exception) {
+                _operationResult.emit(Result(false, "Failed to delete trip: ${e.message}"))
+            }
         }
     }
+
 
     fun deleteTripInfo(tripInfo: TripInfo) {
         viewModelScope.launch {

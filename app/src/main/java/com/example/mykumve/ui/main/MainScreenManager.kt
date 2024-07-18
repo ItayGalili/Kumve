@@ -170,21 +170,43 @@ class MainScreenManager : Fragment() {
 
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                Toast.makeText(
-                    requireContext(),
-                    "DELETING Trip...",
-                    Toast.LENGTH_SHORT
-                ).show()
                 val tripWithInfo = tripAdapter.tripsWithInfo[viewHolder.adapterPosition]
                 val trip = tripWithInfo.trip
+                Toast.makeText(
+                    requireContext(),
+                    "Deleting Trip: ${trip.title}",
+                    Toast.LENGTH_SHORT
+                ).show()
                 Log.d(
                     TAG, "Swipe action, deleting ${trip.title} " +
                             "on ${viewHolder.adapterPosition} index"
                 )
+
                 tripViewModel.deleteTrip(trip)
-                tripAdapter.notifyItemRemoved(viewHolder.adapterPosition)
+
+                viewLifecycleOwner.lifecycleScope.launch {
+                    repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        tripViewModel.operationResult.collectLatest { result ->
+                            if (result?.success == true) {
+                                // Re-fetch the trip list to ensure the UI is updated correctly
+                                tripViewModel.fetchAllTrips()
+                                tripAdapter.notifyItemRemoved(viewHolder.adapterPosition)
+                            } else {
+                                // Handle deletion failure, e.g., show a Toast or Snackbar
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Failed to delete trip: ${result?.reason}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                // Notify the adapter that the item has not been removed
+                                tripAdapter.notifyItemChanged(viewHolder.adapterPosition)
+                            }
+                        }
+                    }
+                }
             }
         }).attachToRecyclerView(binding.mainRecyclerView)
+        Log.d(TAG, "Creating mode: ${sharedViewModel.isCreatingTripMode}\nEditing mode: ${sharedViewModel.isEditingExistingTrip}")
     }
 
     private fun logTripsWithInfo(tripsWithInfo: List<TripWithInfo>) {

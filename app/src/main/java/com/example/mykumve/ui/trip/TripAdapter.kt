@@ -71,7 +71,7 @@ class TripAdapter(
                     .into(binding.itemImage)
             }
 
-            sharedViewModel.selectExistingTripWithInfo(tripWithInfo)
+//            sharedViewModel.selectExistingTripWithInfo(tripWithInfo)
 //            tripInfo?.let { sharedViewModel.selectExistingTripInfo(it) }
 
             binding.participantListCardBtn.setOnClickListener {
