@@ -8,12 +8,20 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.mykumve.R
+import com.example.mykumve.ui.viewmodel.UserViewModel
 import com.example.mykumve.util.EncryptionUtils
 import com.example.mykumve.util.UserManager
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class ChangePasswordFragment : DialogFragment() {
 
+    private val userViewModel: UserViewModel by activityViewModels()
     private lateinit var previousPasswordEditText: EditText
     private lateinit var newPasswordEditText: EditText
     private lateinit var confirmNewPasswordEditText: EditText
@@ -50,8 +58,21 @@ class ChangePasswordFragment : DialogFragment() {
                                         )
                                             .show()
                                     } else {
-                                        //val newpasswordHash = EncryptionUtils.hashPassword(newPassword, user.salt)
-                                        //change password for real //todo
+                                        val newPasswordHash = EncryptionUtils.hashPassword(newPassword, user.salt)
+                                        userViewModel.updatePassword(user, newPasswordHash)
+                                        viewLifecycleOwner.lifecycleScope.launch {
+                                            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                                                userViewModel.operationResult.collectLatest { result ->
+                                                    if (result.success) {
+                                                        // Handle success, e.g., show a success message
+                                                        Toast.makeText(requireContext(), result.reason, Toast.LENGTH_SHORT).show()
+                                                    } else {
+                                                        // Handle failure, e.g., show a failure message
+                                                        Toast.makeText(requireContext(), result.reason, Toast.LENGTH_SHORT).show()
+                                                    }
+                                                }
+                                            }
+                                        }
                                         Toast.makeText(
                                             requireContext(),
                                             "password changed successfully",
