@@ -1,6 +1,3 @@
-
-
-
 package com.example.mykumve.ui.menu
 
 import android.net.Uri
@@ -17,6 +14,7 @@ import com.example.mykumve.R
 import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.MyProfilePageBinding
 import com.example.mykumve.ui.viewmodel.UserViewModel
+import com.example.mykumve.util.EncryptionUtils
 import com.example.mykumve.util.ImagePickerUtil
 import com.example.mykumve.util.UserManager
 import com.example.mykumve.util.UserUtils
@@ -36,6 +34,8 @@ class MyProfile : Fragment(), CoroutineScope {
     private lateinit var imagePickerUtil: ImagePickerUtil
     private lateinit var currentUser: User
     private val userViewModel: UserViewModel by activityViewModels()
+    private var imageUri: String? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,6 +44,7 @@ class MyProfile : Fragment(), CoroutineScope {
     ): View? {
         _binding = MyProfilePageBinding.inflate(inflater, container, false)
         val view = binding.root
+        // Initialize ImagePickerUtil
         imagePickerUtil = ImagePickerUtil(this) { uri ->
             uri?.let {
                 binding.profilePic.setImageURI(it)
@@ -57,10 +58,19 @@ class MyProfile : Fragment(), CoroutineScope {
             UserManager.getUser()?.let { user ->
                 currentUser = user
                 binding.profilePic.setImageURI(user.photo?.toUri())
-                binding.profileUserFullNameTv.setText(UserUtils.getFullName(user))
-                binding.profilePic.setOnLongClickListener {
-                    imagePickerUtil.pickImage()
-                    true
+                if (user.surname!=null){
+                    binding.profileUserFullNameTv.setText(user.firstName+" "+user.surname)                }
+                else{
+                    binding.profileUserFullNameTv.setText(user.firstName)
+                }
+                binding.changeProfilePic.setOnClickListener() {
+                    showImagePickerDialog()
+                }
+                binding.profileEmail.setText(user.email)
+                binding.profilePhoneNumber.setText(user.phone)
+                binding.changePassword.setOnClickListener(){
+                    showChangePasswordDialog()
+
                 }
             }
         } else {
@@ -72,7 +82,35 @@ class MyProfile : Fragment(), CoroutineScope {
         return view
     }
 
-    private suspend fun updateUserProfilePic(uri: Uri) {
+    private fun showImagePickerDialog() {
+        val items = arrayOf<CharSequence>("Take Photo", "Choose from Library", "Cancel")
+        val builder = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        builder.setTitle("Update Profile Picture")
+        builder.setItems(items) { dialog, item ->
+            when {
+                items[item] == "Take Photo" -> {
+                    imagePickerUtil.requestCaptureImagePermission()
+                    dialog.dismiss()
+                }
+                items[item] == "Choose from Library" -> {
+                    imagePickerUtil.pickImage()
+                    dialog.dismiss()
+                }
+                items[item] == "Cancel" -> {
+                    dialog.dismiss()
+                }
+            }
+        }
+        builder.show()
+    }
+
+    private fun showChangePasswordDialog() {
+        val dialogFragment = ChangePasswordFragment()
+        dialogFragment.show(parentFragmentManager, "ChangePasswordFragment")
+    }
+
+
+    private fun updateUserProfilePic(uri: Uri) {
         var error = ""
         if ((::currentUser.isInitialized)) {
             currentUser.photo = uri.toString()
@@ -81,7 +119,7 @@ class MyProfile : Fragment(), CoroutineScope {
                     if (result.success) {
                         Toast.makeText(
                             requireContext(),
-                            "Update successfully",
+                            "Profile Picture Updated successfully",
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {

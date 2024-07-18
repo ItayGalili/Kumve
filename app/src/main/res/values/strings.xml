@@ -1,5 +1,18 @@
 <resources>
     <string name="app_name">MyKumve</string>
+    <string-array name="locations_array">
+        <item>Ramat HaGolan</item>
+        <item>Galilee</item>
+        <item>Jezreel Valley</item>
+        <item>Tiberias</item>
+        <item>Haifa</item>
+        <item>Sharon</item>
+        <item>Central District</item>
+        <item>Shfela</item>
+        <item>Jerusalem</item>
+        <item>Negev</item>
+        <item>Arava</item>
+    </string-array>
     <string name="difficulty_unset">Unset</string>
     <string name="difficulty_easy">Easy</string>
     <string name="difficulty_medium">Medium</string>
@@ -46,7 +59,6 @@
     <string name="title_is_required">Title is required</string>
     <string name="notifications">Notifications</string>
     <string name="show_invitations">Show Invitations</string>
-    <string name="unknown_area">Unknown Area</string>
 
     <string-array name="difficulty_options">
         <item>@string/difficulty_unset</item>
@@ -75,4 +87,5 @@
         <item>@string/central_negev_and_craters</item>
         <item>@string/southern_negev_and_eilat_mountains</item>
     </string-array>
+    <string name="unknown_area">unkown area</string>
 </resources>

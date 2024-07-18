@@ -15,6 +15,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
 import com.example.mykumve.data.data_classes.Point
+import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.TripInfo
 import com.example.mykumve.databinding.RouteBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel

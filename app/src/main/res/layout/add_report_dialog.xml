@@ -1,0 +1,30 @@
+<!-- res/layout/add_report_dialog.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/report_image"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:src="@drawable/my_alerts"/>
+
+    <EditText
+        android:id="@+id/report_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Report Description"
+        android:padding="16dp"
+        android:inputType="textMultiLine"
+        android:maxLines="3"
+        android:scrollbars="vertical"/>
+
+    <Button
+        android:id="@+id/report_now"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/statusBarColor"
+        android:text="Report Now" />
+
+</LinearLayout>
