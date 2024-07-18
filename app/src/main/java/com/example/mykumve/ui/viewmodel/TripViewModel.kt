@@ -91,6 +91,7 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+/*
     fun fetchTripInfoByTripId(tripId: Long) {
         viewModelScope.launch {
             tripRepository.getTripById(tripId)
@@ -106,6 +107,7 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
                 }
         }
     }
+*/
 
     fun fetchTripInfoById(id: Long) {
         viewModelScope.launch {
@@ -210,9 +212,6 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
-
-
-
 
     fun updateTrip(trip: Trip) {
         viewModelScope.launch {

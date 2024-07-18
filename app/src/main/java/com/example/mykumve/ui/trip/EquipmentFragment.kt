@@ -13,6 +13,9 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +26,8 @@ import com.example.mykumve.databinding.EquipmentListBinding
 import com.example.mykumve.databinding.EquipmentCardBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.util.UserUtils
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class EquipmentFragment : Fragment() {
 
@@ -47,7 +52,7 @@ class EquipmentFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.invitationList.layoutManager = LinearLayoutManager(requireContext())
-        adapter = EquipmentAdapter(loadData())
+        adapter = EquipmentAdapter(mutableListOf()) // Initialize with an empty list
         binding.invitationList.adapter = adapter
 
         val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(adapter))
@@ -69,9 +74,13 @@ class EquipmentFragment : Fragment() {
     }
 
     private fun loadTripData() {
-        if (sharedTripViewModel.isCreatingTripMode) {
-            if (sharedTripViewModel.trip.value?.equipment == null) {
-                sharedTripViewModel.updateEquipment(mutableListOf())
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                sharedTripViewModel.trip.collectLatest { trip ->
+                    trip?.equipment?.let { equipmentList ->
+                        adapter.updateEquipmentList(equipmentList.toMutableList())
+                    }
+                }
             }
         }
     }
@@ -95,7 +104,8 @@ class EquipmentFragment : Fragment() {
             val position = adapter.addEquipment(newEquipment)
             binding.invitationList.post {
                 binding.invitationList.scrollToPosition(position) // Scroll to the new item
-                val lastViewHolder = binding.invitationList.findViewHolderForAdapterPosition(position) as? EquipmentAdapter.EquipmentViewHolder
+                val lastViewHolder =
+                    binding.invitationList.findViewHolderForAdapterPosition(position) as? EquipmentAdapter.EquipmentViewHolder
                 lastViewHolder?.binding?.equipmentName?.requestFocus()
             }
         }
@@ -103,19 +113,24 @@ class EquipmentFragment : Fragment() {
 
     private fun saveCurrentEditedItem(): Boolean {
         val lastPosition = adapter.itemCount - 1
-        val lastViewHolder = binding.invitationList.findViewHolderForAdapterPosition(lastPosition) as? EquipmentAdapter.EquipmentViewHolder
+        val lastViewHolder =
+            binding.invitationList.findViewHolderForAdapterPosition(lastPosition) as? EquipmentAdapter.EquipmentViewHolder
 
         lastViewHolder?.binding?.equipmentName?.let {
             val equipmentName = it.text.toString()
-            val updatedEquipment = adapter.getEquipmentList()[lastPosition].copy(name = equipmentName)
+            val updatedEquipment =
+                adapter.getEquipmentList()[lastPosition].copy(name = equipmentName)
             adapter.updateEquipment(lastPosition, updatedEquipment)
             it.clearFocus()
             val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(it.windowToken, 0)
         }
 
-        return if (adapter.getEquipmentList().isNotEmpty() && adapter.getEquipmentList().lastOrNull()?.name.isNullOrEmpty()) {
-            Toast.makeText(context, "Please fill the last equipment item..", Toast.LENGTH_SHORT).show()
+        return if (adapter.getEquipmentList().isNotEmpty() && adapter.getEquipmentList()
+                .lastOrNull()?.name.isNullOrEmpty()
+        ) {
+            Toast.makeText(context, "Please fill the last equipment item.", Toast.LENGTH_SHORT)
+                .show()
             false
         } else {
             true
@@ -124,13 +139,9 @@ class EquipmentFragment : Fragment() {
 
 
     private fun saveData() {
-        val filteredList = adapter.getEquipmentList().filter { it.name.isNotEmpty() }.toMutableList() //don't save empty items
+        val filteredList = adapter.getEquipmentList().filter { it.name.isNotEmpty() }
+            .toMutableList() //don't save empty items
         sharedTripViewModel.updateEquipment(filteredList)
-    }
-
-    private fun loadData(): MutableList<Equipment> {
-        val data = sharedTripViewModel.trip.value?.equipment?.toMutableList() ?: mutableListOf()
-        return data
     }
 
     override fun onDestroyView() {
@@ -146,6 +157,12 @@ class EquipmentAdapter(private val equipmentList: MutableList<Equipment>) :
         val binding =
             EquipmentCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return EquipmentViewHolder(binding)
+    }
+
+    fun updateEquipmentList(newEquipmentList: MutableList<Equipment>) {
+        equipmentList.clear()
+        equipmentList.addAll(newEquipmentList)
+        notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: EquipmentViewHolder, position: Int) {
@@ -183,7 +200,8 @@ class EquipmentAdapter(private val equipmentList: MutableList<Equipment>) :
             UserManager.getUser()?.let {
                 val userId = it.id
                 val equipmentName = Editable.Factory.getInstance().newEditable(equipment.name)
-                if (equipmentName.isBlank()) binding.equipmentName.hint = "New Equipment ${adapter.itemCount}"
+                if (equipmentName.isBlank()) binding.equipmentName.hint =
+                    "New Equipment ${adapter.itemCount}"
 
                 val userFullName = if (equipment.done) UserUtils.getFullName(it) else ""
                 binding.equipmentName.text = equipmentName

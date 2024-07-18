@@ -4,13 +4,18 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewModelScope
 import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.TripInfo
 import com.example.mykumve.data.model.TripInvitation
+import com.example.mykumve.util.Result
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class SharedTripViewModel : ViewModel() {
     val TAG = SharedTripViewModel::class.java.simpleName
@@ -22,6 +27,9 @@ class SharedTripViewModel : ViewModel() {
 
     private val _partialTrip = MutableStateFlow<Trip?>(null)
     private val _partialTripInfo = MutableStateFlow<TripInfo?>(null)
+
+    private val _operationResult = MutableSharedFlow<Result>()
+    val operationResult: SharedFlow<Result> = _operationResult
     val trip: StateFlow<Trip?>
         get() = if (isCreatingTripMode) _partialTrip.asStateFlow() else _selectedExistingTripWithInfo.value?.trip?.let {
             MutableStateFlow(
@@ -82,20 +90,23 @@ class SharedTripViewModel : ViewModel() {
         }
     }
 
-    fun updateEquipment(equipment: MutableList<Equipment>?) {
-        trip.value?.equipment =
-            equipment?.toMutableList() // Ensure the trip's equipment list is updated
-        if (!isCreatingTripMode) {
+    fun updateEquipment(equipment: List<Equipment>?) {
+        viewModelScope.launch {
             try {
-                trip.value?.let {
-                    tripViewModel.updateTrip(it) // Call TripViewModel to update the trip
+                val currentTrip = trip.value?.copy(equipment = equipment?.toMutableList())
+                if (currentTrip != null && !isCreatingTripMode) {
+                    tripViewModel.updateTrip(currentTrip)
+                    _operationResult.emit(Result(true, "Equipment updated successfully"))
+                } else {
+                    _operationResult.emit(Result(false, "Trip is null or in creating mode"))
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error with update equipment \n${e.message}")
+                _operationResult.emit(Result(false, "Error with update equipment: ${e.message}"))
             }
         }
-    }
 
+    }
     fun resetNewTripState() {
         if (!isEditingExistingTrip) {
             Log.d(
