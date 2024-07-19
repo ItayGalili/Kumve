@@ -34,7 +34,9 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     val tripInfo: StateFlow<TripInfo?> get() = _tripInfo.asStateFlow()
 
     private val _trips = MutableStateFlow<List<Trip>>(emptyList())
+    private val _tripsInfo = MutableStateFlow<List<TripInfo>>(emptyList())
     val trips: StateFlow<List<Trip>> get() = _trips.asStateFlow()
+    val tripsInfo: StateFlow<List<TripInfo>> get() = _tripsInfo.asStateFlow()
 
     private val _tripInvitations = MutableStateFlow<List<TripInvitation>>(emptyList())
     val tripInvitations: StateFlow<List<TripInvitation>> get() = _tripInvitations.asStateFlow()
@@ -130,6 +132,21 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
                     }
             } catch (e: Exception) {
                 _operationResult.emit(Result(false, "Failed to fetch trips: ${e.message}"))
+            }
+        }
+    }
+
+    fun fetchAllTripsInfo() {
+        viewModelScope.launch {
+            try {
+                tripRepository.getAllTripInfo()
+                    ?.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+                    ?.collectLatest { tripsInfo ->
+                        _tripsInfo.value = tripsInfo
+                        _operationResult.emit(Result(true, "Fetched all trips info successfully"))
+                    }
+            } catch (e: Exception) {
+                _operationResult.emit(Result(false, "Failed to fetch trips info: ${e.message}"))
             }
         }
     }

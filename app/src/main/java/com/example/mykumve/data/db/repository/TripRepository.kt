@@ -35,6 +35,9 @@ class TripRepository(application: Application) {
     fun getAllTrips(): Flow<List<Trip>>? {
         return tripDao?.getAllTrips()
     }
+    fun getAllTripInfo(): Flow<List<TripInfo>>? {
+        return tripInfoDao?.getAllTripInfo()
+    }
 
     fun getTripById(id: Long): Flow<Trip>? {
         return tripDao?.getTripById(id)
