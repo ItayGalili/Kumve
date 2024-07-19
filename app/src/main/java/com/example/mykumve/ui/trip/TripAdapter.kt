@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class TripAdapter(
-    var tripsWithInfo: List<TripWithInfo>,
+    var tripsWithInfo: MutableList<TripWithInfo>,
     private val sharedViewModel: SharedTripViewModel,
     var context: Context,
     private val lifecycleOwner: LifecycleOwner,
@@ -40,7 +40,7 @@ class TripAdapter(
                         trip?.let {
                             val updatedList = tripsWithInfo.map {
                                 if (it.trip.id == trip.id) TripWithInfo(trip, it.tripInfo) else it
-                            }
+                            }.toMutableList()
                             tripsWithInfo = updatedList
                             notifyItemChanged(tripsWithInfo.indexOfFirst { it.trip.id == trip.id })
                         }
@@ -101,4 +101,12 @@ class TripAdapter(
     override fun onBindViewHolder(holder: TripWithInfoViewHolder, position: Int) {
         holder.bind(tripsWithInfo[position], sharedViewModel)
     }
+
+    fun updateTripList(newTripList: List<TripWithInfo>) {
+        tripsWithInfo.clear()
+        tripsWithInfo.addAll(newTripList)
+        notifyDataSetChanged()
+    }
+
+
 }

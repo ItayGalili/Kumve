@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mykumve.ui.trip.TripAdapter
 import com.example.mykumve.R
-import com.example.mykumve.data.model.Trip
 import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.MainScreenBinding
 import com.example.mykumve.ui.main.MainActivity.Companion.DEBUG_MODE
@@ -36,6 +35,7 @@ import com.example.mykumve.ui.viewmodel.TripWithInfo
 import com.example.mykumve.util.TripInvitationStatus
 import com.example.mykumve.util.UserManager
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 class MainScreenManager : Fragment() {
@@ -94,7 +94,7 @@ class MainScreenManager : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         tripAdapter = TripAdapter(
-            emptyList(),
+            mutableListOf(),
             sharedViewModel,
             requireContext(),
             onItemLongClickListener = { tripWithInfo ->
@@ -129,7 +129,7 @@ class MainScreenManager : Fragment() {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
                         tripViewModel.fetchTripsByParticipantUserIdWithInfo(currentUser!!.id)
                         tripViewModel.tripsWithInfo.collectLatest { tripsWithInfo ->
-                            tripAdapter.tripsWithInfo = tripsWithInfo
+                            tripAdapter.updateTripList(tripsWithInfo)
                             tripAdapter.notifyDataSetChanged()
                             val welcomeMsg = binding.informationWhileEmpty
                             welcomeMsg.alpha = if (tripAdapter.itemCount > 0) 0f else 1f
@@ -169,41 +169,42 @@ class MainScreenManager : Fragment() {
 
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                deleteTrip(viewHolder)
+            }
+
+            private fun deleteTrip(viewHolder: RecyclerView.ViewHolder) {
                 val tripWithInfo = tripAdapter.tripsWithInfo[viewHolder.adapterPosition]
                 val trip = tripWithInfo.trip
-                Toast.makeText(
-                    requireContext(),
-                    "Deleting Trip: ${trip.title}",
-                    Toast.LENGTH_SHORT
-                ).show()
-                Log.d(
-                    TAG, "Swipe action, deleting ${trip.title} " +
-                            "on ${viewHolder.adapterPosition} index"
-                )
-
-                tripViewModel.deleteTrip(trip)
+                Toast.makeText(requireContext(), "Deleting Trip: ${trip.title}", Toast.LENGTH_SHORT).show()
+                Log.d(TAG, "Swipe action, deleting ${trip.title} on ${viewHolder.adapterPosition} index")
 
                 viewLifecycleOwner.lifecycleScope.launch {
-                    repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        tripViewModel.operationResult.collectLatest { result ->
-                            if (result?.success == true) {
-                                // Re-fetch the trip list to ensure the UI is updated correctly
-                                tripViewModel.fetchAllTrips()
-                                tripAdapter.notifyItemRemoved(viewHolder.adapterPosition)
-                            } else {
-                                // Handle deletion failure, e.g., show a Toast or Snackbar
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Failed to delete trip: ${result?.reason}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                // Notify the adapter that the item has not been removed
-                                tripAdapter.notifyItemChanged(viewHolder.adapterPosition)
+                    tripViewModel.deleteTrip(trip)
+                    observeDeleteResult(viewHolder)
+                }
+
+            }
+
+            private fun observeDeleteResult(viewHolder: RecyclerView.ViewHolder) {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        tripViewModel.operationResult
+                            .distinctUntilChanged()
+                            .collectLatest { result ->
+                                if (result?.success == true) {
+                                    Log.d(TAG, "Trip deleted successfully.")
+                                    tripAdapter.notifyItemRemoved(viewHolder.adapterPosition)
+                                } else {
+                                    Toast.makeText(requireContext(), "Failed to delete trip: ${result?.reason}", Toast.LENGTH_SHORT).show()
+//                                    tripAdapter.notifyItemChanged(viewHolder.adapterPosition)
+                                }
                             }
-                        }
                     }
                 }
             }
+
+
+
         }).attachToRecyclerView(binding.mainRecyclerView)
         Log.d(TAG, "Creating mode: ${sharedViewModel.isCreatingTripMode}\nEditing mode: ${sharedViewModel.isEditingExistingTrip}")
     }
