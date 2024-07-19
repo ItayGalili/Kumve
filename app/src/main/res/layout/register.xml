@@ -14,109 +14,171 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:textColor="@color/statusBarColor"
-        android:textSize="30sp"
-        android:layout_marginTop="10dp"
-        android:text="Register" />
-
-    <ImageButton
-        android:id="@+id/image_person_register"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center"
-        android:scaleType="fitCenter"
-        android:src="@android:drawable/ic_menu_upload"/>
-<TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Upload your profile picture"
-    android:gravity="center"
-    android:textColor="@color/statusBarColor"
-    />
+        android:textColor="@color/white"
+        android:textSize="35sp"
+        android:textStyle="bold"
+        android:layout_marginTop="35dp"
+        android:text="@string/register" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:layout_marginTop="15dp"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+        android:id="@+id/register_name"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColorHint="#C49649"
-        app:hintTextColor="@color/statusBarColor">
-        >
-
+        app:boxStrokeWidth="2dp"
+        app:boxStrokeColor="@color/white"
+        app:boxStrokeErrorColor="#FF0000"
+        app:boxCornerRadiusTopEnd="30dp"
+        app:boxCornerRadiusTopStart="30dp"
+        app:boxCornerRadiusBottomEnd="30dp"
+        app:boxCornerRadiusBottomStart="30dp"
+        app:boxBackgroundColor="@color/white"
+        android:alpha="0.8"
+        app:startIconDrawable="@drawable/full_name_vector"
+        app:startIconTint="#98640C"
+        android:layout_marginTop="16dp"
+        android:hint="Full Name"
+        app:hintTextColor="@color/ground"
+        android:textColorHint="@color/ground">
         <com.google.android.material.textfield.TextInputEditText
-
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter full name"
+            android:textColor="@color/ground"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+        android:id="@+id/register_email"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColorHint="#C49649"
-        app:hintTextColor="@color/statusBarColor"
-        app:helperTextTextColor="#BD1414">
-
-        >
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/password_register"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:hint="Enter password"
-
-            />
-    </com.google.android.material.textfield.TextInputLayout>
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColorHint="#C49649"
-        app:hintTextColor="@color/statusBarColor"
-        >
-
+        app:boxStrokeWidth="2dp"
+        app:boxStrokeColor="@color/white"
+        app:boxStrokeErrorColor="#FF0000"
+        app:boxCornerRadiusTopEnd="30dp"
+        app:boxCornerRadiusTopStart="30dp"
+        app:boxCornerRadiusBottomEnd="30dp"
+        app:boxCornerRadiusBottomStart="30dp"
+        app:boxBackgroundColor="@color/white"
+        android:alpha="0.8"
+        app:startIconDrawable="@drawable/full_name_vector"
+        app:startIconTint="#98640C"
+        android:layout_marginTop="16dp"
+        android:hint="Email"
+        app:hintTextColor="@color/ground"
+        android:textColorHint="@color/ground">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/email_register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter email adress"
+            android:textColor="@color/ground"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+        android:id="@+id/register_phone"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColorHint="#C49649"
-        app:hintTextColor="@color/statusBarColor"
-
-        >
-
+        app:boxStrokeWidth="2dp"
+        app:boxStrokeColor="@color/white"
+        app:boxStrokeErrorColor="#FF0000"
+        app:boxCornerRadiusTopEnd="30dp"
+        app:boxCornerRadiusTopStart="30dp"
+        app:boxCornerRadiusBottomEnd="30dp"
+        app:boxCornerRadiusBottomStart="30dp"
+        app:boxBackgroundColor="@color/white"
+        android:alpha="0.8"
+        app:startIconDrawable="@drawable/phone_number_vector"
+        app:startIconTint="#98640C"
+        android:layout_marginTop="16dp"
+        android:hint="Phone number"
+        app:hintTextColor="@color/ground"
+        android:textColorHint="@color/ground"
+        app:helperTextEnabled="true"
+        app:helperTextTextColor="@color/white"
+        app:helperText="*Must have a country code prefix">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/Phone_register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter phone number with +[country code]"
+            android:textColor="@color/ground"
             android:inputType="phone"
             android:digits="0123456789+"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
-
-    <Button
-        android:id="@+id/Register_Btn"
-        android:layout_width="wrap_content"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/register_password"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:boxStrokeWidth="2dp"
+        app:boxStrokeColor="@color/white"
+        app:boxStrokeErrorColor="#FF0000"
+        app:boxCornerRadiusTopEnd="30dp"
+        app:boxCornerRadiusTopStart="30dp"
+        app:boxCornerRadiusBottomEnd="30dp"
+        app:boxCornerRadiusBottomStart="30dp"
+        app:boxBackgroundColor="@color/white"
+        android:alpha="0.8"
+        app:startIconDrawable="@drawable/password_icon"
+        app:startIconTint="#98640C"
+        android:layout_marginTop="16dp"
+        app:endIconMode="password_toggle"
+        app:endIconTint="@color/ground"
+        android:hint="Choose a Password"
+        app:hintTextColor="@color/ground"
+        android:textColorHint="@color/ground"
+        app:helperTextEnabled="true"
+        app:helperTextTextColor="@color/white"
+        app:helperText="*at least 6 characters">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/password_register"
+            android:inputType="textPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/ground"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
+        app:cardCornerRadius="100dp"
+        android:alpha="0.8">
+        <ImageButton
+            android:id="@+id/image_person_register"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:backgroundTint="@color/white"
+            android:padding="40dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/add_photo_vector">
+        </ImageButton>
+    </androidx.cardview.widget.CardView>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Upload your profile picture"
         android:gravity="center"
-        android:backgroundTint="#C49649"
+        android:alpha="0.9"
+        android:textSize="17sp"
+        android:textColor="@color/white"
+        />
+    <android.widget.Button
+        android:id="@+id/Register_Btn"
+        android:layout_width="322dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/gradient_background_grey_to_brown"
         android:text="@string/register"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/white"/>
 
 </LinearLayout>

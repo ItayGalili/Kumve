@@ -25,16 +25,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Email"
-        android:textColorHint="@color/design_default_color_secondary_variant"
+        app:hintTextColor="@color/blueSky"
+        android:textColorHint="@color/blueSky"
         app:boxStrokeWidth="2dp"
-        app:boxStrokeColor="@color/black"
+        app:boxStrokeColor="@color/white"
         app:boxStrokeErrorColor="#FF0000"
         app:boxCornerRadiusTopStart="30dp"
         app:boxCornerRadiusBottomEnd="30dp"
         app:boxBackgroundColor="@color/white"
-        android:alpha="0.5"
+        android:alpha="0.7"
         app:startIconDrawable="@drawable/email_vector"
-        app:startIconTint="@color/design_default_color_secondary_variant"
+        app:startIconTint="#36A4FF"
         android:layout_below="@id/logo_image"
         android:layout_marginTop="16dp">
 
@@ -42,7 +43,7 @@
             android:id="@+id/email_ad"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/design_default_color_secondary_variant"
+            android:textColor="#36A4FF"
             android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -52,17 +53,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"
-        android:textColorHint="@color/design_default_color_secondary_variant"
+        app:hintTextColor="@color/blueSky"
+        android:textColorHint="@color/blueSky"
         app:boxStrokeWidth="2dp"
-        app:boxStrokeColor="@color/black"
+        app:boxStrokeColor="@color/white"
         app:boxStrokeErrorColor="#FF0000"
         app:boxCornerRadiusTopStart="30dp"
         app:boxCornerRadiusBottomEnd="30dp"
         app:boxBackgroundColor="@color/white"
-        android:alpha="0.5"
+        android:alpha="0.7"
         app:startIconDrawable="@drawable/password_icon"
-        app:startIconTint="@color/design_default_color_secondary_variant"
+        app:startIconTint="#36A4FF"
         app:endIconMode="password_toggle"
+        app:endIconTint="#36A4FF"
         android:layout_below="@id/email_input_layout"
         android:layout_marginTop="16dp">
 
@@ -70,20 +73,21 @@
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/design_default_color_secondary_variant"
+            android:textColor="#36A4FF"
             android:imeOptions="actionDone"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <android.widget.Button
         android:id="@+id/Login_Btn"
         android:layout_width="322dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/password_input_layout"
         android:layout_marginTop="20dp"
-        android:backgroundTint="#36A4FF"
+        android:background="@drawable/gradient_background_grey_to_blue"
         android:gravity="center"
+        android:textColor="@color/white"
         android:text="Login"
         android:textSize="20sp" />
 
@@ -99,16 +103,17 @@
         android:textSize="17sp"
         android:textStyle="bold" />
 
-    <Button
+    <android.widget.Button
         android:id="@+id/Register_Btn"
         android:layout_width="322dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/signup_prompt"
+        android:background="@drawable/gradient_background_grey_to_brown"
         android:layout_marginTop="5dp"
-        android:backgroundTint="@color/statusBarColor"
         android:gravity="center"
-        android:text="Register"
-        android:textSize="20sp" />
+        android:text="@string/register"
+        android:textSize="20sp"
+        android:textColor="@color/white"/>
 
 </RelativeLayout>
