@@ -6,9 +6,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/icon"
+        android:icon="@mipmap/kumve_android_app_icon"
         android:label="Kumve"
-        android:roundIcon="@drawable/icon"
+        android:roundIcon="@drawable/kumve_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyKumve.Starting"
         tools:targetApi="31">

@@ -47,10 +47,9 @@ class ChangePasswordFragment : DialogFragment() {
             if(UserManager.isLoggedIn()){
                 if (newPassword == confirmNewPassword) {
                     if(newPassword!=previousPassword){
-                        UserManager.getUser()?.let { user ->
-                            val oldpasswordHash = EncryptionUtils.hashPassword(previousPassword, user.salt)
-                                if (user.hashedPassword == oldpasswordHash) {
-                                    if (newPassword.isBlank() || newPassword.length < 6) {
+                        UserManager.getUser()?.let { user -> val oldpasswordHash = EncryptionUtils.hashPassword(previousPassword, user.salt)
+                            if (user.hashedPassword == oldpasswordHash) {
+                                if (newPassword.isBlank() || newPassword.length < 6) {
                                         Toast.makeText(
                                             requireContext(),
                                             R.string.error_invalid_password,
