@@ -133,7 +133,7 @@
         android:textColorHint="@color/ground"
         app:helperTextEnabled="true"
         app:helperTextTextColor="@color/white"
-        app:helperText="*at least 6 characters">
+        app:helperText="*At least 6 characters">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password_register"
             android:inputType="textPassword"

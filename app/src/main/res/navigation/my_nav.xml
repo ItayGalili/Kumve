@@ -158,7 +158,7 @@
         android:id="@+id/myProfile"
         android:name="com.example.mykumve.ui.menu.MyProfile"
         android:label="my_profile_page"
-        tools:layout="@layout/my_profile_page" />
+        tools:layout="@layout/my_profile_page_old" />
 
     <fragment
         android:id="@+id/partnerListFragment"
