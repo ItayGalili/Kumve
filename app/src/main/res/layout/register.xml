@@ -62,7 +62,7 @@
         app:boxCornerRadiusBottomStart="30dp"
         app:boxBackgroundColor="@color/white"
         android:alpha="0.8"
-        app:startIconDrawable="@drawable/full_name_vector"
+        app:startIconDrawable="@drawable/email_vector"
         app:startIconTint="#98640C"
         android:layout_marginTop="16dp"
         android:hint="Email"
