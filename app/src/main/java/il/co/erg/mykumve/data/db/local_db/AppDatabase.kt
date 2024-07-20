@@ -6,7 +6,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import il.co.erg.mykumve.data.model.*
+import il.co.erg.mykumve.data.db.local_db.model.Area
+import il.co.erg.mykumve.data.db.local_db.model.SubArea
+import il.co.erg.mykumve.data.db.local_db.model.Trip
+import il.co.erg.mykumve.data.db.local_db.model.TripInfo
+import il.co.erg.mykumve.data.db.local_db.model.TripInvitation
+import il.co.erg.mykumve.data.db.local_db.model.User
 
 @Database(
     entities = [User::class, Trip::class, TripInfo::class, TripInvitation::class, Area::class, SubArea::class],

@@ -2,10 +2,10 @@ package il.co.erg.mykumve.util
 
 import androidx.room.TypeConverter
 import il.co.erg.mykumve.data.data_classes.Equipment
-import il.co.erg.mykumve.data.model.Area
+import il.co.erg.mykumve.data.db.local_db.model.Area
 import il.co.erg.mykumve.data.data_classes.Point
-import il.co.erg.mykumve.data.model.TripInvitation
-import il.co.erg.mykumve.data.model.User
+import il.co.erg.mykumve.data.db.local_db.model.TripInvitation
+import il.co.erg.mykumve.data.db.local_db.model.User
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.Date

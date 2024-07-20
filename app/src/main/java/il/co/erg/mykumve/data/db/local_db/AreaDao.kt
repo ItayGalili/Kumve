@@ -2,8 +2,8 @@ package il.co.erg.mykumve.data.db.local_db
 
 import androidx.room.Dao
 import androidx.room.Query
-import il.co.erg.mykumve.data.model.Area
-import il.co.erg.mykumve.data.model.SubArea
+import il.co.erg.mykumve.data.db.local_db.model.Area
+import il.co.erg.mykumve.data.db.local_db.model.SubArea
 
 @Dao
 interface AreaDao {

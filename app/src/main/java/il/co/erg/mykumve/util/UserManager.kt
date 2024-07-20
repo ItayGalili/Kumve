@@ -3,7 +3,7 @@ package il.co.erg.mykumve.util
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import il.co.erg.mykumve.data.model.User
+import il.co.erg.mykumve.data.db.local_db.model.User
 import com.google.gson.Gson
 
 object UserManager {

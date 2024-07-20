@@ -1,7 +1,7 @@
 package il.co.erg.mykumve.ui.reports
 
 import androidx.lifecycle.ViewModel
-import il.co.erg.mykumve.data.model.Report
+import il.co.erg.mykumve.data.db.local_db.model.Report
 
 class ReportsViewModel : ViewModel() {
     private val reportsList = mutableListOf<Report>()

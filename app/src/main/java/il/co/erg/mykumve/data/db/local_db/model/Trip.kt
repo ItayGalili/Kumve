@@ -1,4 +1,4 @@
-package il.co.erg.mykumve.data.model
+package il.co.erg.mykumve.data.db.local_db.model
 
 import il.co.erg.mykumve.util.Converters
 import androidx.room.ColumnInfo

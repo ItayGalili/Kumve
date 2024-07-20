@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import il.co.erg.mykumve.R
-import il.co.erg.mykumve.data.model.Report
+import il.co.erg.mykumve.data.db.local_db.model.Report
 
 class ReportsAdapter(private var reports: MutableList<Report>) :
     RecyclerView.Adapter<ReportsAdapter.ReportViewHolder>() {

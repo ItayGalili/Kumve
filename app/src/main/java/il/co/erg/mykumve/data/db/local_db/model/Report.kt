@@ -1,4 +1,4 @@
-package il.co.erg.mykumve.data.model
+package il.co.erg.mykumve.data.db.local_db.model
 
 import android.graphics.Bitmap
 import java.text.SimpleDateFormat

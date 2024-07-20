@@ -12,7 +12,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import il.co.erg.mykumve.R
-import il.co.erg.mykumve.data.model.Report
+import il.co.erg.mykumve.data.db.local_db.model.Report
 import il.co.erg.mykumve.util.ImagePickerUtil
 import il.co.erg.mykumve.util.UserManager
 import il.co.erg.mykumve.util.UserUtils

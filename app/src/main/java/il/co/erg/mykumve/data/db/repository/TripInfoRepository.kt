@@ -4,7 +4,7 @@ import android.app.Application
 import il.co.erg.mykumve.data.db.local_db.TripInfoDao
 import il.co.erg.mykumve.data.db.local_db.AppDatabase
 import il.co.erg.mykumve.data.db.local_db.AreaDao
-import il.co.erg.mykumve.data.model.TripInfo
+import il.co.erg.mykumve.data.db.local_db.model.TripInfo
 import kotlinx.coroutines.flow.Flow
 
 

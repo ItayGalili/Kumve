@@ -11,7 +11,7 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import il.co.erg.mykumve.R
-import il.co.erg.mykumve.data.model.User
+import il.co.erg.mykumve.data.db.local_db.model.User
 import il.co.erg.mykumve.databinding.MyProfilePageBinding
 import il.co.erg.mykumve.ui.viewmodel.UserViewModel
 import il.co.erg.mykumve.util.EncryptionUtils

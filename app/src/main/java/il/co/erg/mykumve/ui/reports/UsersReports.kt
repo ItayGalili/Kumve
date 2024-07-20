@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import il.co.erg.mykumve.R
-import il.co.erg.mykumve.data.model.Report
+import il.co.erg.mykumve.data.db.local_db.model.Report
 import il.co.erg.mykumve.databinding.ReportsBinding
 
 class UsersReports : Fragment(), AddReportDialogFragment.OnReportAddedListener {

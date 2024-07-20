@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import il.co.erg.mykumve.R
 import il.co.erg.mykumve.databinding.FragmentPartnerListBinding
-import il.co.erg.mykumve.data.model.User
+import il.co.erg.mykumve.data.db.local_db.model.User
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
 import il.co.erg.mykumve.ui.viewmodel.TripViewModel
 import il.co.erg.mykumve.ui.viewmodel.UserViewModel

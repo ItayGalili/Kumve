@@ -8,7 +8,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
-import il.co.erg.mykumve.data.model.TripInvitation
+import il.co.erg.mykumve.data.db.local_db.model.TripInvitation
 import il.co.erg.mykumve.databinding.ItemNotificationBinding
 import il.co.erg.mykumve.ui.viewmodel.TripViewModel
 import il.co.erg.mykumve.util.TripInvitationStatus

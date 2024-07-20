@@ -8,7 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import il.co.erg.mykumve.data.db.repository.UserRepository
-import il.co.erg.mykumve.data.model.User
+import il.co.erg.mykumve.data.db.local_db.model.User
 import il.co.erg.mykumve.util.EncryptionUtils
 import il.co.erg.mykumve.util.Result
 import il.co.erg.mykumve.util.UserManager

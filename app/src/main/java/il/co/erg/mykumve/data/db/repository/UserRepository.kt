@@ -4,7 +4,7 @@ import android.app.Application
 import android.util.Log
 import il.co.erg.mykumve.data.db.local_db.AppDatabase
 import il.co.erg.mykumve.data.db.local_db.UserDao
-import il.co.erg.mykumve.data.model.User
+import il.co.erg.mykumve.data.db.local_db.model.User
 import il.co.erg.mykumve.util.Result
 import kotlinx.coroutines.flow.Flow
 

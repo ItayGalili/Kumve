@@ -7,8 +7,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import il.co.erg.mykumve.data.model.Trip
-import il.co.erg.mykumve.data.model.TripInfo
+import il.co.erg.mykumve.data.db.local_db.model.Trip
+import il.co.erg.mykumve.data.db.local_db.model.TripInfo
 import kotlinx.coroutines.flow.Flow
 
 @Dao

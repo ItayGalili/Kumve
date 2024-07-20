@@ -11,10 +11,10 @@ import androidx.lifecycle.viewModelScope
 import il.co.erg.mykumve.data.db.repository.TripInfoRepository
 import il.co.erg.mykumve.data.db.repository.TripRepository
 import il.co.erg.mykumve.data.db.repository.UserRepository
-import il.co.erg.mykumve.data.model.Trip
-import il.co.erg.mykumve.data.model.TripInfo
+import il.co.erg.mykumve.data.db.local_db.model.Trip
+import il.co.erg.mykumve.data.db.local_db.model.TripInfo
 import il.co.erg.mykumve.util.Result
-import il.co.erg.mykumve.data.model.TripInvitation
+import il.co.erg.mykumve.data.db.local_db.model.TripInvitation
 import il.co.erg.mykumve.data.data_classes.Equipment
 import il.co.erg.mykumve.util.TripInvitationStatus
 import kotlinx.coroutines.flow.*

@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import il.co.erg.mykumve.ui.trip.TripAdapter
 import il.co.erg.mykumve.R
-import il.co.erg.mykumve.data.model.User
+import il.co.erg.mykumve.data.db.local_db.model.User
 import il.co.erg.mykumve.databinding.MainScreenBinding
 import il.co.erg.mykumve.ui.main.MainActivity.Companion.DEBUG_MODE
 import il.co.erg.mykumve.ui.notifications.NotificationsFragment

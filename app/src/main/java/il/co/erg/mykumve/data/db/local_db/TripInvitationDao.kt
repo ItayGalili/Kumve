@@ -5,7 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import il.co.erg.mykumve.data.model.TripInvitation
+import il.co.erg.mykumve.data.db.local_db.model.TripInvitation
 import kotlinx.coroutines.flow.Flow
 
 @Dao
