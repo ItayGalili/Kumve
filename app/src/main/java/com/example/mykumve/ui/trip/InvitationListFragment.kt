@@ -170,13 +170,13 @@ class InvitationListFragment : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 sharedTripViewModel.trip.collectLatest { trip ->
                     Log.d(TAG, "observeTripInvitations. invitations: ${trip?.invitations}")
-                    trip?.let {
+                    Log.d(TAG, "observeTripInvitations. user ids: ${trip?.invitations?.map { it.userId }}")
+                    trip?.let {trip ->
                         if (sharedTripViewModel.isCreatingTripMode) {
                             // For temporary trip (partialTrip)
-                            val partialTrip = it
-                            invitationListAdapter.submitList(partialTrip.invitations.toMutableList())
+                            invitationListAdapter.submitList(trip.invitations.toMutableList())
                         } else {
-                            tripViewModel.fetchTripInvitationsByTripId(it.id) // Ensure this is called to fetch data
+                            tripViewModel.fetchTripInvitationsByTripId(trip.id) // Ensure this is called to fetch data
                             tripViewModel.tripInvitations.collectLatest { invitations ->
                                 invitationListAdapter.submitList(invitations.toMutableList())
                             }

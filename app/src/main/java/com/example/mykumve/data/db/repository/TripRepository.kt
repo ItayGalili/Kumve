@@ -67,8 +67,9 @@ class TripRepository(application: Application) {
 
                 callback(
                     Result(
-                        true,
-                        "Trip and TripInfo inserted successfully"
+                        success = true,
+                        reason = "Trip and TripInfo inserted successfully",
+                        data = mapOf("tripId" to tripId, "tripInfoId" to tripInfoId)
                     )
                 )
             } else {

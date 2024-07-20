@@ -53,7 +53,8 @@ enum class ShareLevel(val value: Int) {
 
 data class Result(
     val success: Boolean,
-    val reason: String
+    val reason: String,
+    val data: Map<String, Any?>? = emptyMap()
 )
 
 enum class NavigationArgs(val key: String) {

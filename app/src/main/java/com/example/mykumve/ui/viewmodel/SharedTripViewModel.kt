@@ -98,7 +98,6 @@ class SharedTripViewModel : ViewModel() {
                 if (isCreatingTripMode) {
                     _partialTrip.emit(updatedTrip)
                 } else {
-
                     _selectedExistingTripWithInfo.value?.trip = updatedTrip
                     _selectedExistingTripWithInfo.emit(_selectedExistingTripWithInfo.value)
                 }

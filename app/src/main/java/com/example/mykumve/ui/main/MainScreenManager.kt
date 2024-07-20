@@ -275,9 +275,10 @@ class MainScreenManager : Fragment() {
     }
 
     private fun observeUserTripInvitations(userId: Long) {
-        tripViewModel.fetchTripInvitationsForUser(userId)
-
         viewLifecycleOwner.lifecycleScope.launch {
+            // Fetch trip invitations for the user
+            tripViewModel.fetchTripInvitationsForUser(userId)
+
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 tripViewModel.tripInvitations.collectLatest { invitations ->
                     // Handle the trip invitations
@@ -293,6 +294,11 @@ class MainScreenManager : Fragment() {
                             "You have $pendingInvitationsCount new invitations",
                             Toast.LENGTH_SHORT
                         ).show()
+                        pendingInvitations.forEach {
+                            Log.d(TAG, "New invitations for user.  invitation id: ${it.id}" +
+                                    " tripId: ${it.tripId}" +
+                                    " userId: ${it.userId}")
+                        }
                     }
                 }
             }

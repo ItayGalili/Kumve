@@ -193,18 +193,25 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
         lifecycleOwner.lifecycleScope.launch {
             try {
-                processAndSendUnsentInvitations(trip) { success ->
-                    if (success) {
-                        lifecycleOwner.lifecycleScope.launch {
-                            tripRepository.insertTripWithInfo(trip, tripInfo) { result ->
-                                lifecycleOwner.lifecycleScope.launch {
+                // First insert the trip to get its generated ID
+                tripRepository.insertTripWithInfo(trip, tripInfo) { result ->
+                    if (result.success) {
+                        val insertedTripId = result.data?.get("tripId") as? Long ?: 0
+                        Log.d(TAG, "insertedTripId $insertedTripId")
+                        val updatedTrip = trip.copy(id = insertedTripId)
+
+                        processAndSendUnsentInvitations(updatedTrip) { success ->
+                            lifecycleOwner.lifecycleScope.launch {
+                                if (success) {
                                     _operationResult.emit(result)
+                                } else {
+                                    _operationResult.emit(Result(false, "Failed to send some invitations."))
                                 }
                             }
                         }
                     } else {
                         lifecycleOwner.lifecycleScope.launch {
-                            _operationResult.emit(Result(false, "Failed to send some invitations."))
+                            _operationResult.emit(result)
                         }
                     }
                 }
@@ -303,7 +310,8 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             var success = true
             trip.invitations.filter { it.status == TripInvitationStatus.UNSENT }.forEach { invitation ->
-                sendTripInvitation(invitation) { result ->
+                val updatedInvitation = invitation.copy(tripId = trip.id)
+                sendTripInvitation(updatedInvitation) { result ->
                     if (!result) {
                         success = false
                     }
@@ -369,7 +377,7 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     fun fetchTripInvitationsForUser(userId: Long) {
         viewModelScope.launch {
             tripRepository.getTripInvitationsForUser(userId)?.collectLatest { invitations ->
-                _tripInvitations.value = invitations
+                _tripInvitations.emit(invitations)
             }
         }
     }
