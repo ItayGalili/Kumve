@@ -17,6 +17,7 @@ import il.co.erg.mykumve.data.db.firebasemvm.repository.UserRepository
 import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
 import il.co.erg.mykumve.data.data_classes.Equipment
 import il.co.erg.mykumve.data.db.firebasemvm.util.Status
+import il.co.erg.mykumve.data.db.firebasemvm.util.safeCall
 import il.co.erg.mykumve.util.TripInvitationStatus
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -249,13 +250,38 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun sendTripInvitation(tripId: String, userId: String, callback: (Boolean) -> Unit) {
+    fun sendTripInvitation(tripId: String, userId: String, callback: (Resource<Void>) -> Unit) {
         viewModelScope.launch {
             val invitation = TripInvitation(tripId = tripId, userId = userId)
             val result = tripRepository.sendTripInvitation(invitation)
-            callback(result.status == Status.SUCCESS)
+            if (result.status == Status.SUCCESS) {
+                val updateTripResult = updateTripWithInvitation(tripId, invitation)
+                callback(updateTripResult)
+            } else {
+                callback(result)
+            }
         }
     }
+
+    private suspend fun updateTripWithInvitation(tripId: String, invitation: TripInvitation): Resource<Void> {
+        return safeCall {
+            val tripResource = tripRepository.getTripById(tripId).first()
+            if (tripResource.status == Status.SUCCESS) {
+                val trip = tripResource.data ?: return@safeCall Resource.error("Trip not found", null)
+                trip.invitations.add(invitation)
+                tripRepository.updateTrip(trip).also { updateResult ->
+                    if (updateResult.status == Status.SUCCESS) {
+                        Resource.success(null)
+                    } else {
+                        Resource.error("Failed to update trip with new invitation", null)
+                    }
+                }
+            } else {
+                Resource.error("Failed to fetch trip: ${tripResource.message}", null)
+            }
+        }
+    }
+
 
     private fun processAndSendUnsentInvitations(trip: Trip, callback: (Boolean) -> Unit) {
         viewModelScope.launch {

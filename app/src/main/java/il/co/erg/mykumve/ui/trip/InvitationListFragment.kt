@@ -18,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import il.co.erg.mykumve.R
+import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.data.db.model.TripInvitation
 import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.databinding.FragmentInvitationListBinding
@@ -120,10 +121,16 @@ class InvitationListFragment : Fragment() {
                                     tripId = currentTrip.id,
                                     userId = user.id
                                 ) { result ->
-                                    if (result) {
-                                        Toast.makeText(requireContext(), "Sent", Toast.LENGTH_SHORT).show()
-                                    } else {
-                                        Toast.makeText(requireContext(), "Failed to send", Toast.LENGTH_SHORT).show()
+                                    when (result.status) {
+                                        Status.SUCCESS -> {
+                                            Toast.makeText(requireContext(), "Invitation sent and trip updated", Toast.LENGTH_SHORT).show()
+                                        }
+                                        Status.ERROR -> {
+                                            Toast.makeText(requireContext(), "Failed to send invitation: ${result.message}", Toast.LENGTH_SHORT).show()
+                                        }
+                                        else -> {
+                                            // Handle loading state if necessary
+                                        }
                                     }
                                 }
                             }
@@ -170,12 +177,12 @@ class InvitationListFragment : Fragment() {
                 sharedTripViewModel.trip.collectLatest { trip ->
                     Log.d(TAG, "observeTripInvitations. invitations: ${trip?.invitations}")
                     Log.d(TAG, "observeTripInvitations. user ids: ${trip?.invitations?.map { it.userId }}")
-                    trip?.let {trip ->
+                    trip?.let { currentTrip ->
                         if (sharedTripViewModel.isCreatingTripMode) {
                             // For temporary trip (partialTrip)
-                            invitationListAdapter.submitList(trip.invitations.toMutableList())
+                            invitationListAdapter.submitList(currentTrip.invitations.toMutableList())
                         } else {
-                            tripViewModel.fetchTripInvitationsByTripId(trip.id) // Ensure this is called to fetch data
+                            tripViewModel.fetchTripInvitationsByTripId(currentTrip.id) // Ensure this is called to fetch data
                             tripViewModel.tripInvitations.collectLatest { invitations ->
                                 invitationListAdapter.submitList(invitations.toMutableList())
                             }
@@ -187,7 +194,6 @@ class InvitationListFragment : Fragment() {
             }
         }
     }
-
 
     private fun setupRecyclerView() {
         invitationListAdapter = InvitationListAdapter(userViewModel, viewLifecycleOwner)

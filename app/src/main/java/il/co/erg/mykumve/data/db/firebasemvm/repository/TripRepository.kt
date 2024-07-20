@@ -146,13 +146,25 @@ class TripRepository {
     }
 
     suspend fun sendTripInvitation(invitation: TripInvitation): Resource<Void> {
-        return try {
-            val document = tripInvitationsCollection.document()
-            invitation._id = document.id  // Set the internal mutable field
-            document.set(invitation).await()
-            Resource.success(null)
-        } catch (e: Exception) {
-            Resource.error(e.message ?: "Failed to send trip invitation", null)
+        return safeCall {
+            val tripDocRef = tripsCollection.document(invitation.tripId)
+            val invitationDocRef = tripInvitationsCollection.document()
+            invitation._id = invitationDocRef.id  // Set the internal mutable field
+
+            FirebaseFirestore.getInstance().runTransaction { transaction ->
+                val tripSnapshot = transaction.get(tripDocRef)
+                if (!tripSnapshot.exists()) {
+                    return@runTransaction Resource.error<Void>("Trip not found")
+                }
+
+                val trip = tripSnapshot.toObject(Trip::class.java) ?: return@runTransaction Resource.error<Void>("Trip deserialization error")
+                trip.invitations.add(invitation)
+
+                transaction.set(tripDocRef, trip)
+                transaction.set(invitationDocRef, invitation)
+
+                Resource.success(null)
+            }.await()
         }
     }
 
