@@ -1,160 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:background="#EFEAEA"
     tools:context=".ui.menu.MyProfile">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="350dp">
-        <LinearLayout
+
+    <ImageView
+        android:id="@+id/profile_page_background"
+        android:layout_width="418dp"
+        android:layout_height="225dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/profile_page_erez_ashkenazi_agmon_hahula"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/image_card"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/profile_page_background"
+        app:layout_constraintBottom_toBottomOf="@id/profile_page_background"
+        app:layout_constraintTop_toBottomOf="@id/profile_page_background"
+        android:foregroundGravity="center_horizontal"
+        app:cardCornerRadius="100dp">
+        <ImageView
+            android:id="@+id/profile_pic"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:orientation="vertical"
-            android:background="#D2D3D5">
-            <LinearLayout
-                android:id="@+id/change_profile_pic"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="10dp">
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="53dp"
-                    android:padding="5dp"
-                    android:src="@drawable/edit_icon_juicy_fish" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Change Profile Picture"
-                    android:textSize="15dp"
-                    android:textColor="@color/black"
-                    android:layout_marginStart="10dp" />
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/my_profile"
+            android:scaleType="fitXY">
+        </ImageView>
+    </androidx.cardview.widget.CardView>
+    <ImageView
+        android:id="@+id/change_profile_pic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_card"
 
-            </LinearLayout>
-            <androidx.cardview.widget.CardView
-                android:layout_width="140dp"
-                android:layout_height="140dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
-                android:foregroundGravity="center_horizontal"
-                app:cardCornerRadius="100dp">
-                <ImageView
-                    android:id="@+id/profile_pic"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_horizontal"
-                    android:src="@drawable/ic_launcher_background"
-                    android:scaleType="fitXY">
-                </ImageView>
-
-            </androidx.cardview.widget.CardView>
-
-            <TextView
-                android:id="@+id/profileUserFullNameTv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:layout_marginTop="10dp"
-                android:textSize="30dp"
-                android:layout_gravity="center_horizontal"
-                android:textStyle="bold"
-                android:textColor="@color/white"
-                />
-
-
-        </LinearLayout>
-    </RelativeLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="40dp"
+        android:layout_height="53dp"
+        android:src="@drawable/edit_badge_rizki_ahmad_fauzia"/>
+    <TextView
+        android:id="@+id/profileUserFullNameTv"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="10dp">
+        android:textAlignment="center"
+        android:layout_marginTop="20dp"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/change_profile_pic"
+        android:textColor="@color/royalBlue"
+        android:text="FirstName LastName"
+        />
 
-        <!-- Email ImageView -->
+    <LinearLayout
+        android:id="@+id/profile_email_layout"
+        android:layout_width="352dp"
+        android:layout_height="63dp"
+        android:layout_marginTop="50dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profileUserFullNameTv">
         <ImageView
             android:layout_width="57dp"
             android:layout_height="53dp"
-            android:src="@drawable/email_icon_freepic"
             android:layout_gravity="center_vertical"
-            android:padding="5dp"/>
+            android:padding="10dp"
+            android:alpha="0.6"
+            android:src="@drawable/email_icon_freepic" />
 
-        <!-- Email TextView -->
         <TextView
             android:id="@+id/profile_email"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:gravity="left"
             android:text="user email"
-            android:textSize="19dp"
-            android:textColor="@color/black"
-            android:layout_marginStart="10dp" />
+            android:textColor="@color/royalBlue"
+            android:textSize="19dp" />
 
     </LinearLayout>
-
-    <!-- Phone Number Section -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:id="@+id/profile_phone_layout"
+        android:layout_width="352dp"
+        android:layout_height="63dp"
+        android:layout_marginTop="7dp"
+        android:background="@color/white"
+        android:gravity="center"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="10dp">
-
-        <!-- Phone Number ImageView -->
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_email_layout">
         <ImageView
             android:layout_width="57dp"
             android:layout_height="53dp"
             android:layout_gravity="center_vertical"
-            android:padding="7dp"
-            android:src="@drawable/phone_icon_mayor_icons" />
-
-        <!-- Phone Number TextView -->
+            android:padding="8dp"
+            android:src="@drawable/phone_number_vector" />
         <TextView
             android:id="@+id/profile_phone_number"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="user phone number"
-            android:textSize="19dp"
-            android:textColor="@color/black"
-            android:layout_marginStart="10dp" />
+            android:layout_marginStart="10dp"
+            android:gravity="left"
+            android:text="user email"
+            android:textColor="@color/royalBlue"
+            android:textSize="19dp" />
 
     </LinearLayout>
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:id="@+id/profile_password_layout"
+        android:layout_width="352dp"
+        android:layout_height="63dp"
+        android:layout_marginTop="7dp"
+        android:background="@color/white"
+        android:gravity="center"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="10dp">
-
-        <!-- Phone Number ImageView -->
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_phone_layout">
         <ImageView
             android:layout_width="57dp"
             android:layout_height="53dp"
             android:layout_gravity="center_vertical"
-            android:padding="1dp"
-            android:src="@drawable/password_icon_nur_syifa_fauziaha" />
-        <!-- Phone Number TextView -->
+            android:padding="10dp"
+            android:src="@drawable/password_icon" />
+
         <TextView
             android:id="@+id/profile_password"
-            android:layout_width="wrap_content"
+            android:layout_width="230dp"
             android:layout_height="wrap_content"
-            android:text="user password"
-            android:inputType="textPassword"
+            android:layout_marginStart="10dp"
+            android:gravity="left"
+            android:textColor="@color/royalBlue"
             android:textSize="19dp"
-            android:textColor="@color/black"
-            android:layout_marginStart="10dp"/>
-
+            android:text="user password"
+            android:inputType="textPassword"/>
         <ImageView
             android:id="@+id/change_password"
             android:layout_width="57dp"
             android:layout_height="53dp"
-            android:layout_gravity="center_vertical"
-            android:padding="15dp"
-            android:src="@drawable/edit_icon_juicy_fish" />
+            android:padding="10dp"
+            android:src="@drawable/edit_badge_rizki_ahmad_fauzia" />
 
     </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 
-</LinearLayout>

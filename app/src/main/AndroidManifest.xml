@@ -6,20 +6,22 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/icon"
+        android:icon="@mipmap/kumve_android_app_icon"
         android:label="Kumve"
-        android:roundIcon="@drawable/icon"
+        android:roundIcon="@drawable/kumve_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyKumve.Starting"
         tools:targetApi="31">
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.MyKumve.Starting">
+            android:theme="@style/Theme.MyKumve.Starting"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <meta-data
             android:name="com.google.android.geo.API_KEY"

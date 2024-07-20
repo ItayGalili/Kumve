@@ -1,83 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--todo add translation-->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="7dp"
-    tools:context=".ui.login.LoginManager"
-    android:background="@drawable/background_login"
+    android:background="@drawable/login_dead_sea"
+    android:padding="10dp"
+    tools:context=".ui.login.LoginManager">
 
-    >
-
-
+    <ImageView
+        android:id="@+id/logo_image"
+        android:layout_width="327dp"
+        android:layout_height="294dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/kumve_white_transparent"
+        android:alpha="0.9"/>
 
     <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+        android:id="@+id/email_input_layout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColorHint="#C49649"
-        app:hintTextColor="#C49649"
-        app:boxStrokeColor="#BBA886"
-        android:background="#ffff"
-        android:layout_marginTop="328dp"
-        >
+        android:hint="Email"
+        app:hintTextColor="@color/blueSky"
+        android:textColorHint="@color/blueSky"
+        app:boxStrokeWidth="2dp"
+        app:boxStrokeColor="@color/white"
+        app:boxStrokeErrorColor="#FF0000"
+        app:boxCornerRadiusTopStart="30dp"
+        app:boxCornerRadiusBottomEnd="30dp"
+        app:boxBackgroundColor="@color/white"
+        android:alpha="0.7"
+        app:startIconDrawable="@drawable/email_vector"
+        app:startIconTint="#36A4FF"
+        android:layout_below="@id/logo_image"
+        android:layout_marginTop="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/email_ad"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textEmailAddress"
-            android:hint="Enter email address"
-            />
+            android:textColor="#36A4FF"
+            android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+        android:id="@+id/password_input_layout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColorHint="#C49649"
-        app:hintTextColor="#C49649"
-        android:layout_marginTop="5dp"
+        android:hint="Password"
+        app:hintTextColor="@color/blueSky"
+        android:textColorHint="@color/blueSky"
+        app:boxStrokeWidth="2dp"
+        app:boxStrokeColor="@color/white"
+        app:boxStrokeErrorColor="#FF0000"
+        app:boxCornerRadiusTopStart="30dp"
+        app:boxCornerRadiusBottomEnd="30dp"
+        app:boxBackgroundColor="@color/white"
+        android:alpha="0.7"
+        app:startIconDrawable="@drawable/password_icon"
+        app:startIconTint="#36A4FF"
         app:endIconMode="password_toggle"
-        app:boxStrokeColor="#BBA886"
-        android:background="#ffff"
-        >
+        app:endIconTint="#36A4FF"
+        android:layout_below="@id/email_input_layout"
+        android:layout_marginTop="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter password"
-            android:inputType="textPassword"
+            android:textColor="#36A4FF"
             android:imeOptions="actionDone"
-
-            />
-
+            android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <android.widget.Button
         android:id="@+id/Login_Btn"
         android:layout_width="322dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/password_input_layout"
         android:layout_marginTop="20dp"
-        android:backgroundTint="#C49649"
+        android:background="@drawable/gradient_background_grey_to_blue"
         android:gravity="center"
+        android:textColor="@color/white"
         android:text="Login"
         android:textSize="20sp" />
 
-    <Button
+    <TextView
+        android:id="@+id/signup_prompt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Login_Btn"
+        android:layout_marginTop="13dp"
+        android:gravity="center"
+        android:text="Don't have an account?"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+    <android.widget.Button
         android:id="@+id/Register_Btn"
         android:layout_width="322dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/signup_prompt"
+        android:background="@drawable/gradient_background_grey_to_brown"
         android:layout_marginTop="5dp"
-        android:backgroundTint="#36A4FF"
         android:gravity="center"
-        android:text="Register"
-        android:textSize="20sp" />
+        android:text="@string/register"
+        android:textSize="20sp"
+        android:textColor="@color/white"/>
 
-</LinearLayout>
+</RelativeLayout>

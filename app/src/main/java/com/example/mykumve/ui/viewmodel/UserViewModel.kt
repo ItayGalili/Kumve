@@ -18,6 +18,9 @@ import kotlinx.coroutines.launch
 class UserViewModel(application: Application) : AndroidViewModel(application) {
     val TAG = UserViewModel::class.java.simpleName
 
+    private val _operationResult = MutableSharedFlow<Result>()
+    val operationResult: SharedFlow<Result> = _operationResult
+
     private val userRepository: UserRepository = UserRepository(application)
 
     private val _userByEmail = MutableStateFlow<User?>(null)
@@ -31,6 +34,18 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _allUsers = MutableStateFlow<List<User>>(emptyList())
     val allUsers: StateFlow<List<User>> get() = _allUsers.asStateFlow()
+
+    fun updatePassword(user: User, newPassword: String) {
+        viewModelScope.launch {
+            try {
+                val updatedUser = user.copy(hashedPassword = newPassword)
+                userRepository.updateUser(updatedUser)
+                _operationResult.emit(Result(true, "Password updated successfully"))
+            } catch (e: Exception) {
+                _operationResult.emit(Result(false, "Failed to update password: ${e.message}"))
+            }
+        }
+    }
 
     fun registerUser(
         firstName: String,

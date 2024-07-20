@@ -257,17 +257,14 @@ class MainScreenManager : Fragment() {
                 findNavController().navigate(R.id.action_mainScreenManager_to_myProfile)
                 return true
             }
-
             R.id.menuAlerts -> {
                 showNotificationsFragment()
                 return true
             }
-
             R.id.log_out -> {
                 showLogoutDialog()
                 return true
             }
-
             R.id.debug_delete_db -> {
                 showDeleteDbDialog()
                 return true
@@ -284,8 +281,7 @@ class MainScreenManager : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 tripViewModel.tripInvitations.collectLatest { invitations ->
                     // Handle the trip invitations
-                    val pendingInvitations =
-                        invitations.filter { it.status == TripInvitationStatus.PENDING }
+                    val pendingInvitations = invitations.filter { it.status == TripInvitationStatus.PENDING }
                     val pendingInvitationsCount = pendingInvitations.size
                     if (pendingInvitationsCount == 0) {
                         Toast.makeText(requireContext(), "No new invitations", Toast.LENGTH_SHORT)
@@ -302,7 +298,6 @@ class MainScreenManager : Fragment() {
             }
         }
     }
-
     private fun showNotificationsFragment() {
         val notificationsFragment = NotificationsFragment()
         notificationsFragment.show(parentFragmentManager, notificationsFragment.tag)

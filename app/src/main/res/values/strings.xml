@@ -68,20 +68,20 @@
     </string-array>
 
     <string-array name="area_options">
-        <item>@string/north</item>
+        <item>North</item><!-- Title item -->
         <item>@string/upper_galilee</item>
         <item>@string/western_galilee</item>
         <item>@string/haifa_and_carmel</item>
         <item>@string/lower_galilee</item>
-        <item>@string/center</item>
+        <item>Center</item><!-- Title item -->
         <item>@string/sharon</item>
         <item>@string/shfela</item>
         <item>@string/samaria</item>
         <item>@string/coastal_plain_and_gush_dan</item>
-        <item>@string/jerusalem_and_surroundings</item>
+        <item>Jerusalem and Surroundings</item> <!-- Title item -->
         <item>@string/jerusalem_hills_and_beit_shemesh</item>
         <item>@string/jerusalem</item>
-        <item>@string/south</item>
+        <item>South</item> <!-- Title item -->
         <item>@string/dead_sea_and_judean_desert</item>
         <item>@string/northern_negev</item>
         <item>@string/central_negev_and_craters</item>

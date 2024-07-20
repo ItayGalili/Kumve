@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/bottom_explore"
+        android:icon="@drawable/explore_vector"
+        android:title="Explore"
+        />
+    <item
+        android:id="@+id/bottom_my_trips"
+        android:icon="@drawable/my_trips_vector"
+        android:title="My Trips"
+        />
+    <item
+        android:id="@+id/bottom_live_reports"
+        android:icon="@drawable/reports_vector"
+        android:title="Live Reports"
+        />
+
+</menu>

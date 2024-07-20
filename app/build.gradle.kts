@@ -68,6 +68,7 @@ tasks.named("preBuild") {
 
 dependencies {
 
+    implementation ("androidx.fragment:fragment-ktx:1.4.0")
     implementation ("com.google.code.gson:gson:2.8.9")
     implementation("com.google.maps.android:android-maps-utils:2.2.4")
     implementation("com.github.bumptech.glide:glide:4.16.0")
@@ -98,5 +99,5 @@ dependencies {
     testImplementation("org.mockito:mockito-core:3.11.2")
     testImplementation("org.mockito:mockito-inline:3.11.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0")
-    implementation("com.google.android.material:material:1.4.0")
+
 }
