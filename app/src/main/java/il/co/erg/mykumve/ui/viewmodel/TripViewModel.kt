@@ -50,19 +50,34 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchTripsByParticipantUserIdWithInfo(userId: String) {
         viewModelScope.launch {
-            val allTrips = tripRepository.getAllTrips().firstOrNull()?.data ?: emptyList()
-            val tripsByParticipant = allTrips.filter { trip ->
-                trip.participants?.any { it.id == userId } == true
-            }
+            try {
+                _operationResult.emit(Resource.loading(null))
 
-            val tripsWithInfoList = tripsByParticipant.map { trip ->
-                val tripInfo = trip.tripInfoId?.let { tripInfoRepository.getTripInfoById(it).firstOrNull()?.data }
-                TripWithInfo(trip, tripInfo)
+                val allTripsResource = tripRepository.getAllTrips().first { it.status != Status.LOADING } // Wait until it's not loading
+                if (allTripsResource.status == Status.SUCCESS) {
+                    val allTrips = allTripsResource.data ?: emptyList()
+                    val tripsByParticipant = allTrips.filter { trip ->
+                        trip.participants?.any { it.id == userId } == true
+                    }
+
+                    val tripsWithInfoList = tripsByParticipant.map { trip ->
+                        val tripInfoResource = trip.tripInfoId?.let {
+                            tripInfoRepository.getTripInfoById(it).first { info -> info.status != Status.LOADING }
+                        }
+                        val tripInfo = if (tripInfoResource?.status == Status.SUCCESS) tripInfoResource.data else null
+                        TripWithInfo(trip, tripInfo)
+                    }
+
+                    _tripsWithInfo.emit(tripsWithInfoList)
+                    _operationResult.emit(Resource.success(null))  // Emit success with null for Void?
+                } else {
+                    _operationResult.emit(Resource.error("Failed to fetch trips: ${allTripsResource.message}", null))
+                }
+            } catch (e: Exception) {
+                _operationResult.emit(Resource.error("An error occurred: ${e.message}", null))
             }
-            _tripsWithInfo.emit(tripsWithInfoList)
         }
     }
-
     fun fetchTripById(id: String) {
         viewModelScope.launch {
             tripRepository.getTripById(id).collectLatest { resource ->

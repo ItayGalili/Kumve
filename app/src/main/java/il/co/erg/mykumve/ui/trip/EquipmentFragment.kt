@@ -111,7 +111,7 @@ class EquipmentFragment : Fragment() {
 
     private fun addNewEquipment() {
         if (saveCurrentEditedItem()) {
-            val newEquipment = Equipment("", false, null)
+            val newEquipment = Equipment()
             val position = adapter.addEquipment(newEquipment)
             binding.invitationList.post {
                 binding.invitationList.scrollToPosition(position) // Scroll to the new item

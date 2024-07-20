@@ -187,11 +187,14 @@ class MainScreenManager : Fragment() {
     }
 
     private fun logTripsWithInfo(tripsWithInfo: List<TripWithInfo>) {
-        tripsWithInfo.forEach { tripWithInfo ->
-            val trip = tripWithInfo.trip
-            val tripInfo = tripWithInfo.tripInfo
-            val detailedTripInfo = tripInfo?.let {
-                """
+        if (tripsWithInfo.isEmpty()) {
+            Log.e(TAG, "No trips found.")
+        } else {
+            tripsWithInfo.forEach { tripWithInfo ->
+                val trip = tripWithInfo.trip
+                val tripInfo = tripWithInfo.tripInfo
+                val detailedTripInfo = tripInfo?.let {
+                    """
                 |Trip Info:
                 |    ID: ${it.id}
                 |    Title: ${it.title}
@@ -203,9 +206,9 @@ class MainScreenManager : Fragment() {
                 |    Difficulty: ${it.difficulty}
                 |    Trip ID: ${it.tripId}
                 """.trimMargin()
-            } ?: "No trip info available"
+                } ?: "No trip info available"
 
-            val prettyTrip = """
+                val prettyTrip = """
                 |Trip
                 | id: ${trip.id},
                 |    title: ${trip.title},
@@ -220,8 +223,8 @@ class MainScreenManager : Fragment() {
                 |)
                 |$detailedTripInfo
             """.trimMargin()
-
-            Log.d(TAG, prettyTrip)
+                Log.d(TAG, prettyTrip)
+            }
         }
     }
 

@@ -7,6 +7,7 @@ import il.co.erg.mykumve.data.db.model.Trip
 import il.co.erg.mykumve.data.db.model.TripInfo
 import il.co.erg.mykumve.data.db.model.TripInvitation
 import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
+import il.co.erg.mykumve.data.db.firebasemvm.util.safeCall
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
@@ -20,13 +21,16 @@ class TripRepository {
 
     fun getAllTrips(): Flow<Resource<List<Trip>>> = flow {
         emit(Resource.loading(null))
-        try {
+        val result = safeCall {
             val snapshot = tripsCollection.get().await()
-            val trips = snapshot.documents.mapNotNull { it.toObject<Trip>() }
-            emit(Resource.success(trips))
-        } catch (e: Exception) {
-            emit(Resource.error(e.message ?: "Unknown error", null))
+            if (snapshot != null && !snapshot.isEmpty) {
+                val trips = snapshot.documents.mapNotNull { it.toObject<Trip>() }
+                Resource.success(trips)
+            } else {
+                Resource.error("No trips found", emptyList())
+            }
         }
+        emit(result)
     }
 
     fun getAllTripInfo(): Flow<Resource<List<TripInfo>>> = flow {
