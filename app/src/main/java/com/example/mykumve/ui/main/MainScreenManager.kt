@@ -116,14 +116,6 @@ class MainScreenManager : Fragment() {
         if (UserManager.isLoggedIn()) {
             currentUser = UserManager.getUser()
             currentUser?.let { user ->
-                if (_firstTimeShowingScreen) {
-                    Toast.makeText( // todo remove - only for debug
-                        requireContext(),
-                        getString(R.string.welcome_user, user.firstName),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    _firstTimeShowingScreen = false
-                }
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
