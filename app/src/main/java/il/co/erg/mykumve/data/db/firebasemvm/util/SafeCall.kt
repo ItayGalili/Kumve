@@ -4,6 +4,6 @@ inline fun <T> safeCall(action: () -> Resource<T>): Resource<T> {
     return try {
         action()
     } catch (e: Exception) {
-        Resource.errwor(message = e.message ?: "An unknown error occurred")
+        Resource.error(message = e.message ?: "An unknown error occurred")
     }
 }
