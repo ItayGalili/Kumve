@@ -193,9 +193,19 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
         lifecycleOwner.lifecycleScope.launch {
             try {
-                tripRepository.insertTripWithInfo(trip, tripInfo) { result ->
-                    lifecycleOwner.lifecycleScope.launch {
-                        _operationResult.emit(result)
+                processAndSendUnsentInvitations(trip) { success ->
+                    if (success) {
+                        lifecycleOwner.lifecycleScope.launch {
+                            tripRepository.insertTripWithInfo(trip, tripInfo) { result ->
+                                lifecycleOwner.lifecycleScope.launch {
+                                    _operationResult.emit(result)
+                                }
+                            }
+                        }
+                    } else {
+                        lifecycleOwner.lifecycleScope.launch {
+                            _operationResult.emit(Result(false, "Failed to send some invitations."))
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -289,7 +299,21 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun sendTripInvitation(invitation: TripInvitation, callback: (Boolean) -> Unit) {
+    private fun processAndSendUnsentInvitations(trip: Trip, callback: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            var success = true
+            trip.invitations.filter { it.status == TripInvitationStatus.UNSENT }.forEach { invitation ->
+                sendTripInvitation(invitation) { result ->
+                    if (!result) {
+                        success = false
+                    }
+                }
+            }
+            callback(success)
+        }
+    }
+
+    private fun sendTripInvitation(invitation: TripInvitation, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
             invitation.status = TripInvitationStatus.PENDING
             val result = tripRepository.sendTripInvitation(invitation)

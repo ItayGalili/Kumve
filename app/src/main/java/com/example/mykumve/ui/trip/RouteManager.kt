@@ -88,7 +88,6 @@ class RouteManager : Fragment() {
         sharedViewModel.trip.collectLatest { trip ->
             if (trip != null) {
                 val tripInfo = formToTripInfoObject(passedTripId = trip.id)
-
                 if (!sharedViewModel.isEditingExistingTrip) { // creating new trip
                     tripViewModel.addTripWithInfo(trip, tripInfo, viewLifecycleOwner)
                 } else {
