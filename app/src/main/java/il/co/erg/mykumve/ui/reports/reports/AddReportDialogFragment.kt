@@ -98,7 +98,6 @@ class AddReportDialogFragment : DialogFragment() {
             val reporterName = UserUtils.getFullName(UserManager.getUser())
             // Create a Report object with captured image, description, reporter name, and timestamp
             val report = Report(capturedImageBitmap!!, description, "Reported By: $reporterName", timeStamp)
-
             // Notify parent fragment (UsersReports) through the listener
             listener?.onReportAdded(report)
         }

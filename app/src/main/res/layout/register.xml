@@ -28,7 +28,7 @@
         android:layout_marginTop="16dp"
         android:alpha="0.8"
         android:hint="Full Name"
-        android:textColorHint="@color/ground"
+        android:textColorHint="@color/royalBlue"
         app:boxBackgroundColor="@color/white"
         app:boxCornerRadiusBottomEnd="30dp"
         app:boxCornerRadiusBottomStart="30dp"
@@ -37,16 +37,17 @@
         app:boxStrokeColor="@color/white"
         app:boxStrokeErrorColor="#FF0000"
         app:boxStrokeWidth="2dp"
-        app:hintTextColor="@color/ground"
+        app:hintTextColor="@color/royalBlue"
         app:startIconDrawable="@drawable/full_name_vector"
-        app:startIconTint="#98640C">
+        app:startIconTint="@color/royalBlue">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/ground"
+            android:textColor="@color/royalBlue"
             android:inputType="text"
+            android:textSize="17sp"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -58,7 +59,7 @@
         android:layout_marginTop="16dp"
         android:alpha="0.8"
         android:hint="Email"
-        android:textColorHint="@color/ground"
+        android:textColorHint="@color/royalBlue"
         app:boxBackgroundColor="@color/white"
         app:boxCornerRadiusBottomEnd="30dp"
         app:boxCornerRadiusBottomStart="30dp"
@@ -67,16 +68,17 @@
         app:boxStrokeColor="@color/white"
         app:boxStrokeErrorColor="#FF0000"
         app:boxStrokeWidth="2dp"
-        app:hintTextColor="@color/ground"
+        app:hintTextColor="@color/royalBlue"
         app:startIconDrawable="@drawable/email_vector"
-        app:startIconTint="#98640C">
+        app:startIconTint="@color/royalBlue">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/email_register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/ground"
+            android:textColor="@color/royalBlue"
             android:inputType="textEmailAddress"
+            android:textSize="17sp"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -87,8 +89,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:alpha="0.8"
-        android:hint="Phone number"
-        android:textColorHint="@color/ground"
+        android:hint="Phone number (with country code)"
+        android:textColorHint="@color/royalBlue"
         app:boxBackgroundColor="@color/white"
         app:boxCornerRadiusBottomEnd="30dp"
         app:boxCornerRadiusBottomStart="30dp"
@@ -97,12 +99,9 @@
         app:boxStrokeColor="@color/white"
         app:boxStrokeErrorColor="#FF0000"
         app:boxStrokeWidth="2dp"
-        app:helperText="*Must have a country code prefix"
-        app:helperTextEnabled="true"
-        app:helperTextTextColor="@color/white"
-        app:hintTextColor="@color/ground"
+        app:hintTextColor="@color/royalBlue"
         app:startIconDrawable="@drawable/phone_number_vector"
-        app:startIconTint="#98640C">
+        app:startIconTint="@color/royalBlue">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/Phone_register"
@@ -110,7 +109,8 @@
             android:layout_height="wrap_content"
             android:digits="0123456789+"
             android:inputType="phone"
-            android:textColor="@color/ground"
+            android:textColor="@color/royalBlue"
+            android:textSize="17sp"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -121,8 +121,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:alpha="0.8"
-        android:hint="Choose a Password"
-        android:textColorHint="@color/ground"
+        android:hint="Choose a Password (at least 6 chars)"
+        android:textColorHint="@color/royalBlue"
         app:boxBackgroundColor="@color/white"
         app:boxCornerRadiusBottomEnd="30dp"
         app:boxCornerRadiusBottomStart="30dp"
@@ -132,20 +132,18 @@
         app:boxStrokeErrorColor="#FF0000"
         app:boxStrokeWidth="2dp"
         app:endIconMode="password_toggle"
-        app:endIconTint="@color/ground"
-        app:helperText="*At least 6 characters"
-        app:helperTextEnabled="true"
-        app:helperTextTextColor="@color/white"
-        app:hintTextColor="@color/ground"
+        app:endIconTint="@color/royalBlue"
+        app:hintTextColor="@color/royalBlue"
         app:startIconDrawable="@drawable/password_icon"
-        app:startIconTint="#98640C">
+        app:startIconTint="@color/royalBlue">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password_register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
-            android:textColor="@color/ground"
+            android:textColor="@color/royalBlue"
             android:imeOptions="actionDone"
+            android:textSize="17sp"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -164,7 +162,7 @@
             android:layout_gravity="center"
             android:backgroundTint="@color/white"
             android:padding="30dp"
-            android:background="@drawable/rounded_corner_btn"
+            android:background="@drawable/fully_rounded_corner_btn"
             android:scaleType="fitXY"
             android:src="@drawable/add_photo_vector">
 
@@ -186,7 +184,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="30dp"
-        android:background="@drawable/gradient_background_grey_to_brown"
+        android:background="@drawable/gradient_background_grey_to_royalblue"
         android:text="@string/register"
         android:textColor="@color/white"
         android:textSize="20sp" />

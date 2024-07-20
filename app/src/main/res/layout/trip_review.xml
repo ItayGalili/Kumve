@@ -4,36 +4,38 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.trip.TripReviewManager">
+    tools:context=".ui.trip.TripReviewManager"
+    android:padding="3dp">
+
 
     <TextView
-
+        android:id="@+id/trip_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:textColor="@color/statusBarColor"
-        android:textSize="30sp"
-        android:layout_marginTop="10dp"
-        android:text="trip review" />
+        android:textColor="@color/TextColor"
+        android:background="@color/white"
+        android:textStyle="bold"
+        android:textSize="35sp"
+        android:layout_marginTop="40dp"
+        android:text="trip name"/>
 
     <TextView
+        android:id="@+id/trip_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:textColor="@color/statusBarColor"
-        android:textSize="30sp"
-        android:layout_marginTop="10dp"
-        android:text="Title_review" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
+        android:textColor="@color/TextColor"
         android:textSize="20sp"
-        android:layout_marginTop="10dp"
-        android:text="decription"
-
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:text="trip description"
         />
+    <ImageView
+        android:id="@+id/trip_image"
+        android:layout_marginTop="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:scaleType="fitCenter"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -42,20 +44,17 @@
         android:layout_marginTop="10dp">
 
         <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="40sp"
+            android:id="@+id/trip_length_vector"
+            android:layout_width="12dp"
             android:layout_height="30sp"
             android:layout_weight="1"
-            android:src="@drawable/clock" />
-
+            android:src="@drawable/length_vector" />
         <TextView
-            android:id="@+id/date_review"
+            android:id="@+id/trip_Length"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="3"
-            android:text="date" />
-
-
+            android:text="Length"/>
     </LinearLayout>
 
     <LinearLayout
@@ -65,42 +64,86 @@
         android:layout_marginTop="10dp">
 
         <ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="40sp"
+            android:id="@+id/trip_area_vector"
+            android:layout_width="10dp"
             android:layout_height="30sp"
             android:layout_weight="1"
-            android:src="@drawable/partners" />
+            android:src="@drawable/search_trips_vector" />
 
         <TextView
-            android:id="@+id/pertner_review"
+            android:id="@+id/trip_area"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="3"
-            android:text="date" />
+            android:text="Area" />
 
 
     </LinearLayout>
-
-
-
-    <Button
-        android:id="@+id/Edit"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:backgroundTint="#C49649"
-        android:text="Edit the trip"
-        android:layout_gravity="center"/>
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
 
-    <Button
-        android:id="@+id/close"
-        android:layout_width="wrap_content"
+        <ImageView
+            android:id="@+id/trip_difficulty_vector"
+            android:layout_width="wrap_content"
+            android:layout_height="30sp"
+            android:layout_weight="1"
+            android:src="@drawable/difficulty_vector" />
+        <TextView
+            android:id="@+id/trip_difficulty"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:text="Difficulty" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:backgroundTint="#C49649"
-        android:text="close"
-        android:layout_gravity="center"/>
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
 
+        <ImageView
+            android:id="@+id/trip_route_description_vector"
+            android:layout_width="41dp"
+            android:layout_height="30sp"
+            android:layout_weight="1"
+            android:src="@drawable/description_vector" />
+        <TextView
+            android:id="@+id/trip_route_description"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:text="Route Description" />
+    </LinearLayout>
+    <LinearLayout
+        android:paddingTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        >
+        <android.widget.Button
+            android:id="@+id/add_to_my_trips_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="add to my trips"
+            android:textColor="@color/TextColor"
+            android:background="@drawable/gradient_white_to_brown">
+        </android.widget.Button>
+        <Space
+            android:layout_width="5dp"
+            android:layout_height="wrap_content">
+        </Space>
+        <android.widget.Button
+            android:id="@+id/go_back_to_trips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/gradient_white_to_grey"
+            android:text="Cancel"
+            android:textColor="@color/TextColor">
+        </android.widget.Button>
+    </LinearLayout>
 </LinearLayout>
