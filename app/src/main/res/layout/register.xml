@@ -45,7 +45,9 @@
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/ground" />
+            android:textColor="@color/ground"
+            android:inputType="text"
+            />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -73,7 +75,9 @@
             android:id="@+id/email_register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/ground" />
+            android:textColor="@color/ground"
+            android:inputType="textEmailAddress"
+            />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -106,7 +110,8 @@
             android:layout_height="wrap_content"
             android:digits="0123456789+"
             android:inputType="phone"
-            android:textColor="@color/ground" />
+            android:textColor="@color/ground"
+            />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -134,13 +139,14 @@
         app:hintTextColor="@color/ground"
         app:startIconDrawable="@drawable/password_icon"
         app:startIconTint="#98640C">
-
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password_register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
-            android:textColor="@color/ground" />
+            android:textColor="@color/ground"
+            android:imeOptions="actionDone"
+            />
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.cardview.widget.CardView
