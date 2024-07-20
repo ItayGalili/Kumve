@@ -89,7 +89,7 @@ class LoginManager : Fragment() {
                         Log.d(TAG, "Found ${users.size} users.")
                         users.forEach { user ->
                             val userInfo = """
-                            User number ${user.id}:
+                            User ID ${user.id}:
                             Name: ${getFullName(user)}
                             Phone: ${user.phone}
                             Email: ${user.email}
