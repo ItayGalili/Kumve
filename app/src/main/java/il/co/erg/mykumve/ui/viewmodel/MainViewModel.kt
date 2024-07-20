@@ -1,4 +1,4 @@
-package il.co.erg.mykumve.ui.main
+package il.co.erg.mykumve.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay

@@ -14,6 +14,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import il.co.erg.mykumve.R
+import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
+import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.databinding.LoginBinding
 import il.co.erg.mykumve.ui.main.MainActivity.Companion.DEBUG_MODE
 import il.co.erg.mykumve.ui.viewmodel.UserViewModel

@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import il.co.erg.mykumve.data.db.local_db.model.User
+import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.databinding.ItemPartnerCardBinding
 import il.co.erg.mykumve.ui.viewmodel.UserViewModel
 import il.co.erg.mykumve.util.UserUtils

@@ -6,10 +6,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewModelScope
 import il.co.erg.mykumve.data.data_classes.Equipment
-import il.co.erg.mykumve.data.db.local_db.model.Trip
-import il.co.erg.mykumve.data.db.local_db.model.TripInfo
-import il.co.erg.mykumve.data.db.local_db.model.TripInvitation
-import il.co.erg.mykumve.util.Result
+import il.co.erg.mykumve.data.db.model.Trip
+import il.co.erg.mykumve.data.db.model.TripInfo
+import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -30,8 +29,9 @@ class SharedTripViewModel : ViewModel() {
     private val _partialTrip = MutableStateFlow<Trip?>(null)
     private val _partialTripInfo = MutableStateFlow<TripInfo?>(null)
 
-    private val _operationResult = MutableSharedFlow<Result>()
-    val operationResult: SharedFlow<Result> = _operationResult
+    private val _operationResult = MutableSharedFlow<Resource<Void?>>()
+    val operationResult: SharedFlow<Resource<Void?>> = _operationResult
+
     val trip: StateFlow<Trip?>
         get() = if (isCreatingTripMode) _partialTrip.asStateFlow() else _selectedExistingTripWithInfo.value?.trip?.let {
             MutableStateFlow(
@@ -66,12 +66,6 @@ class SharedTripViewModel : ViewModel() {
         }
     }
 
-
-//    fun addInvitation(invitation: TripInvitation) {
-//        _partialTrip.value?.invitations?.add(invitation)
-//        _partialTrip.value = _partialTrip.value // Notify observers of the change
-//    }
-
     fun initTripViewModel(viewModelStoreOwner: ViewModelStoreOwner) {
         tripViewModel = ViewModelProvider(viewModelStoreOwner).get(TripViewModel::class.java)
     }
@@ -101,16 +95,14 @@ class SharedTripViewModel : ViewModel() {
                     _selectedExistingTripWithInfo.value?.trip = updatedTrip
                     _selectedExistingTripWithInfo.emit(_selectedExistingTripWithInfo.value)
                 }
-                _operationResult.emit(Result(true, "Trip updated successfully"))
+                _operationResult.emit(Resource.success(null))
             } catch (e: Exception) {
                 Log.e(TAG, "Error with updating trip \n${e.message}")
-                _operationResult.emit(Result(false, "Error with updating trip: ${e.message}"))
+                _operationResult.emit(Resource.error("Error with updating trip: ${e.message}", null))
             }
         }
     }
 
-
-    // Existing updateEquipment method
     fun updateEquipment(equipment: List<Equipment>?) {
         viewModelScope.launch {
             try {
@@ -119,22 +111,21 @@ class SharedTripViewModel : ViewModel() {
                         val updatedTrip = currentTrip.copy(equipment = equipment?.toMutableList())
                         if (!isCreatingTripMode) {
                             tripViewModel.updateTrip(updatedTrip)
-                            _operationResult.emit(Result(true, "Existing trip equipment updated successfully"))
+                            _operationResult.emit(Resource.success(null))
                         } else {
                             currentTrip.equipment = equipment?.toMutableList() // Ensure the trip's equipment list is updated
-                            _operationResult.emit(Result(true, "Equipment for partial trip updated successfully"))
+                            _operationResult.emit(Resource.success(null))
                         }
                     } else {
-                        _operationResult.emit(Result(false, "Trip is null"))
+                        _operationResult.emit(Resource.error("Trip is null", null))
                     }
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error with update equipment \n${e.message}")
-                _operationResult.emit(Result(false, "Error with update equipment: ${e.message}"))
+                _operationResult.emit(Resource.error("Error with update equipment: ${e.message}", null))
             }
         }
     }
-
 
     fun resetNewTripState() {
         if (!isEditingExistingTrip) {

@@ -153,7 +153,7 @@ class EquipmentFragment : Fragment() {
                 .distinctUntilChanged()
                 .collectLatest { result ->
                     result.let {
-                        Log.d(TAG, "saveData: Equipment data saved with result: ${it.reason}")
+                        Log.d(TAG, "saveData: Equipment data saved with result: ${it.message}")
                     }
                 }
         }

@@ -1,4 +1,4 @@
-package il.co.erg.mykumve.data.db.firebasemvm.model
+package il.co.erg.mykumve.data.db.model
 
 data class User(
     internal var _id: String = "",
@@ -12,6 +12,5 @@ data class User(
 ){
     val id: String
         get() = _id // Public read-only property
-
 }
 

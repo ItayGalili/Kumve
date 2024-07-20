@@ -8,29 +8,22 @@
 │   └── db
 │       ├── firebasemvm
 │       │   ├── model
+│       │   │   ├── Area.kt
+│       │   │   ├── SubArea.kt
+│       │   │   ├── Trip.kt
+│       │   │   ├── TripInfo.kt
+│       │   │   ├── TripInvitation.kt
+│       │   │   └── User.kt
+│       │   ├── repository
+│       │   │   ├── TripInfoRepository.kt
+│       │   │   ├── TripRepository.kt
+│       │   │   └── UserRepository.kt
 │       │   └── util
 │       │       ├── AutoClearedValue.kt
 │       │       ├── Resource.kt
 │       │       └── SafeCall.kt
-│       ├── local_db
-│       │   ├── AppDatabase.kt
-│       │   ├── AreaDao.kt
-│       │   ├── TripDao.kt
-│       │   ├── TripInfoDao.kt
-│       │   ├── TripInvitationDao.kt
-│       │   ├── UserDao.kt
-│       │   └── model
-│       │       ├── Area.kt
-│       │       ├── Report.kt
-│       │       ├── SubArea.kt
-│       │       ├── Trip.kt
-│       │       ├── TripInfo.kt
-│       │       ├── TripInvitation.kt
-│       │       └── User.kt
-│       └── repository
-│           ├── TripInfoRepository.kt
-│           ├── TripRepository.kt
-│           └── UserRepository.kt
+│       └── local_db
+│           └── Report.kt
 ├── network
 │   └── NetworkManager.kt
 ├── ui
@@ -82,7 +75,7 @@
     ├── UserManager.kt
     └── Utility.kt
 
-22 directories, 60 files
+21 directories, 54 files
 
 /Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/res
 /Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/res

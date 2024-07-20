@@ -3,11 +3,13 @@ package il.co.erg.mykumve.data.db.firebasemvm.repository
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
-import il.co.erg.mykumve.data.db.firebasemvm.model.User
+import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
+import il.co.erg.mykumve.data.db.firebasemvm.util.safeCall
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.cancellation.CancellationException
 
 class UserRepository {
 
@@ -60,14 +62,11 @@ class UserRepository {
     }
 
     suspend fun insertUser(user: User): Resource<Void> {
-        return try {
+        return safeCall {
             val document = usersCollection.document()
             user._id = document.id // Setting the private mutable field
             document.set(user).await()
             Resource.success(null)
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to insert user\n${e.cause.toString()}\n$e")
-            Resource.error(e.message ?: "Failed to insert user", null)
         }
     }
 

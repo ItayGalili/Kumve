@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/floating_background"
     android:id="@+id/notificationFragment"
-    tools:context=".ui.notifications.NotificationsFragment">
+    tools:context=".ui.menu.NotificationsFragment">
 
     <TextView
         android:id="@+id/notificationsTitle"

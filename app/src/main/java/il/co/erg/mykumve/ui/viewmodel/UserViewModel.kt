@@ -8,7 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import il.co.erg.mykumve.data.db.firebasemvm.repository.UserRepository
-import il.co.erg.mykumve.data.db.firebasemvm.model.User
+import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
 import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.util.EncryptionUtils

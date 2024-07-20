@@ -1,161 +1,196 @@
-package il.co.erg.mykumve.data.db.repository
+package il.co.erg.mykumve.data.db.firebasemvm.repository
 
-import android.app.Application
-import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
-import il.co.erg.mykumve.data.db.local_db.TripDao
-import il.co.erg.mykumve.data.db.local_db.model.Trip
-import androidx.room.Transaction
-import il.co.erg.mykumve.data.db.local_db.AppDatabase
-import il.co.erg.mykumve.data.db.local_db.TripInfoDao
-import il.co.erg.mykumve.data.db.local_db.TripInvitationDao
-import il.co.erg.mykumve.data.db.local_db.UserDao
-import il.co.erg.mykumve.data.db.local_db.model.TripInfo
-import il.co.erg.mykumve.data.db.local_db.model.TripInvitation
-import il.co.erg.mykumve.util.Result
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
+import il.co.erg.mykumve.data.db.model.Trip
+import il.co.erg.mykumve.data.db.model.TripInfo
+import il.co.erg.mykumve.data.db.model.TripInvitation
+import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.tasks.await
 
+class TripRepository {
 
-class TripRepository(application: Application) {
-    private var tripDao: TripDao? = null
-    private var userDao: UserDao? = null
-    private var tripInvitationDao: TripInvitationDao? = null
-    private var tripInfoDao: TripInfoDao? = null
-    val TAG = TripRepository::class.java.simpleName
+    private val db = FirebaseFirestore.getInstance()
+    private val tripsCollection = db.collection("trips")
+    private val tripInfoCollection = db.collection("trip_info")
+    private val tripInvitationsCollection = db.collection("trip_invitations")
 
-
-    init {
-        val db = AppDatabase.getDatabase(application)
-        tripDao = db.tripDao()
-        tripInvitationDao = db.tripInvitationDao()
-        userDao = db.userDao()
-        tripInfoDao = db.tripInfoDao()
-    }
-
-    fun getAllTrips(): Flow<List<Trip>>? {
-        return tripDao?.getAllTrips()
-    }
-    fun getAllTripInfo(): Flow<List<TripInfo>>? {
-        return tripInfoDao?.getAllTripInfo()
-    }
-
-    fun getTripById(id: Long): Flow<Trip>? {
-        return tripDao?.getTripById(id)
-    }
-
-    suspend fun insertTrip(trip: Trip) {
-        tripDao?.insertTrip(trip)
-    }
-
-    @Transaction
-    suspend fun insertTripWithInfo(trip: Trip, tripInfo: TripInfo, callback: (Result) -> Unit) {
+    fun getAllTrips(): Flow<Resource<List<Trip>>> = flow {
+        emit(Resource.loading(null))
         try {
-            // Step 1: Insert Trip first without TripInfoId
-            val tripId = tripDao?.insertTrip(trip)
-            Log.d(TAG, "Inserted Trip with ID: $tripId")
-            if (tripId != null) {
-
-                // Step 2: Insert TripInfo with the TripId from the inserted Trip
-                val modifiedTripInfo = tripInfo.copy(tripId = tripId)
-                val tripInfoId = tripInfoDao?.insertTripInfo(modifiedTripInfo)
-                Log.d(TAG, "Inserted TripInfo with ID: $tripInfoId")
-
-                // Step 3: Update the Trip with the newly created TripInfoId
-                val updatedTrip = trip.copy(id = tripId, tripInfoId = tripInfoId)
-                tripDao?.updateTrip(updatedTrip)
-                Log.d(TAG, "Updated Trip with TripInfo ID: ${updatedTrip.tripInfoId}")
-
-                callback(
-                    Result(
-                        success = true,
-                        reason = "Trip and TripInfo inserted successfully",
-                        data = mapOf("tripId" to tripId, "tripInfoId" to tripInfoId)
-                    )
-                )
-            } else {
-                callback(Result(false, "Failed to insert Trip"))
-            }
-        } catch (e: SQLiteConstraintException) {
-            Log.e(TAG, "Foreign Key constraint failed: ${e.message}")
-            callback(Result(false, "Foreign Key constraint failed: ${e.message}"))
+            val snapshot = tripsCollection.get().await()
+            val trips = snapshot.documents.mapNotNull { it.toObject<Trip>() }
+            emit(Resource.success(trips))
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to insert trip and trip info: ${e.message}")
-            callback(Result(false, "Failed to insert trip and trip info: ${e.message}"))
+            emit(Resource.error(e.message ?: "Unknown error", null))
         }
     }
 
-
-    @Transaction
-    suspend fun updateTripWithInfo(trip: Trip, tripInfo: TripInfo, callback: (Result) -> Unit) {
-        var result: Result? = null
+    fun getAllTripInfo(): Flow<Resource<List<TripInfo>>> = flow {
+        emit(Resource.loading(null))
         try {
-            Log.d(TAG, "Starting updateTripWithInfo")
-
-            // Step 1: Update Trip first
-            tripDao?.updateTrip(trip)
-            Log.d(TAG, "Updated Trip with ID: ${trip.id}")
-
-            // Step 2: Update TripInfo
-            val modifiedTripInfo = tripInfo.copy(tripId = trip.id)
-            tripInfoDao?.updateTripInfo(modifiedTripInfo)
-            Log.d(TAG, "Updated TripInfo with ID: ${tripInfo.id}")
-
-            result = Result(true, "Trip and TripInfo updated successfully")
-        } catch (e: SQLiteConstraintException) {
-            Log.e(TAG, "Foreign Key constraint failed: ${e.message}")
-            result = Result(false, "Foreign Key constraint failed: ${e.message}")
+            val snapshot = tripInfoCollection.get().await()
+            val tripInfoList = snapshot.documents.mapNotNull { it.toObject<TripInfo>() }
+            emit(Resource.success(tripInfoList))
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to update trip and trip info: ${e.message}")
-            result = Result(false, "Failed to update trip and trip info: ${e.message}")
-        } finally {
-            Log.d(TAG, "Completed updateTripWithInfo")
+            emit(Resource.error(e.message ?: "Unknown error", null))
         }
-        callback(result ?: Result(false, "General Error"))
     }
 
+    suspend fun updateTripWithInfo(trip: Trip, tripInfo: TripInfo, callback: (Resource<Void?>) -> Unit) {
+        try {
+            // Update the Trip
+            tripsCollection.document(trip.id).set(trip).await()
 
+            // Update the TripInfo
+            tripInfoCollection.document(tripInfo.id).set(tripInfo).await()
 
-
-    suspend fun updateTrip(trip: Trip) {
-        tripDao?.updateTrip(trip)
+            callback(Resource.success(null))
+        } catch (e: Exception) {
+            Log.e("TripRepository", "Failed to update trip and trip info: ${e.message}")
+            callback(Resource.error("Failed to update trip and trip info: ${e.message}", null))
+        }
     }
 
-    suspend fun deleteTrip(trip: Trip) {
-        tripDao?.deleteTripAndRelatedData(trip, tripInfoDao!!, tripInvitationDao!!)
-    }
-
-    suspend fun deleteTripInvitation(invitation: TripInvitation) {
-//        val trip = getTripById(invitation.tripId)?.value?.let { trip ->
-//            trip.invitations.removeAll { it.tripId == invitation.tripId }
-//            tripDao?.updateTrip(trip)
-//        }
-    }
-
-    suspend fun sendTripInvitation(invitation: TripInvitation): Boolean {
+    suspend fun deleteTripInvitation(invitation: TripInvitation): Resource<Void?> {
         return try {
-            tripInvitationDao?.insertTripInvitation(invitation)
-            true
+            tripInvitationsCollection.document(invitation.id).delete().await()
+            Resource.success(null)
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to send trip invitation: ${e.message}")
-            false
+            Log.e("TripRepository", "Failed to delete trip invitation: ${e.message}")
+            Resource.error("Failed to delete trip invitation: ${e.message}", null)
         }
     }
 
-    suspend fun updateTripInvitation(invitation: TripInvitation) {
-        tripInvitationDao?.updateTripInvitation(invitation)
+
+    fun getTripById(id: String): Flow<Resource<Trip?>> = flow {
+        emit(Resource.loading(null))
+        try {
+            val document = tripsCollection.document(id).get().await()
+            val trip = document.toObject<Trip>()
+            emit(Resource.success(trip))
+        } catch (e: Exception) {
+            emit(Resource.error(e.message ?: "Unknown error", null))
+        }
     }
 
-    fun getTripInvitationsByTripId(tripId: Long): Flow<List<TripInvitation>>? {
-        return tripInvitationDao?.getTripInvitationsByTripId(tripId)
+    suspend fun insertTrip(trip: Trip): Resource<Void> {
+        return try {
+            val document = tripsCollection.document()
+            trip._id = document.id  // Set the internal mutable field
+            document.set(trip).await()
+            Resource.success(null)
+        } catch (e: Exception) {
+            Resource.error(e.message ?: "Failed to insert trip", null)
+        }
     }
 
-    fun getTripInvitationsForUser(userId: Long): Flow<List<TripInvitation>>? {
-        return tripInvitationDao?.getTripInvitationsForUser(userId)
+    suspend fun insertTripWithInfo(trip: Trip, tripInfo: TripInfo, callback: (Resource<Void>) -> Unit) {
+        try {
+            val tripDocument = tripsCollection.document()
+            trip._id = tripDocument.id  // Set the internal mutable field
+            tripDocument.set(trip).await()
+
+            tripInfo.tripId = trip.id
+            val tripInfoDocument = tripInfoCollection.document()
+            tripInfo._id = tripInfoDocument.id  // Set the internal mutable field
+            tripInfoDocument.set(tripInfo).await()
+
+            val updatedTrip = trip.copy(tripInfoId = tripInfo.id)
+            tripDocument.set(updatedTrip).await()
+
+            callback(Resource.success(null))
+        } catch (e: Exception) {
+            callback(Resource.error(e.message ?: "Failed to insert trip and trip info", null))
+        }
     }
 
-    fun getTripsByUserId(userId: Long): Flow<List<Trip>>? {
-        return tripDao?.getTripsByUserId(userId)
+    suspend fun updateTrip(trip: Trip): Resource<Void> {
+        return try {
+            tripsCollection.document(trip.id).set(trip).await()
+            Resource.success(null)
+        } catch (e: Exception) {
+            Resource.error(e.message ?: "Failed to update trip", null)
+        }
     }
 
+    suspend fun updateTripInfo(tripInfo: TripInfo): Resource<Void> {
+        return try {
+            tripInfoCollection.document(tripInfo.id).set(tripInfo).await()
+            Resource.success(null)
+        } catch (e: Exception) {
+            Resource.error(e.message ?: "Failed to update trip info", null)
+        }
+    }
+
+    suspend fun deleteTrip(trip: Trip): Resource<Void> {
+        return try {
+            tripsCollection.document(trip.id).delete().await()
+            tripInfoCollection.whereEqualTo("tripId", trip.id).get().await().documents.forEach {
+                tripInfoCollection.document(it.id).delete().await()
+            }
+            tripInvitationsCollection.whereEqualTo("tripId", trip.id).get().await().documents.forEach {
+                tripInvitationsCollection.document(it.id).delete().await()
+            }
+            Resource.success(null)
+        } catch (e: Exception) {
+            Resource.error(e.message ?: "Failed to delete trip and related data", null)
+        }
+    }
+
+    suspend fun sendTripInvitation(invitation: TripInvitation): Resource<Void> {
+        return try {
+            val document = tripInvitationsCollection.document()
+            invitation._id = document.id  // Set the internal mutable field
+            document.set(invitation).await()
+            Resource.success(null)
+        } catch (e: Exception) {
+            Resource.error(e.message ?: "Failed to send trip invitation", null)
+        }
+    }
+
+    suspend fun updateTripInvitation(invitation: TripInvitation): Resource<Void> {
+        return try {
+            tripInvitationsCollection.document(invitation.id).set(invitation).await()
+            Resource.success(null)
+        } catch (e: Exception) {
+            Resource.error(e.message ?: "Failed to update trip invitation", null)
+        }
+    }
+
+    fun getTripInvitationsByTripId(tripId: String): Flow<Resource<List<TripInvitation>>> = flow {
+        emit(Resource.loading(null))
+        try {
+            val snapshot = tripInvitationsCollection.whereEqualTo("tripId", tripId).get().await()
+            val invitations = snapshot.documents.mapNotNull { it.toObject<TripInvitation>() }
+            emit(Resource.success(invitations))
+        } catch (e: Exception) {
+            emit(Resource.error(e.message ?: "Unknown error", null))
+        }
+    }
+
+    fun getTripInvitationsForUser(userId: String): Flow<Resource<List<TripInvitation>>> = flow {
+        emit(Resource.loading(null))
+        try {
+            val snapshot = tripInvitationsCollection.whereEqualTo("userId", userId).get().await()
+            val invitations = snapshot.documents.mapNotNull { it.toObject<TripInvitation>() }
+            emit(Resource.success(invitations))
+        } catch (e: Exception) {
+            emit(Resource.error(e.message ?: "Unknown error", null))
+        }
+    }
+
+    fun getTripsByUserId(userId: String): Flow<Resource<List<Trip>>> = flow {
+        emit(Resource.loading(null))
+        try {
+            val snapshot = tripsCollection.whereEqualTo("userId", userId).get().await()
+            val trips = snapshot.documents.mapNotNull { it.toObject<Trip>() }
+            emit(Resource.success(trips))
+        } catch (e: Exception) {
+            emit(Resource.error(e.message ?: "Unknown error", null))
+        }
+    }
 }
-

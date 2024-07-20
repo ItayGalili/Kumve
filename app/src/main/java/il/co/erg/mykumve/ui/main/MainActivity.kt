@@ -8,11 +8,9 @@ import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.fragment.app.commit
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import il.co.erg.mykumve.R
-import il.co.erg.mykumve.ui.login.LoginManager
+import il.co.erg.mykumve.ui.viewmodel.MainViewModel
 import il.co.erg.mykumve.util.UserManager
 
 
