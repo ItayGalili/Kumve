@@ -11,16 +11,14 @@ import il.co.erg.mykumve.data.db.local_db.model.SubArea
 import il.co.erg.mykumve.data.db.local_db.model.Trip
 import il.co.erg.mykumve.data.db.local_db.model.TripInfo
 import il.co.erg.mykumve.data.db.local_db.model.TripInvitation
-import il.co.erg.mykumve.data.db.local_db.model.User
 
 @Database(
-    entities = [User::class, Trip::class, TripInfo::class, TripInvitation::class, Area::class, SubArea::class],
-    version = 16)
+    entities = [ Trip::class, TripInfo::class, TripInvitation::class, Area::class, SubArea::class],
+    version = 17)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun tripDao(): TripDao
     abstract fun tripInfoDao(): TripInfoDao
-    abstract fun userDao(): UserDao
     abstract fun tripInvitationDao(): TripInvitationDao
     abstract fun areaDao(): AreaDao
 

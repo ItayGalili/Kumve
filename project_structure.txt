@@ -1,29 +1,36 @@
-/Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/java/com/example/mykumve
-/Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/java/com/example/mykumve
+/Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/java/il/co/erg/mykumve
+/Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/java/il/co/erg/mykumve
 ├── data
 │   ├── data_classes
 │   │   ├── Equipment.kt
 │   │   ├── MapState.kt
 │   │   └── Point.kt
-│   ├── db
-│   │   ├── local_db
-│   │   │   ├── AppDatabase.kt
-│   │   │   ├── AreaDao.kt
-│   │   │   ├── TripDao.kt
-│   │   │   ├── TripInfoDao.kt
-│   │   │   ├── TripInvitationDao.kt
-│   │   │   └── UserDao.kt
-│   │   └── repository
-│   │       ├── TripInfoRepository.kt
-│   │       ├── TripRepository.kt
-│   │       └── UserRepository.kt
-│   └── model
-│       ├── Area.kt
-│       ├── SubArea.kt
-│       ├── Trip.kt
-│       ├── TripInfo.kt
-│       ├── TripInvitation.kt
-│       └── User.kt
+│   └── db
+│       ├── firebasemvm
+│       │   ├── model
+│       │   └── util
+│       │       ├── AutoClearedValue.kt
+│       │       ├── Resource.kt
+│       │       └── SafeCall.kt
+│       ├── local_db
+│       │   ├── AppDatabase.kt
+│       │   ├── AreaDao.kt
+│       │   ├── TripDao.kt
+│       │   ├── TripInfoDao.kt
+│       │   ├── TripInvitationDao.kt
+│       │   ├── UserDao.kt
+│       │   └── model
+│       │       ├── Area.kt
+│       │       ├── Report.kt
+│       │       ├── SubArea.kt
+│       │       ├── Trip.kt
+│       │       ├── TripInfo.kt
+│       │       ├── TripInvitation.kt
+│       │       └── User.kt
+│       └── repository
+│           ├── TripInfoRepository.kt
+│           ├── TripRepository.kt
+│           └── UserRepository.kt
 ├── network
 │   └── NetworkManager.kt
 ├── ui
@@ -37,11 +44,18 @@
 │   ├── map
 │   │   └── MapFragment.kt
 │   ├── menu
+│   │   ├── ChangePassWordFragment.kt
 │   │   ├── MyProfile.kt
 │   │   ├── NotificationsFragment.kt
 │   │   └── TripInvitationAdapter.kt
 │   ├── register
 │   │   └── RegisterManager.kt
+│   ├── reports
+│   │   ├── ReportsViewModel.kt
+│   │   ├── UsersReports.kt
+│   │   └── reports
+│   │       ├── AddReportDialogFragment.kt
+│   │       └── ReportsAdapter.kt
 │   ├── trip
 │   │   ├── EquipmentFragment.kt
 │   │   ├── InvitationListAdapter.kt
@@ -68,7 +82,7 @@
     ├── UserManager.kt
     └── Utility.kt
 
-17 directories, 51 files
+22 directories, 60 files
 
 /Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/res
 /Users/danielenikandil/AndroidStudioProjects/Kumve/app/src/main/res
@@ -84,6 +98,7 @@
 ├── drawable
 │   ├── _ie2vme2rukrojugbmrx0ud6k7u.xml
 │   ├── account_circle.xml
+│   ├── add_photo_vector.png
 │   ├── animated_logo.xml
 │   ├── annoucements_yogi_aprelliyanto.png
 │   ├── background_login.png
@@ -98,14 +113,31 @@
 │   ├── book.png
 │   ├── calendar.png
 │   ├── clock.png
+│   ├── counter_badge.xml
+│   ├── edit_badge_rizki_ahmad_fauzia.png
+│   ├── edit_icon_juicy_fish.png
+│   ├── email_icon_freepic.png
+│   ├── email_vector.xml
+│   ├── explore_vector.xml
 │   ├── fart.jpeg
 │   ├── floating_background.xml
 │   ├── flower.png
+│   ├── full_name_vector.xml
+│   ├── gradient_background_grey_to_blue.xml
+│   ├── gradient_background_grey_to_brown.xml
+│   ├── gradient_profile_page.xml
+│   ├── gradient_white_to_brown.xml
+│   ├── gradient_white_to_grey.xml
 │   ├── hills.jpg
 │   ├── ic_launcher_background.xml
 │   ├── icon.png
+│   ├── kumve.xml
+│   ├── kumve_icon_round.gif
+│   ├── kumve_transparent.gif
+│   ├── kumve_white_transparent.gif
 │   ├── list.png
 │   ├── log_out.xml
+│   ├── login_dead_sea.jpg
 │   ├── login_screen.png
 │   ├── login_screen_high.png
 │   ├── macro_4327877.png
@@ -115,11 +147,24 @@
 │   ├── my_alerts.xml
 │   ├── my_profile.png
 │   ├── my_trips_afif_fudina.png
+│   ├── my_trips_background_empty_seek_the_lamb.gif
+│   ├── my_trips_kama.gif
+│   ├── my_trips_vector.xml
 │   ├── network.png
 │   ├── network_no_bg_smashicons.png
 │   ├── network_smashicons.png
 │   ├── partners.png
+│   ├── password_icon.xml
+│   ├── password_icon_nur_syifa_fauziaha.png
+│   ├── password_icon_smashicons.png
 │   ├── pencil.png
+│   ├── phone_icon_mayor_icons.png
+│   ├── phone_number_vector.xml
+│   ├── phone_vector.xml
+│   ├── profile_page_erez_ashkenazi_agmon_hahula.gif
+│   ├── profile_page_keysarya.png
+│   ├── register_ein_halon.jpg
+│   ├── reports_vector.xml
 │   ├── rounded_button.xml
 │   ├── rounded_corner_btn.xml
 │   ├── tin.png
@@ -128,6 +173,10 @@
 │   └── ic_launcher_foreground.xml
 ├── layout
 │   ├── activity_main.xml
+│   ├── add_report_dialog.xml
+│   ├── alerts_action_item.xml
+│   ├── bottom_tabs.xml
+│   ├── dialog_change_password.xml
 │   ├── equipment_card.xml
 │   ├── equipment_list.xml
 │   ├── fragment_invitation_list.xml
@@ -141,38 +190,60 @@
 │   ├── map.xml
 │   ├── menu_item_with_badge.xml
 │   ├── my_profile_page.xml
+│   ├── my_profile_page_old.xml
 │   ├── register.xml
+│   ├── reports.xml
+│   ├── reports_item.xml
 │   ├── route.xml
 │   ├── travel_card.xml
 │   ├── travel_manager_view.xml
 │   ├── travel_network.xml
 │   └── trip_review.xml
 ├── menu
+│   ├── bottom_nav.xml
 │   ├── main_menu.xml
 │   └── map_options.xml
 ├── mipmap-anydpi-v26
 │   ├── ic_launcher.xml
-│   └── ic_launcher_round.xml
+│   ├── ic_launcher_round.xml
+│   ├── kumve_android_app_icon.xml
+│   └── kumve_android_app_icon_round.xml
 ├── mipmap-hdpi
 │   ├── ic_launcher.webp
-│   └── ic_launcher_round.webp
+│   ├── ic_launcher_round.webp
+│   ├── kumve_android_app_icon.webp
+│   ├── kumve_android_app_icon_foreground_layer.webp
+│   └── kumve_android_app_icon_round.webp
 ├── mipmap-mdpi
 │   ├── ic_launcher.webp
-│   └── ic_launcher_round.webp
+│   ├── ic_launcher_round.webp
+│   ├── kumve_android_app_icon.webp
+│   ├── kumve_android_app_icon_foreground_layer.webp
+│   └── kumve_android_app_icon_round.webp
 ├── mipmap-xhdpi
 │   ├── ic_launcher.webp
-│   └── ic_launcher_round.webp
+│   ├── ic_launcher_round.webp
+│   ├── kumve_android_app_icon.webp
+│   ├── kumve_android_app_icon_foreground_layer.webp
+│   └── kumve_android_app_icon_round.webp
 ├── mipmap-xxhdpi
 │   ├── ic_launcher.webp
-│   └── ic_launcher_round.webp
+│   ├── ic_launcher_round.webp
+│   ├── kumve_android_app_icon.webp
+│   ├── kumve_android_app_icon_foreground_layer.webp
+│   └── kumve_android_app_icon_round.webp
 ├── mipmap-xxxhdpi
 │   ├── ic_launcher.webp
-│   └── ic_launcher_round.webp
+│   ├── ic_launcher_round.webp
+│   ├── kumve_android_app_icon.webp
+│   ├── kumve_android_app_icon_foreground_layer.webp
+│   └── kumve_android_app_icon_round.webp
 ├── navigation
 │   └── my_nav.xml
 ├── values
 │   ├── colors.xml
 │   ├── ids.xml
+│   ├── kumve_android_app_icon_background_layer.xml
 │   ├── strings.xml
 │   ├── styles.xml
 │   └── themes.xml
@@ -186,4 +257,4 @@
     ├── backup_rules.xml
     └── data_extraction_rules.xml
 
-19 directories, 95 files
+19 directories, 152 files
