@@ -24,6 +24,7 @@ import com.example.mykumve.util.UserUtils.getFullName
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
 class LoginManager : Fragment() {
@@ -46,14 +47,12 @@ class LoginManager : Fragment() {
             if (isAdded) {
                     loginUser(email, password) { isLoggedInUser ->
                     if (isLoggedInUser.success) {
-                        Toast.makeText(requireContext(), R.string.login_successful, Toast.LENGTH_SHORT)
-                            .show()
-                        // Navigate to main screen
+                        Toast.makeText(requireContext(), R.string.login_successful, Toast.LENGTH_SHORT).show()
+                        // Navigate to the main screen
                         findNavController().navigate(R.id.action_loginManager_to_mainScreenManager)
                     } else {
-                        Toast.makeText(requireContext(), R.string.login_failed, Toast.LENGTH_SHORT)
-                            .show()
-                        Log.e(TAG, "User is not logged in: ${isLoggedInUser.reason}" )
+                        Toast.makeText(requireContext(), R.string.login_failed, Toast.LENGTH_SHORT).show()
+                        Log.e(TAG, "User is not logged in: ${isLoggedInUser.reason}")
                     }
                 }
             }
@@ -105,21 +104,24 @@ class LoginManager : Fragment() {
     private fun loginUser(email: String, password: String, callback: (Result) -> Unit) {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-            userViewModel.fetchUserByEmail(email) // Make sure this method updates the flow
-            userViewModel.userByEmail.collectLatest { user ->
-                val isLoggedInUser = if (user != null) {
-                    val passwordHash = EncryptionUtils.hashPassword(password, user.salt)
-                    if (passwordHash == user.hashedPassword) {
-                        UserManager.saveUser(user)
-                        Result(true, getString(R.string.login_successful))
-                    } else {
-                        Result(false, getString(R.string.login_failed) + ": incorrect password") // todo
+                userViewModel.fetchUserByEmail(email) // Ensure this method updates the flow
+                userViewModel.userByEmail
+                    .filterNotNull()
+                    .distinctUntilChanged()
+                    .collectLatest { user ->
+                        val isLoggedInUser = if (user != null) {
+                            val passwordHash = EncryptionUtils.hashPassword(password, user.salt)
+                            if (passwordHash == user.hashedPassword) {
+                                UserManager.saveUser(user)
+                                Result(true, getString(R.string.login_successful))
+                            } else {
+                                Result(false, getString(R.string.login_failed) + ": incorrect password")
+                            }
+                        } else {
+                            Result(false, getString(R.string.login_failed) + ": user not found")
+                        }
+                        callback(isLoggedInUser)
                     }
-                } else {
-                    Result(false, getString(R.string.login_failed) + ": user not found") // todo
-                }
-                callback(isLoggedInUser)
-            }
             }
         }
     }
