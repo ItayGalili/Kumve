@@ -15,12 +15,12 @@ import il.co.erg.mykumve.R
 import il.co.erg.mykumve.databinding.TravelCardBinding
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
 import il.co.erg.mykumve.ui.viewmodel.TripWithInfo
-import il.co.erg.mykumve.util.Converters
 import il.co.erg.mykumve.util.TripInfoUtils.mapAreaToString
 import il.co.erg.mykumve.util.TripInfoUtils.mapDifficultyToString
 import il.co.erg.mykumve.util.Utility.toFormattedString
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.Date
 
 class TripAdapter(
     var tripsWithInfo: MutableList<TripWithInfo>,
@@ -59,10 +59,10 @@ class TripAdapter(
             Log.d(TAG, "Binding trip ${trip.title}, with total ${trip.invitations.size} invitations and ${trip.participants?.size} participants")
             binding.tripTitle.text = trip.title
             binding.areaCard.text = mapAreaToString(context, tripInfo?.subAreaId)
-            binding.dateCard.text = Converters().toDate(trip.gatherTime?.toString()?.toLong())?.toFormattedString()
+            binding.dateCard.text = trip.gatherTime?.let { Date(it).toFormattedString() }
             binding.difficultyCard.text = mapDifficultyToString(context, tripInfo?.difficulty)
 
-            //image up load:
+            // Image upload:
             if (trip.image != null) {
                 Glide.with(binding.root).load(trip.image).circleCrop()
                     .into(binding.itemImage)
@@ -107,6 +107,4 @@ class TripAdapter(
         tripsWithInfo.addAll(newTripList)
         notifyDataSetChanged()
     }
-
-
 }

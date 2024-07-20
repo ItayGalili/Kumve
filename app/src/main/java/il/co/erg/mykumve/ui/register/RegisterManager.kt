@@ -8,13 +8,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import il.co.erg.mykumve.R
+import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.databinding.RegisterBinding
 import il.co.erg.mykumve.ui.viewmodel.UserViewModel
 import il.co.erg.mykumve.util.ImagePickerUtil
@@ -23,7 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-class RegisterManager : Fragment(), CoroutineScope {
+class   RegisterManager : Fragment(), CoroutineScope {
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO
@@ -206,7 +206,7 @@ class RegisterManager : Fragment(), CoroutineScope {
         ) { result ->
             launch(Dispatchers.Main) {
                 if (isAdded) {
-                    if (result.success) {
+                    if (result.status == Status.SUCCESS) {
                         Toast.makeText(
                             requireContext(),
                             R.string.registration_successful,
@@ -214,7 +214,7 @@ class RegisterManager : Fragment(), CoroutineScope {
                         ).show()
                         findNavController().navigate(R.id.action_registerManager_to_loginManager)
                     } else {
-                        Toast.makeText(requireContext(), result.reason, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), result.message, Toast.LENGTH_SHORT).show()
                         // Todo descriptive error
                     }
                 }

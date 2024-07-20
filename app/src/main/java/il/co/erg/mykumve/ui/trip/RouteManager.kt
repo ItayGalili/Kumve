@@ -15,7 +15,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import il.co.erg.mykumve.R
 import il.co.erg.mykumve.data.data_classes.Point
-import il.co.erg.mykumve.data.model.TripInfo
+import il.co.erg.mykumve.data.db.model.TripInfo
+import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
+import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.databinding.RouteBinding
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
 import il.co.erg.mykumve.ui.viewmodel.TripViewModel
@@ -25,7 +27,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class RouteManager : Fragment() {
-    private var _binding : RouteBinding? = null
+    private var _binding: RouteBinding? = null
     val TAG = RouteManager::class.java.simpleName
 
     private val binding get() = _binding!!
@@ -39,7 +41,7 @@ class RouteManager : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = RouteBinding.inflate(inflater,container,false)
+        _binding = RouteBinding.inflate(inflater, container, false)
 
         setupSpinners()
 
@@ -53,13 +55,13 @@ class RouteManager : Fragment() {
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
                         tripViewModel.operationResult.collectLatest { result ->
-                            if (result?.success == true) {
-                                Log.d(TAG, "Operation succeeded: ${result.reason}")
+                            if (result.status == Status.SUCCESS) {
+                                Log.d(TAG, "Operation succeeded: ${result.message}")
                                 sharedViewModel.isEditingExistingTrip = false
                                 sharedViewModel.resetNewTripState()
                                 findNavController().navigate(R.id.action_routeManager_to_mainScreenManager)
                             } else {
-                                Log.e(TAG, "Operation failed: ${result?.reason}")
+                                Log.e(TAG, "Operation failed: ${result.message}")
                             }
                         }
                     }
@@ -99,20 +101,19 @@ class RouteManager : Fragment() {
         return result
     }
 
-    private fun formToTripInfoObject(passedTripId: Long? = null): TripInfo {
-        val id = sharedViewModel.tripInfo.value?.id ?: 0
+    private fun formToTripInfoObject(passedTripId: String? = null): TripInfo {
         val title = binding.RouteTitle.text.toString().takeIf { it.isNotEmpty() } ?: sharedViewModel.tripInfo.value?.title?.takeIf { it.isNotEmpty() } ?: ""
         val points = listOf<Point>() ?: sharedViewModel.tripInfo.value?.points
         val routeDescription = binding.RouteDescription.text.toString().takeIf { it.isNotEmpty() }
-            ?: sharedViewModel.tripInfo.value?.routeDescription  //todo check
+            ?: sharedViewModel.tripInfo.value?.routeDescription
 
         val selectedDifficulty = binding.DifficultySpinner.selectedItem as String
         val selectedArea = binding.AreaSpinner.selectedItem as String
 
         val areaId = -1 //TripInfoUtils.mapAreaToModel(requireContext(), selectedArea)
         val subAreaId = TripInfoUtils.mapAreaToModel(requireContext(), selectedArea)
-            ?: sharedViewModel.tripInfo.value?.areaId ?: -1 //todo check
-        val difficulty = TripInfoUtils.mapDifficultyToModel(requireContext(), selectedDifficulty).takeIf { it != DifficultyLevel.UNSET } //todo check
+            ?: sharedViewModel.tripInfo.value?.areaId ?: -1
+        val difficulty = TripInfoUtils.mapDifficultyToModel(requireContext(), selectedDifficulty).takeIf { it != DifficultyLevel.UNSET }
             ?: sharedViewModel.tripInfo.value?.difficulty
             ?: DifficultyLevel.UNSET
 
@@ -121,9 +122,8 @@ class RouteManager : Fragment() {
         val isCircular = false
         val likes = 0
         val description = ""
-        val tripId = passedTripId ?: sharedViewModel.trip.value?.id ?: 0
+        val tripId = passedTripId ?: sharedViewModel.trip.value?.id ?: ""
         val tripInfo = TripInfo(
-            id = id,
             title = title,
             points = points,
             areaId = areaId,
@@ -143,8 +143,6 @@ class RouteManager : Fragment() {
     private fun verifyRouteForm(): Boolean {
         return binding.RouteTitle.toString().isNotEmpty()
     }
-
-
 
     private fun loadFormData() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -184,7 +182,6 @@ class RouteManager : Fragment() {
         )
     }
 
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -204,5 +201,4 @@ class RouteManager : Fragment() {
         areaAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.AreaSpinner.adapter = areaAdapter
     }
-
 }

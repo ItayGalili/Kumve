@@ -8,11 +8,10 @@ import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.fragment.app.commit
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import com.google.firebase.FirebaseApp
 import il.co.erg.mykumve.R
-import il.co.erg.mykumve.ui.login.LoginManager
+import il.co.erg.mykumve.ui.viewmodel.MainViewModel
 import il.co.erg.mykumve.util.UserManager
 
 
@@ -45,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
+        FirebaseApp.initializeApp(this)
 
         if (UserManager.isLoggedIn()) {
             navController.navigate(R.id.mainScreenManager)

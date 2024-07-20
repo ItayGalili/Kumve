@@ -13,6 +13,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import il.co.erg.mykumve.R
+import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.ui.viewmodel.UserViewModel
 import il.co.erg.mykumve.util.EncryptionUtils
 import il.co.erg.mykumve.util.UserManager
@@ -62,12 +63,12 @@ class ChangePasswordFragment : DialogFragment() {
                                         viewLifecycleOwner.lifecycleScope.launch {
                                             repeatOnLifecycle(Lifecycle.State.STARTED) {
                                                 userViewModel.operationResult.collectLatest { result ->
-                                                    if (result.success) {
+                                                    if (result.status == Status.SUCCESS) {
                                                         // Handle success, e.g., show a success message
-                                                        Toast.makeText(requireContext(), result.reason, Toast.LENGTH_SHORT).show()
+                                                        Toast.makeText(requireContext(), result.message, Toast.LENGTH_SHORT).show()
                                                     } else {
                                                         // Handle failure, e.g., show a failure message
-                                                        Toast.makeText(requireContext(), result.reason, Toast.LENGTH_SHORT).show()
+                                                        Toast.makeText(requireContext(), result.message, Toast.LENGTH_SHORT).show()
                                                     }
                                                 }
                                             }

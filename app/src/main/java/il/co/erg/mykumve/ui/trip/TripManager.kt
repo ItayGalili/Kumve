@@ -18,10 +18,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import il.co.erg.mykumve.R
 import il.co.erg.mykumve.data.data_classes.Equipment
-import il.co.erg.mykumve.data.model.Trip
-import il.co.erg.mykumve.data.model.TripInfo
-import il.co.erg.mykumve.data.model.TripInvitation
-import il.co.erg.mykumve.data.model.User
+import il.co.erg.mykumve.data.db.model.Trip
+import il.co.erg.mykumve.data.db.model.TripInfo
+import il.co.erg.mykumve.data.db.model.TripInvitation
+import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.databinding.TravelManagerViewBinding
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
 import il.co.erg.mykumve.ui.viewmodel.TripViewModel
@@ -297,7 +297,7 @@ class TripManager : Fragment() {
         tripFromSharedViewModel: Trip? = null,
 
         ): Trip {
-        val id = sharedViewModel.trip.value?.id ?: 0
+        val id = sharedViewModel.tripInfo.value?.id ?: ""
         val title = binding.nameTrip.text.toString()
         val description = binding.description.text.toString()
         val gatherTime = startDate ?: sharedViewModel.trip.value?.gatherTime
@@ -318,7 +318,7 @@ class TripManager : Fragment() {
 
         // Create a new Trip object with the provided details
         val trip = Trip(
-            id = id,
+            _id = id,
             title = title,
             gatherTime = gatherTime,
             endDate = endTime,

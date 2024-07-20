@@ -1,4 +1,6 @@
-package il.co.erg.mykumve.network
+package il.co.erg.mykumve.explore
+
+import androidx.fragment.app.Fragment
 
 /**
  * Handles network operations, initially for local data and later for Firebase.
@@ -6,7 +8,7 @@ package il.co.erg.mykumve.network
  *
  * TODO: Implement methods for handling network requests and data synchronization.
  */
-object NetworkManager {
+class ExploreFragment : Fragment() {
 
     // TODO: Implement methods to handle network operations.
 

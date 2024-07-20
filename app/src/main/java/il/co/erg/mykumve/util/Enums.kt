@@ -51,11 +51,11 @@ enum class ShareLevel(val value: Int) {
     }
 }
 
-data class Result(
-    val success: Boolean,
-    val reason: String,
-    val data: Map<String, Any?>? = emptyMap()
-)
+//data class Result(
+//    val success: Boolean,
+//    val reason: String,
+//    val data: Map<String, Any?>? = emptyMap()
+//)
 
 enum class NavigationArgs(val key: String) {
     IS_CREATING_NEW_TRIP("isCreatingNewTrip")

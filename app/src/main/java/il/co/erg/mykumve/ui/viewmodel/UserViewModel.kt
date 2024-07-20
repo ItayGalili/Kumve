@@ -7,10 +7,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
-import il.co.erg.mykumve.data.db.repository.UserRepository
-import il.co.erg.mykumve.data.model.User
+import il.co.erg.mykumve.data.db.firebasemvm.repository.UserRepository
+import il.co.erg.mykumve.data.db.model.User
+import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
+import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.util.EncryptionUtils
-import il.co.erg.mykumve.util.Result
 import il.co.erg.mykumve.util.UserManager
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -18,10 +19,10 @@ import kotlinx.coroutines.launch
 class UserViewModel(application: Application) : AndroidViewModel(application) {
     val TAG = UserViewModel::class.java.simpleName
 
-    private val _operationResult = MutableSharedFlow<Result>()
-    val operationResult: SharedFlow<Result> = _operationResult
+    private val _operationResult = MutableSharedFlow<Resource<Void>>()
+    val operationResult: SharedFlow<Resource<Void>> = _operationResult
 
-    private val userRepository: UserRepository = UserRepository(application)
+    private val userRepository: UserRepository = UserRepository()
 
     private val _userByEmail = MutableStateFlow<User?>(null)
     val userByEmail: StateFlow<User?> get() = _userByEmail.asStateFlow()
@@ -39,10 +40,10 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 val updatedUser = user.copy(hashedPassword = newPassword)
-                userRepository.updateUser(updatedUser)
-                _operationResult.emit(Result(true, "Password updated successfully"))
+                val result = userRepository.updateUser(updatedUser)
+                _operationResult.emit(result)
             } catch (e: Exception) {
-                _operationResult.emit(Result(false, "Failed to update password: ${e.message}"))
+                _operationResult.emit(Resource.error(e.message ?: "Failed to update password", null))
             }
         }
     }
@@ -53,37 +54,42 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         email: String,
         password: String,
         photo: String?,
-        description: String?,
-        callback: (Result) -> Unit
+        phone: String?,
+        callback: (Resource<Void>) -> Unit
     ) {
         viewModelScope.launch {
-            userRepository.getUserByEmail(email)
-                ?.stateIn(viewModelScope, SharingStarted.Lazily, null)
-                ?.collectLatest { existingUser ->
-                    if (existingUser != null) {
-                        callback(Result(false, "User already registered.")) // Todo string
-                    } else {
-                        val salt = EncryptionUtils.generateSalt()
-                        val passwordHashed = EncryptionUtils.hashPassword(password, salt)
-                        val newUser =
-                            User(firstName, surname, email, photo, description, passwordHashed, salt)
-                        val result = userRepository.insertUser(newUser)
-                        if (result.success) {
-                            UserManager.saveUser(newUser)
-                        }
-                        callback(result)
+            userRepository.getUserByEmail(email).collectLatest { resource ->
+                val existingUser = resource.data
+                if (existingUser != null) {
+                    callback(Resource.error("User already registered.", null))
+                } else {
+                    val salt = EncryptionUtils.generateSalt()
+                    val passwordHashed = EncryptionUtils.hashPassword(password, salt)
+                    val newUser = User(firstName=firstName
+                        , surname= surname
+                        , email = email
+                        , photo = photo
+                        , phone = phone
+                        , hashedPassword = passwordHashed
+                        , salt = salt
+                    )
+                    val result = userRepository.insertUser(newUser)
+                    if (result.status == Status.SUCCESS) {
+                        UserManager.saveUser(newUser)
                     }
+                    callback(result)
                 }
+            }
         }
     }
 
     fun updateUser(
         user: User,
-        callback: (Result) -> Unit
+        callback: (Resource<Void>) -> Unit
     ) {
         viewModelScope.launch {
             val result = userRepository.updateUser(user)
-            if (result.success) {
+            if (result.status == Status.SUCCESS) {
                 UserManager.saveUser(user)
             }
             callback(result)
@@ -92,82 +98,71 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun fetchUserByEmail(email: String) {
         viewModelScope.launch {
-            userRepository.getUserByEmail(email)
-                ?.stateIn(viewModelScope, SharingStarted.Lazily, null)
-                ?.collectLatest { user ->
-                    _userByEmail.emit(user)
-                }
+            userRepository.getUserByEmail(email).collectLatest { resource ->
+                _userByEmail.emit(resource.data)
+            }
         }
     }
 
     fun fetchUserByPhone(phone: String) {
         viewModelScope.launch {
-            userRepository.getUserByPhone(phone)
-                ?.distinctUntilChanged()
-                ?.collectLatest { user ->
-                    _userByPhone.emit(user)
-                }
+            userRepository.getUserByPhone(phone).collectLatest { resource ->
+                _userByPhone.emit(resource.data)
+            }
         }
     }
 
-    fun fetchUserById(id: Long) {
+    fun fetchUserById(id: String) {
         viewModelScope.launch {
-            userRepository.getUserById(id)
-                ?.stateIn(viewModelScope, SharingStarted.Lazily, null)
-                ?.collectLatest { user ->
-                    _userById.emit(user)
-                }
+            userRepository.getUserById(id).collectLatest { resource ->
+                _userById.emit(resource.data)
+            }
         }
     }
 
     fun fetchAllUsers() {
         viewModelScope.launch {
-            userRepository.getAllUsers()
-                ?.distinctUntilChanged()  // Ensure only distinct values are processed
-                ?.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-                ?.collectLatest { users ->
-                    if (users.isNotEmpty()) {  // Only log when users list is not empty
-                        _allUsers.emit(users)
-                    }
-                }
+            userRepository.getAllUsers().collectLatest { resource ->
+                _allUsers.emit(resource.data ?: emptyList())
+            }
         }
     }
 
-    fun observeUserByEmail(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
+    fun observeUserByEmail(lifecycleOwner: androidx.lifecycle.LifecycleOwner, handleUserUpdate: (User?) -> Unit) {
         lifecycleOwner.lifecycleScope.launch {
             lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 userByEmail.collectLatest { user ->
-                    // Handle user updates here
+                    handleUserUpdate(user)
                 }
             }
         }
     }
 
-    fun observeUserByPhone(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
+    fun observeUserByPhone(lifecycleOwner: androidx.lifecycle.LifecycleOwner, handleUserUpdate: (User?) -> Unit) {
         lifecycleOwner.lifecycleScope.launch {
             lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 userByPhone.collectLatest { user ->
-                    // Handle user updates here
+                    handleUserUpdate(user)
                 }
             }
         }
     }
 
-    fun observeUserById(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
+    fun observeUserById(lifecycleOwner: androidx.lifecycle.LifecycleOwner, handleUserUpdate: (User?) -> Unit) {
         lifecycleOwner.lifecycleScope.launch {
             lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 userById.collectLatest { user ->
-                    // Handle user updates here
+                    handleUserUpdate(user)
                 }
             }
         }
     }
 
-    fun observeAllUsers(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
+    fun observeAllUsers(lifecycleOwner: androidx.lifecycle.LifecycleOwner, handleUsersUpdate: (List<User>) -> Unit) {
         lifecycleOwner.lifecycleScope.launch {
             lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 allUsers.collectLatest { users ->
-                    // Handle users updates here
+                    handleUsersUpdate(users)
                 }
             }
         }

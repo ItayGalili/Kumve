@@ -1,19 +1,17 @@
-package il.co.erg.mykumve.ui.notifications
+package il.co.erg.mykumve.ui.menu
 
 import androidx.core.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.net.toUri
-import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
+import il.co.erg.mykumve.data.db.model.TripInvitation
 import il.co.erg.mykumve.R
-import il.co.erg.mykumve.data.model.TripInvitation
 import il.co.erg.mykumve.databinding.ItemNotificationBinding
 import il.co.erg.mykumve.ui.viewmodel.TripViewModel
 import il.co.erg.mykumve.ui.viewmodel.UserViewModel
@@ -120,7 +118,6 @@ class TripInvitationAdapter(
         Log.d(TAG, "REJECT selected - Responding to trip invitation")
         invitation.status = TripInvitationStatus.REJECTED
         respondToTripInvitation(invitation)
-
     }
 
     private fun respondToTripInvitation(invitation: TripInvitation) {

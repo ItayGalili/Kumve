@@ -2,12 +2,7 @@ package il.co.erg.mykumve.ui.main
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
@@ -26,10 +21,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import il.co.erg.mykumve.ui.trip.TripAdapter
 import il.co.erg.mykumve.R
-import il.co.erg.mykumve.data.model.User
+import il.co.erg.mykumve.data.db.model.User
+import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.databinding.MainScreenBinding
 import il.co.erg.mykumve.ui.main.MainActivity.Companion.DEBUG_MODE
-import il.co.erg.mykumve.ui.notifications.NotificationsFragment
+import il.co.erg.mykumve.ui.menu.NotificationsFragment
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
 import il.co.erg.mykumve.ui.viewmodel.TripViewModel
 import il.co.erg.mykumve.ui.viewmodel.TripWithInfo
@@ -40,7 +36,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 class MainScreenManager : Fragment() {
-    //toolbar
+    // Toolbar
     private lateinit var toolbar: Toolbar
     private var _binding: MainScreenBinding? = null
     private val binding get() = _binding!!
@@ -51,13 +47,11 @@ class MainScreenManager : Fragment() {
     private var _firstTimeShowingScreen = true
     val TAG = MainScreenManager::class.java.simpleName
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = MainScreenBinding.inflate(inflater, container, false)
 
         binding.addBtn.setOnClickListener {
@@ -84,9 +78,7 @@ class MainScreenManager : Fragment() {
     private fun initializeComponent() {
         sharedViewModel.isEditingExistingTrip = false
         sharedViewModel.isCreatingTripMode = false
-
     }
-
 
     private fun clearFragmentBackStack() {
         parentFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
@@ -106,18 +98,14 @@ class MainScreenManager : Fragment() {
         binding.mainRecyclerView.adapter = tripAdapter
         binding.mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        //toolbar
+        // Toolbar
         toolbar = view.findViewById(R.id.toolbar)
         (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
-        // Ensure menu items are displayed in the Toolbar
         setHasOptionsMenu(true)
-        //toolbar
-
 
         if (UserManager.isLoggedIn()) {
             currentUser = UserManager.getUser()
             currentUser?.let { user ->
-
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
                         tripViewModel.fetchTripsByParticipantUserIdWithInfo(currentUser!!.id)
@@ -160,7 +148,6 @@ class MainScreenManager : Fragment() {
                 return false
             }
 
-
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 deleteTrip(viewHolder)
             }
@@ -175,7 +162,6 @@ class MainScreenManager : Fragment() {
                     tripViewModel.deleteTrip(trip)
                     observeDeleteResult(viewHolder)
                 }
-
             }
 
             private fun observeDeleteResult(viewHolder: RecyclerView.ViewHolder) {
@@ -183,67 +169,65 @@ class MainScreenManager : Fragment() {
                     viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                         tripViewModel.operationResult
                             .distinctUntilChanged()
-                            .collectLatest { result ->
-                                if (result?.success == true) {
+                            .collectLatest { resource ->
+                                if (resource.status == Status.SUCCESS) {
                                     Log.d(TAG, "Trip deleted successfully.")
                                     tripAdapter.notifyItemRemoved(viewHolder.adapterPosition)
                                 } else {
-                                    Toast.makeText(requireContext(), "Failed to delete trip: ${result?.reason}", Toast.LENGTH_SHORT).show()
-//                                    tripAdapter.notifyItemChanged(viewHolder.adapterPosition)
+                                    Toast.makeText(requireContext(), "Failed to delete trip: ${resource.message}", Toast.LENGTH_SHORT).show()
+                                    tripAdapter.notifyItemChanged(viewHolder.adapterPosition)
                                 }
                             }
                     }
                 }
             }
 
-
-
         }).attachToRecyclerView(binding.mainRecyclerView)
         Log.d(TAG, "Creating mode: ${sharedViewModel.isCreatingTripMode}\nEditing mode: ${sharedViewModel.isEditingExistingTrip}")
     }
 
     private fun logTripsWithInfo(tripsWithInfo: List<TripWithInfo>) {
-        tripsWithInfo.forEach { tripWithInfo ->
-            val trip = tripWithInfo.trip
-            val tripInfo = tripWithInfo.tripInfo
-            val detailedTripInfo = tripInfo?.let {
-                """
-            |Trip Info:
-            |    ID: ${it.id}
-            |    Title: ${it.title}
-            |    Points: ${it.points}
-            |    Area ID: ${it.areaId}
-            |    Sub Area ID: ${it.subAreaId}
-            |    Description: ${it.description}
-            |    Route Description: ${it.routeDescription}
-            |    Difficulty: ${it.difficulty}
-            |    Trip ID: ${it.tripId}
+        if (tripsWithInfo.isEmpty()) {
+            Log.e(TAG, "No trips found.")
+        } else {
+            tripsWithInfo.forEach { tripWithInfo ->
+                val trip = tripWithInfo.trip
+                val tripInfo = tripWithInfo.tripInfo
+                val detailedTripInfo = tripInfo?.let {
+                    """
+                |Trip Info:
+                |    ID: ${it.id}
+                |    Title: ${it.title}
+                |    Points: ${it.points}
+                |    Area ID: ${it.areaId}
+                |    Sub Area ID: ${it.subAreaId}
+                |    Description: ${it.description}
+                |    Route Description: ${it.routeDescription}
+                |    Difficulty: ${it.difficulty}
+                |    Trip ID: ${it.tripId}
+                """.trimMargin()
+                } ?: "No trip info available"
+
+                val prettyTrip = """
+                |Trip
+                | id: ${trip.id},
+                |    title: ${trip.title},
+                |    description: ${trip.description},
+                |    gatherTime: ${trip.gatherTime},
+                |    tripInfoId: ${trip.tripInfoId},
+                |    endDate: ${trip.endDate},
+                |    participants: ${trip.participants?.size},
+                |    equipment: ${trip.equipment?.size},
+                |    invitations: ${trip.invitations.size},
+                |    shareLevel: ${trip.shareLevel}
+                |)
+                |$detailedTripInfo
             """.trimMargin()
-            } ?: "No trip info available"
-
-            val prettyTrip = """
-        |Trip
-        | id: ${trip.id},
-        |    title: ${trip.title},
-        |    description: ${trip.description},
-        |    gatherTime: ${trip.gatherTime},
-        |    tripInfoId: ${trip.tripInfoId},
-        |    endDate: ${trip.endDate},
-        |    participants: ${trip.participants?.size},
-        |    equipment: ${trip.equipment?.size},
-        |    invitations: ${trip.invitations.size},
-        |    shareLevel: ${trip.shareLevel}
-        |)
-        |$detailedTripInfo
-        """.trimMargin()
-
-            Log.d(TAG, prettyTrip)
+                Log.d(TAG, prettyTrip)
+            }
         }
     }
 
-
-
-    //toolbar
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.main_menu, menu)
@@ -259,7 +243,7 @@ class MainScreenManager : Fragment() {
             onOptionsItemSelected(menuItem)
         }
 
-        observeUserTripInvitations(UserManager.getUser()?.id ?: 0L)
+        observeUserTripInvitations(UserManager.getUser()?.id ?: "")
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -280,12 +264,11 @@ class MainScreenManager : Fragment() {
                 showDeleteDbDialog()
                 return true
             }
-
             else -> return super.onOptionsItemSelected(item)
         }
     }
 
-    private fun observeUserTripInvitations(userId: Long) {
+    private fun observeUserTripInvitations(userId: String) {
         viewLifecycleOwner.lifecycleScope.launch {
             // Fetch trip invitations for the user
             tripViewModel.fetchTripInvitationsForUser(userId)
@@ -300,33 +283,19 @@ class MainScreenManager : Fragment() {
                     val pendingInvitationsCount = pendingInvitations.size
                     if (pendingInvitationsCount == 0) {
                         badge?.visibility = View.GONE
-//                        Toast.makeText(requireContext(), "No new invitations", Toast.LENGTH_SHORT)
-//                            .show()
                     } else {
-                            badge?.text = "+$pendingInvitationsCount"
-                            badge?.visibility = View.VISIBLE
-                        }
-                        // Show notifications or update UI with the invitations
-//                        Toast.makeText(
-//                            requireContext(),
-//                            "You have $pendingInvitationsCount new invitations",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-                        pendingInvitations.forEach {
-                            Log.d(TAG, "New invitations for user.  invitation id: ${it.id}" +
-                                    " tripId: ${it.tripId}" +
-                                    " userId: ${it.userId}")
-                        }
+                        badge?.text = "+$pendingInvitationsCount"
+                        badge?.visibility = View.VISIBLE
                     }
                 }
             }
         }
+    }
 
     private fun showNotificationsFragment() {
         val notificationsFragment = NotificationsFragment()
         notificationsFragment.show(parentFragmentManager, notificationsFragment.tag)
     }
-
 
     private fun showDeleteDbDialog() {
         val builder = AlertDialog.Builder(requireContext())
@@ -382,5 +351,4 @@ class MainScreenManager : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
 }

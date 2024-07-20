@@ -7,12 +7,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
-import il.co.erg.mykumve.R
+import androidx.fragment.app.activityViewModels
 import il.co.erg.mykumve.data.model.Report
+import il.co.erg.mykumve.databinding.AddReportDialogBinding
 import il.co.erg.mykumve.util.ImagePickerUtil
 import il.co.erg.mykumve.util.UserManager
 import il.co.erg.mykumve.util.UserUtils
@@ -22,14 +20,15 @@ import java.util.Locale
 
 class AddReportDialogFragment : DialogFragment() {
 
-    // Define interface for communication with parent fragment
     interface OnReportAddedListener {
         fun onReportAdded(report: Report)
     }
 
     private var listener: OnReportAddedListener? = null
-    private lateinit var reportImage: ImageView
-    private lateinit var descriptionEditText: EditText
+    private var _binding: AddReportDialogBinding? = null
+    private val binding get() = _binding!!
+
+    private val reportsViewModel: ReportsViewModel by activityViewModels()
     private lateinit var imagePickerUtil: ImagePickerUtil
 
     private var capturedImageBitmap: Bitmap? = null
@@ -38,34 +37,24 @@ class AddReportDialogFragment : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.add_report_dialog, container, false)
+        _binding = AddReportDialogBinding.inflate(inflater, container, false)
 
-        // Initialize views
-        reportImage = view.findViewById(R.id.report_image)
-        descriptionEditText = view.findViewById(R.id.report_description)
-
-        // Initialize ImagePickerUtil
         imagePickerUtil = ImagePickerUtil(this) { uri ->
             uri?.let {
-                reportImage.setImageURI(it)
-                // Convert Uri to Bitmap and store it
+                binding.reportImage.setImageURI(it)
                 capturedImageBitmap = uriToBitmap(it)
             }
         }
 
-        // Capture image button click
-        reportImage.setOnClickListener {
+        binding.reportImage.setOnClickListener {
             showImagePickerDialog()
         }
 
-        // Save button click
-        val saveButton = view.findViewById<Button>(R.id.report_now)
-        saveButton.setOnClickListener {
+        binding.reportNow.setOnClickListener {
             saveReport()
-            dismiss()
         }
 
-        return view
+        return binding.root
     }
 
     private fun showImagePickerDialog() {
@@ -73,16 +62,16 @@ class AddReportDialogFragment : DialogFragment() {
         val builder = androidx.appcompat.app.AlertDialog.Builder(requireContext())
         builder.setTitle("Add Photo!")
         builder.setItems(items) { dialog, item ->
-            when {
-                items[item] == "Take Photo" -> {
+            when (items[item]) {
+                "Take Photo" -> {
                     imagePickerUtil.requestCaptureImagePermission()
                     dialog.dismiss()
                 }
-                items[item] == "Choose from Library" -> {
+                "Choose from Library" -> {
                     imagePickerUtil.pickImage()
                     dialog.dismiss()
                 }
-                items[item] == "Cancel" -> {
+                "Cancel" -> {
                     dialog.dismiss()
                 }
             }
@@ -91,25 +80,29 @@ class AddReportDialogFragment : DialogFragment() {
     }
 
     private fun saveReport() {
-        val description = descriptionEditText.text.toString().trim()
+        val description = binding.reportDescription.text.toString().trim()
+        val reporterName = UserUtils.getFullName(UserManager.getUser())
+        val timestamp = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(Date())
 
         if (description.isNotEmpty() && capturedImageBitmap != null) {
-            val timeStamp = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(Date())
-            val reporterName = UserUtils.getFullName(UserManager.getUser())
-            // Create a Report object with captured image, description, reporter name, and timestamp
-            val report = Report(capturedImageBitmap!!, description, "Reported By: $reporterName", timeStamp)
-            // Notify parent fragment (UsersReports) through the listener
+            val report = Report(capturedImageBitmap!!, description, "Reported By: $reporterName", timestamp)
             listener?.onReportAdded(report)
+            dismiss()
         }
+    }
+
+    private fun uriToBitmap(uri: Uri): Bitmap {
+        val inputStream = requireContext().contentResolver.openInputStream(uri)
+        return BitmapFactory.decodeStream(inputStream)
     }
 
     fun setOnReportAddedListener(listener: OnReportAddedListener) {
         this.listener = listener
     }
 
-    private fun uriToBitmap(uri: Uri): Bitmap {
-        val inputStream = requireContext().contentResolver.openInputStream(uri)
-        return BitmapFactory.decodeStream(inputStream)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {

@@ -14,12 +14,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import il.co.erg.mykumve.R
+import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
+import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.databinding.LoginBinding
 import il.co.erg.mykumve.ui.main.MainActivity.Companion.DEBUG_MODE
 import il.co.erg.mykumve.ui.viewmodel.UserViewModel
 import il.co.erg.mykumve.util.EncryptionUtils
 import il.co.erg.mykumve.util.UserManager
-import il.co.erg.mykumve.util.Result
 import il.co.erg.mykumve.util.UserUtils.getFullName
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -40,60 +41,21 @@ class LoginManager : Fragment() {
     ): View {
         _binding = LoginBinding.inflate(inflater, container, false)
 
-
         binding.LoginBtn.setOnClickListener {
-            val email = binding.emailAd.text.toString()
-            val password = binding.password.text.toString()
+            val emailInput = binding.emailAd.text.toString()
+            var password = binding.password.text.toString()
             if (isAdded) {
-                val emailInput = binding.emailAd.text.toString()
-                var email = ""
-                var password = ""
-                when {
-                    emailInput.isBlank() -> {
-                        email = "daniel@a.com"
-                        password = "123456"
-                    }
-                    emailInput.contains("1")   -> {
-                        email = "user1@a.com"
-                        password = "123456"
-                    }
-                    emailInput.contains("2")   -> {
-                        email = "user2@a.com"
-                        password = "123456"
-                    }
-                    emailInput.contains("3")   -> {
-                        email = "user3@a.com"
-                        password = "123456"
-                    }
-                    emailInput.contains("4")   -> {
-                        email = "user4@a.com"
-                        password = "123456"
-                    }
-                    emailInput.contains("5")   -> {
-                        email = "user5@a.com"
-                        password = "123456"
-                    }
-                    emailInput.contains("6")   -> {
-                        email = "user6@a.com"
-                        password = "123456"
-                    }
-                    emailInput.contains("7")   -> {
-                        email = "user7@a.com"
-                        password = "123456"
-                    }
-                    else -> {
-                        email = emailInput
-                        password = binding.password.text.toString()
-                    }
-                }
                 loginUser(email, password) { isLoggedInUser ->
                     if (isLoggedInUser.success) {
                         Toast.makeText(requireContext(), R.string.login_successful, Toast.LENGTH_SHORT).show()
-                        // Navigate to the main screen
                         findNavController().navigate(R.id.action_loginManager_to_mainScreenManager)
-                    } else {
+                    }
+                    Status.ERROR -> {
                         Toast.makeText(requireContext(), R.string.login_failed, Toast.LENGTH_SHORT).show()
-                        Log.e(TAG, "User is not logged in: ${isLoggedInUser.reason}")
+                        Log.e(TAG, "User is not logged in: ${resource.message}")
+                    }
+                    else -> {
+                        // Handle loading state if necessary
                     }
                 }
             }
@@ -107,7 +69,6 @@ class LoginManager : Fragment() {
                 false
             }
         }
-
 
         binding.RegisterBtn.setOnClickListener {
             findNavController().navigate(R.id.action_loginManager_to_registerManager)
@@ -124,8 +85,8 @@ class LoginManager : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 userViewModel.fetchAllUsers()
                 userViewModel.allUsers
-                    .filter { users -> users.isNotEmpty() }  // Filter out empty lists
-                    .distinctUntilChanged()  // Ensure only distinct values are processed
+                    .filter { users -> users.isNotEmpty() }
+                    .distinctUntilChanged()
                     .collectLatest { users ->
                         Log.d(TAG, "Found ${users.size} users.")
                         users.forEach { user ->
@@ -142,31 +103,30 @@ class LoginManager : Fragment() {
         }
     }
 
-    private fun loginUser(email: String, password: String, callback: (Result) -> Unit) {
+    private fun loginUser(email: String, password: String, callback: (Resource<String>) -> Unit) {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                userViewModel.fetchUserByEmail(email) // Ensure this method updates the flow
+                userViewModel.fetchUserByEmail(email)
                 userViewModel.userByEmail
                     .filterNotNull()
                     .distinctUntilChanged()
                     .collectLatest { user ->
-                        val isLoggedInUser = if (user != null) {
+                        val resource = if (user != null) {
                             val passwordHash = EncryptionUtils.hashPassword(password, user.salt)
                             if (passwordHash == user.hashedPassword) {
                                 UserManager.saveUser(user)
-                                Result(true, getString(R.string.login_successful))
+                                Resource.success(getString(R.string.login_successful))
                             } else {
-                                Result(false, getString(R.string.login_failed) + ": incorrect password")
+                                Resource.error(getString(R.string.login_failed) + ": incorrect password")
                             }
                         } else {
-                            Result(false, getString(R.string.login_failed) + ": user not found")
+                            Resource.error(getString(R.string.login_failed) + ": user not found")
                         }
-                        callback(isLoggedInUser)
+                        callback(resource)
                     }
             }
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
