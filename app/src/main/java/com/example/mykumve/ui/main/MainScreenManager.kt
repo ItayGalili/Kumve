@@ -64,13 +64,13 @@ class MainScreenManager : Fragment() {
             findNavController().navigate(R.id.action_mainScreenManager_to_travelManager)
         }
 
-//        binding.reportsBtn.setOnClickListener {
-//            findNavController().navigate(R.id.action_mainScreenManager_to_UsersReports)
-//        }
-//
-//        binding.partnersBtnMs.setOnClickListener {
-//            findNavController().navigate(R.id.action_mainScreenManager_to_networkManager)
-//        }
+        binding.reportsBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_mainScreenManager_to_UsersReports)
+        }
+
+        binding.partnersBtnMs.setOnClickListener {
+            findNavController().navigate(R.id.action_mainScreenManager_to_networkManager)
+        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             findNavController().navigate(R.id.mainScreenManager)
@@ -275,7 +275,7 @@ class MainScreenManager : Fragment() {
     }
 
     private fun observeUserTripInvitations(userId: Long) {
-        tripViewModel.fetchTripInvitationsForUser(userId) // Ensure this is called to fetch data
+        tripViewModel.fetchTripInvitationsForUser(userId)
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
