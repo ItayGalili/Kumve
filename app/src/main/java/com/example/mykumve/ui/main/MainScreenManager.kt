@@ -64,13 +64,13 @@ class MainScreenManager : Fragment() {
             findNavController().navigate(R.id.action_mainScreenManager_to_travelManager)
         }
 
-//        binding.reportsBtn.setOnClickListener {
-//            findNavController().navigate(R.id.action_mainScreenManager_to_UsersReports)
-//        }
-//
-//        binding.partnersBtnMs.setOnClickListener {
-//            findNavController().navigate(R.id.action_mainScreenManager_to_networkManager)
-//        }
+        binding.reportsBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_mainScreenManager_to_UsersReports)
+        }
+
+        binding.partnersBtnMs.setOnClickListener {
+            findNavController().navigate(R.id.action_mainScreenManager_to_networkManager)
+        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             findNavController().navigate(R.id.mainScreenManager)
