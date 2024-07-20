@@ -9,3 +9,8 @@
 .cxx
 local.properties
 /app/google-services.json
+/my-firebase-project/.firebaserc
+/my-firebase-project/.gitignore
+/my-firebase-project/firebase.json
+/my-firebase-project/firestore.indexes.json
+/my-firebase-project/firestore.rules
