@@ -44,9 +44,10 @@ class LoginManager : Fragment() {
         binding.LoginBtn.setOnClickListener {
             val emailInput = binding.emailAd.text.toString()
             var password = binding.password.text.toString()
-            if (isAdded) {
-                loginUser(email, password) { isLoggedInUser ->
-                    if (isLoggedInUser.success) {
+
+            loginUser(emailInput, password) { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
                         Toast.makeText(requireContext(), R.string.login_successful, Toast.LENGTH_SHORT).show()
                         findNavController().navigate(R.id.action_loginManager_to_mainScreenManager)
                     }
