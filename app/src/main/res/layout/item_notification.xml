@@ -3,17 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/whenEmptyText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="No Notifications"
+        android:textSize="16sp"
+        android:textColor="@color/lightGrey"
+        android:visibility="invisible"/>
 
     <ImageView
         android:id="@+id/invitation_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="103dp"
+        android:layout_height="118dp"
         android:src="@drawable/my_alerts"
-        app:layout_constraintTop_toTopOf="parent"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5" />
 
     <TextView
@@ -24,7 +38,37 @@
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/invitation_icon"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@id/invitation_icon"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/invitation_gather_time"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@id/invitation_icon"
+        app:layout_constraintTop_toBottomOf="@id/invitation_title"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/invitation_creator"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@id/invitation_icon"
+        app:layout_constraintTop_toBottomOf="@id/invitation_gather_time"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/invitation_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@id/invitation_icon"
+        app:layout_constraintTop_toBottomOf="@id/invitation_creator"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
@@ -34,30 +78,46 @@
         android:textColor="@android:color/darker_gray"
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@id/invitation_icon"
-        app:layout_constraintTop_toBottomOf="@id/invitation_title"
+        app:layout_constraintTop_toBottomOf="@id/invitation_description"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <LinearLayout
-        android:id="@+id/button_container"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintStart_toEndOf="@id/invitation_icon"
+        android:id="@+id/handel_invitation_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:paddingTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/invitation_status"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <Button
+        <android.widget.Button
             android:id="@+id/accept_button"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Accept" />
+            android:layout_weight="1"
+            android:text="Accept"
+            android:textColor="@color/white"
+            android:background="@color/Approve" />
 
-        <Button
+        <Space
+            android:layout_width="5dp"
+            android:layout_height="wrap_content" />
+
+        <android.widget.Button
             android:id="@+id/reject_button"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Reject"
-            android:layout_marginStart="8dp" />
+            android:layout_weight="1"
+            android:text="Decline"
+            android:textColor="@color/white"
+            android:background="@color/blueSky" />
+
+        <Space
+            android:layout_width="5dp"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

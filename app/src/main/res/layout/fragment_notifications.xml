@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@drawable/floating_background"
     android:id="@+id/notificationFragment"
     tools:context=".ui.notifications.NotificationsFragment">
@@ -13,24 +13,24 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Notifications"
-        android:textSize="15sp"
+        android:textSize="20sp"
         android:textColor="@color/black"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:padding="10dp"
         android:gravity="center"
-        android:background="@color/lightGrey"/>
+        android:background="@drawable/gradient_profile_page"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/notificationsList"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:padding="16dp"
         app:layout_constraintTop_toBottomOf="@id/notificationsTitle"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:padding="16dp"
+        app:layout_constraintStart_toStartOf="parent"
         tools:listitem="@layout/item_notification" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

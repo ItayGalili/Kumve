@@ -1,17 +1,24 @@
+
 package com.example.mykumve.ui.notifications
 
+import androidx.core.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mykumve.R
 import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.databinding.ItemNotificationBinding
 import com.example.mykumve.ui.viewmodel.TripViewModel
 import com.example.mykumve.util.TripInvitationStatus
+import com.example.mykumve.util.Utility
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -27,15 +34,24 @@ class TripInvitationAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(invitation: TripInvitation) {
             tripViewModel.fetchTripById(invitation.tripId) // Ensure this is called to fetch data
-
             lifecycleOwner.lifecycleScope.launch {
                 lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     tripViewModel.trip.collectLatest { trip ->
                         if (trip != null) {
+                            binding.whenEmptyText.isVisible=false
                             Log.d(TAG, "Binding trip invitation, tripId ${invitation.tripId}")
                             binding.invitationTitle.text = trip.title
                             binding.invitationStatus.text = "Status: ${invitation.status}"
-
+                            if(trip.image?.toUri()!=null){
+                                binding.invitationIcon.setImageURI(trip.image?.toUri())
+                            }
+                            if(trip.gatherTime!=null){
+                                binding.invitationGatherTime.text = Utility.timestampToString(trip.gatherTime)
+                            }
+                            binding.invitationCreator.text = trip.userId.toString()//check if creator name is available / name of sender
+                            if(trip.description!=null) {
+                                binding.invitationDescription.text = trip.description
+                            }
                             if (invitation.status in setOf(
                                     TripInvitationStatus.APPROVED,
                                     TripInvitationStatus.REJECTED
@@ -43,6 +59,8 @@ class TripInvitationAdapter(
                             ) {
                                 binding.acceptButton.isEnabled = false
                                 binding.rejectButton.isEnabled = false
+                                binding.acceptButton.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.lightGrey))
+                                binding.rejectButton.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.lightGrey))
                             } else {
                                 binding.acceptButton.setOnClickListener {
                                     handleAccept(invitation)
@@ -51,6 +69,9 @@ class TripInvitationAdapter(
                                     handleReject(invitation)
                                 }
                             }
+                        }
+                        else{
+                            binding.whenEmptyText.isVisible=true
                         }
                     }
                 }
@@ -89,6 +110,7 @@ class TripInvitationAdapter(
         Log.d(TAG, "REJECT selected - Responding to trip invitation")
         invitation.status = TripInvitationStatus.REJECTED
         respondToTripInvitation(invitation)
+
     }
 
     private fun respondToTripInvitation(invitation: TripInvitation) {
