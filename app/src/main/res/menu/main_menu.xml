@@ -11,7 +11,8 @@
         android:title="My Alerts"
         android:id="@+id/menuAlerts"
         app:showAsAction="always"
-        android:icon="@drawable/my_alerts">
+        android:icon="@drawable/my_alerts"
+        app:actionLayout="@layout/alerts_action_item">
     </item>
     <item
         android:title="Log Out"

@@ -24,6 +24,7 @@ class SocialNetworkManager : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = TravelNetworkBinding.inflate(inflater, container, false)
+        val view = binding.root
 
         binding.msBtn.setOnClickListener{
             findNavController().navigate(R.id.action_networkManager_to_mainScreenManager)
@@ -33,7 +34,8 @@ class SocialNetworkManager : Fragment() {
             findNavController().navigate(R.id.action_networkManager_to_UsersReports)
         }
 
-        return binding.root
+
+        return view
     }
 
     override fun onDestroyView() {

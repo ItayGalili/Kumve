@@ -8,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
@@ -246,9 +247,19 @@ class MainScreenManager : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.main_menu, menu)
+
         if (MainActivity.DEBUG_MODE) {
             menu.findItem(R.id.debug_delete_db).isVisible = true
         }
+
+        val menuItem = menu.findItem(R.id.menuAlerts)
+        val actionView = menuItem?.actionView
+        val badge = actionView?.findViewById<TextView>(R.id.alert_badge_textview)
+        actionView?.setOnClickListener {
+            onOptionsItemSelected(menuItem)
+        }
+
+        observeUserTripInvitations(UserManager.getUser()?.id ?: 0L)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -282,18 +293,25 @@ class MainScreenManager : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 tripViewModel.tripInvitations.collectLatest { invitations ->
                     // Handle the trip invitations
+                    val menuItem = toolbar.menu.findItem(R.id.menuAlerts)
+                    val actionView = menuItem?.actionView
+                    val badge = actionView?.findViewById<TextView>(R.id.alert_badge_textview)
                     val pendingInvitations = invitations.filter { it.status == TripInvitationStatus.PENDING }
                     val pendingInvitationsCount = pendingInvitations.size
                     if (pendingInvitationsCount == 0) {
-                        Toast.makeText(requireContext(), "No new invitations", Toast.LENGTH_SHORT)
-                            .show()
+                        badge?.visibility = View.GONE
+//                        Toast.makeText(requireContext(), "No new invitations", Toast.LENGTH_SHORT)
+//                            .show()
                     } else {
+                            badge?.text = "+$pendingInvitationsCount"
+                            badge?.visibility = View.VISIBLE
+                        }
                         // Show notifications or update UI with the invitations
-                        Toast.makeText(
-                            requireContext(),
-                            "You have $pendingInvitationsCount new invitations",
-                            Toast.LENGTH_SHORT
-                        ).show()
+//                        Toast.makeText(
+//                            requireContext(),
+//                            "You have $pendingInvitationsCount new invitations",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
                         pendingInvitations.forEach {
                             Log.d(TAG, "New invitations for user.  invitation id: ${it.id}" +
                                     " tripId: ${it.tripId}" +
@@ -303,7 +321,7 @@ class MainScreenManager : Fragment() {
                 }
             }
         }
-    }
+
     private fun showNotificationsFragment() {
         val notificationsFragment = NotificationsFragment()
         notificationsFragment.show(parentFragmentManager, notificationsFragment.tag)
@@ -350,20 +368,6 @@ class MainScreenManager : Fragment() {
         val dialog: AlertDialog = builder.create()
         dialog.show()
     }
-
-//    private fun setAlertsBadgeCount(count: Int) {
-//        val menuItem = toolbar.menu.findItem(R.id.menuAlerts)
-//        val actionView = menuItem?.actionView ?: return
-//
-//        val badge = actionView.findViewById<TextView>(R.id.badge)
-//
-//        if (count > 0) {
-//            badge.text = "+$count"
-//            badge.visibility = View.VISIBLE
-//        } else {
-//            badge.visibility = View.GONE
-//        }
-//    }
 
     private fun onTripLongClicked(tripWithInfo: TripWithInfo) {
         Toast.makeText(requireContext(), "Long-clicked on: ${tripWithInfo.trip.title}", Toast.LENGTH_SHORT).show()
