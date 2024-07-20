@@ -22,6 +22,20 @@
         android:gravity="center"
         android:background="@drawable/gradient_profile_page"/>
 
+    <TextView
+        android:id="@+id/whenEmptyText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="No Notifications"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textColor="@color/lightGrey"
+        android:alpha="1.0"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/notificationsList"
         android:layout_width="0dp"

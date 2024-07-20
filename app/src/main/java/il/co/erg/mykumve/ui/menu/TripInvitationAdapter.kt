@@ -12,18 +12,23 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
+import il.co.erg.mykumve.R
 import il.co.erg.mykumve.data.model.TripInvitation
 import il.co.erg.mykumve.databinding.ItemNotificationBinding
 import il.co.erg.mykumve.ui.viewmodel.TripViewModel
+import il.co.erg.mykumve.ui.viewmodel.UserViewModel
 import il.co.erg.mykumve.util.TripInvitationStatus
+import il.co.erg.mykumve.util.Utility
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class TripInvitationAdapter(
     private var invitations: List<TripInvitation>,
     var tripViewModel: TripViewModel,
+    private val userViewModel: UserViewModel,
     private val lifecycleOwner: LifecycleOwner
 ) : RecyclerView.Adapter<TripInvitationAdapter.TripInvitationViewHolder>() {
+
 
     val TAG = TripInvitationAdapter::class.java.simpleName
 
@@ -35,7 +40,6 @@ class TripInvitationAdapter(
                 lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     tripViewModel.trip.collectLatest { trip ->
                         if (trip != null) {
-                            binding.whenEmptyText.isVisible=false
                             Log.d(TAG, "Binding trip invitation, tripId ${invitation.tripId}")
                             binding.invitationTitle.text = trip.title
                             binding.invitationStatus.text = "Status: ${invitation.status}"
@@ -45,7 +49,19 @@ class TripInvitationAdapter(
                             if(trip.gatherTime!=null){
                                 binding.invitationGatherTime.text = Utility.timestampToString(trip.gatherTime)
                             }
-                            binding.invitationCreator.text = trip.userId.toString()//check if creator name is available / name of sender
+
+                            userViewModel.fetchUserById(trip.userId)
+                            lifecycleOwner.lifecycleScope.launch {
+                                lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                                    userViewModel.userById.collectLatest { user ->
+                                        if (user != null) {
+                                            binding.invitationCreator.text = "Created by: ${user.firstName} ${user.surname ?: ""}"
+                                        } else {
+                                            binding.invitationCreator.text = "Created by: Unknown"
+                                        }
+                                    }
+                                }
+                            }
                             if(trip.description!=null) {
                                 binding.invitationDescription.text = trip.description
                             }
@@ -66,9 +82,6 @@ class TripInvitationAdapter(
                                     handleReject(invitation)
                                 }
                             }
-                        }
-                        else{
-                            binding.whenEmptyText.isVisible=true
                         }
                     }
                 }

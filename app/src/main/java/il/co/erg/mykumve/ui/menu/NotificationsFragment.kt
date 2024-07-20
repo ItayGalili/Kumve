@@ -1,3 +1,4 @@
+
 package il.co.erg.mykumve.ui.notifications
 
 import android.os.Bundle
@@ -14,11 +15,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import il.co.erg.mykumve.data.model.User
 import il.co.erg.mykumve.databinding.FragmentNotificationsBinding
 import il.co.erg.mykumve.ui.viewmodel.TripViewModel
+import il.co.erg.mykumve.ui.viewmodel.UserViewModel
 import il.co.erg.mykumve.util.UserManager
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class NotificationsFragment : DialogFragment() {
+    private val userViewModel: UserViewModel by activityViewModels()
 
     private var _binding: FragmentNotificationsBinding? = null
     private val binding get() = _binding!!
@@ -37,7 +40,7 @@ class NotificationsFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        tripInvitationAdapter = TripInvitationAdapter(emptyList(), tripViewModel, viewLifecycleOwner)
+        tripInvitationAdapter = TripInvitationAdapter(emptyList(), tripViewModel, userViewModel, viewLifecycleOwner)
         binding.notificationsList.adapter = tripInvitationAdapter
         binding.notificationsList.layoutManager = LinearLayoutManager(requireContext())
 
