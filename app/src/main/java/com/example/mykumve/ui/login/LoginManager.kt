@@ -22,6 +22,8 @@ import com.example.mykumve.util.UserManager
 import com.example.mykumve.util.Result
 import com.example.mykumve.util.UserUtils.getFullName
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 class LoginManager : Fragment() {
@@ -81,19 +83,21 @@ class LoginManager : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 userViewModel.fetchAllUsers()
-                userViewModel.allUsers.collectLatest { users ->
-                    Log.d(TAG, "Found ${users.size} users.")
-                    users.forEach { user ->
-                        val userInfo = """
-                                        User number ${user.id}:
-                                        Name: ${getFullName(user)}
-                                        Phone: ${user.phone}
-                                        Email: ${user.email}
-                                    """.trimIndent()
-                        Log.d(TAG, userInfo)
+                userViewModel.allUsers
+                    .filter { users -> users.isNotEmpty() }  // Filter out empty lists
+                    .distinctUntilChanged()  // Ensure only distinct values are processed
+                    .collectLatest { users ->
+                        Log.d(TAG, "Found ${users.size} users.")
+                        users.forEach { user ->
+                            val userInfo = """
+                            User number ${user.id}:
+                            Name: ${getFullName(user)}
+                            Phone: ${user.phone}
+                            Email: ${user.email}
+                        """.trimIndent()
+                            Log.d(TAG, userInfo)
+                        }
                     }
-                }
-
             }
         }
     }

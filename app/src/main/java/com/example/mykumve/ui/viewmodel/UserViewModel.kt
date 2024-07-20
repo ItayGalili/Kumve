@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class UserViewModel(application: Application) : AndroidViewModel(application) {
+    val TAG = UserViewModel::class.java.simpleName
 
     private val userRepository: UserRepository = UserRepository(application)
 
@@ -107,10 +108,12 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     fun fetchAllUsers() {
         viewModelScope.launch {
             userRepository.getAllUsers()
+                ?.distinctUntilChanged()  // Ensure only distinct values are processed
                 ?.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
                 ?.collectLatest { users ->
-                    Log.d("UserRepository", "getAllUsers: ${users.size}")
-                    _allUsers.emit(users)
+                    if (users.isNotEmpty()) {  // Only log when users list is not empty
+                        _allUsers.emit(users)
+                    }
                 }
         }
     }
