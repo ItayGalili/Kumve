@@ -19,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.mykumve.R
 import com.example.mykumve.data.data_classes.Equipment
 import com.example.mykumve.data.model.Trip
+import com.example.mykumve.data.model.TripInfo
 import com.example.mykumve.data.model.TripInvitation
 import com.example.mykumve.data.model.User
 import com.example.mykumve.databinding.TravelManagerViewBinding
@@ -168,17 +169,32 @@ class TripManager : Fragment() {
                     " Creating trip mode" else " Selecting existing trip"
             )
 
-            val tempTrip = formToTripObject(user)
-            val tripInfo = sharedViewModel.tripInfo.value // Assuming tripInfo is already set
-
-            Log.d(TAG, "Caching trip id: ${tempTrip.id} and tripInfo: ${tripInfo?.id}")
-            if (sharedViewModel.isCreatingTripMode) {
-                sharedViewModel.setPartialTrip(tempTrip)
-                tripInfo?.let { sharedViewModel.setPartialTripInfo(it) }
-            } else {
-                val existingTripWithInfo = TripWithInfo(tempTrip, tripInfo)
-                sharedViewModel.selectExistingTripWithInfo(existingTripWithInfo)
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    Log.v(TAG, "Loading trip data into form")
+                    sharedViewModel.trip.collectLatest { trip ->
+                        var tempTrip: Trip? = null
+                        var tempTripInfo: TripInfo? = null
+                        if (trip != null) {
+                            tempTrip = formToTripObject(user, tripFromSharedViewModel = trip)
+                            tempTripInfo = sharedViewModel.tripInfo.value // Assuming tripInfo is already set
+                        } else {
+                            tempTrip = formToTripObject(user )
+                        }
+                        Log.d(TAG, "Caching trip id: ${tempTrip.id} and tripInfo: ${tempTripInfo?.id}")
+                        if (sharedViewModel.isCreatingTripMode) {
+                            sharedViewModel.setPartialTrip(tempTrip)
+                            tempTripInfo?.let { sharedViewModel.setPartialTripInfo(it) }
+                        } else {
+                            val existingTripWithInfo = TripWithInfo(tempTrip, tempTripInfo)
+                            sharedViewModel.selectExistingTripWithInfo(existingTripWithInfo)
+                        }
+                    }
+                }
             }
+
+
+
         }
     }
 
@@ -278,6 +294,7 @@ class TripManager : Fragment() {
         equipmentList: List<Equipment>? = null,
         participantList: List<User>? = null,
         invitationList: List<TripInvitation>? = null,
+        tripFromSharedViewModel: Trip? = null,
 
         ): Trip {
         val id = sharedViewModel.trip.value?.id ?: 0
@@ -286,17 +303,17 @@ class TripManager : Fragment() {
         val gatherTime = startDate ?: sharedViewModel.trip.value?.gatherTime
         val endTime = endDate ?: sharedViewModel.trip.value?.endDate
         val equipments = equipmentList?.takeIf { it.isNotEmpty() }?.toMutableList()
-            ?: sharedViewModel.trip.value?.equipment?.toMutableList()
+            ?: tripFromSharedViewModel?.equipment?.toMutableList()
 
         val participants =
             participantList?.takeIf { it.isNotEmpty() }?.toMutableList() ?: mutableListOf(user)
 
         val invitations = invitationList?.takeIf { it.isNotEmpty() }?.toMutableList()
-            ?: sharedViewModel.trip.value?.invitations?.takeIf { it.isNotEmpty() }?.toMutableList()
+            ?: tripFromSharedViewModel?.invitations?.takeIf { it.isNotEmpty() }?.toMutableList()
             ?: mutableListOf()
 
         val photo = imagePickerUtil.getImageUri().toString().takeIf { it != "null" }
-            ?: sharedViewModel.trip.value?.image
+            ?: tripFromSharedViewModel?.image
         val notes = null
 
         // Create a new Trip object with the provided details

@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class SharedTripViewModel : ViewModel() {
@@ -94,20 +95,27 @@ class SharedTripViewModel : ViewModel() {
     fun updateEquipment(equipment: List<Equipment>?) {
         viewModelScope.launch {
             try {
-                val currentTrip = trip.value?.copy(equipment = equipment?.toMutableList())
-                if (currentTrip != null && !isCreatingTripMode) {
-                    tripViewModel.updateTrip(currentTrip)
-                    _operationResult.emit(Result(true, "Equipment updated successfully"))
-                } else {
-                    _operationResult.emit(Result(false, "Trip is null or in creating mode"))
+                trip.collectLatest { currentTrip ->
+                    if (currentTrip != null) {
+                        val updatedTrip = currentTrip.copy(equipment = equipment?.toMutableList())
+                        if (!isCreatingTripMode) {
+                            tripViewModel.updateTrip(updatedTrip)
+                            _operationResult.emit(Result(true, "Existing trip equipment updated successfully"))
+                        } else {
+                            currentTrip.equipment = equipment?.toMutableList() // Ensure the trip's equipment list is updated
+                            _operationResult.emit(Result(true, "Equipment for partial trip updated successfully"))
+                        }
+                    } else {
+                        _operationResult.emit(Result(false, "Trip is null"))
+                    }
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error with update equipment \n${e.message}")
                 _operationResult.emit(Result(false, "Error with update equipment: ${e.message}"))
             }
         }
-
     }
+
     fun resetNewTripState() {
         if (!isEditingExistingTrip) {
             Log.d(
