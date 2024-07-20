@@ -28,6 +28,7 @@ import com.example.mykumve.util.TripInvitationStatus
 import com.example.mykumve.util.UserManager
 import com.example.mykumve.util.UserUtils
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 
@@ -56,9 +57,6 @@ class InvitationListFragment : Fragment() {
         observeTripInvitations()
         logPossiblePartner()
 
-        binding.addPartner.setOnClickListener {
-            invitePartnerToTrip(it)
-        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             handleCloseButton()
@@ -69,27 +67,45 @@ class InvitationListFragment : Fragment() {
         return binding.root
     }
 
-    private fun handleCloseButton() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                sharedTripViewModel.trip.collectLatest { trip ->
+                    trip?.invitations?.let { invitations ->
+                        invitationListAdapter.updateInvitations(invitations)
+                    }
+                }
+            }
+        }
+        binding.addPartner.setOnClickListener {
+            invitePartnerToTrip(it)
+        }
+
+
+    }
+
+        private fun handleCloseButton() {
         //            saveData() todo (save to db / cached the removed ones also)
         findNavController().navigate(R.id.action_invitationListFragment_to_partnerListFragment)
     }
 
     private fun invitePartnerToTrip(button: View?) {
-        val phoneNumber = binding.phoneNumberToInvite.text.toString() // Corrected to get the text
-        if (phoneNumber.isEmpty())
+        val phoneNumber = binding.phoneNumberToInvite.text.toString()
+        if (phoneNumber.isEmpty()) {
+            Log.d("InvitePartner", "Phone number is empty.")
             return
+        }
         Log.d("InvitePartner", "Phone number to invite: $phoneNumber")
 
-        userViewModel.fetchUserByPhone(phoneNumber) // Ensure this is called to fetch data
+        // Fetch the user by phone number
+        userViewModel.fetchUserByPhone(phoneNumber)
 
         viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 userViewModel.userByPhone.collectLatest { user ->
                     if (user != null) {
-                        Log.d(
-                            "InvitePartner",
-                            "User found: ${UserUtils.getFullName(user)} with ID ${user.id}"
-                        )
+                        Log.d("InvitePartner", "User found: ${UserUtils.getFullName(user)} with ID ${user.id}")
                         val currentTrip = sharedTripViewModel.trip.value
                         if (currentTrip != null) {
                             if (sharedTripViewModel.isCreatingTripMode) {
@@ -99,7 +115,6 @@ class InvitationListFragment : Fragment() {
                                     status = TripInvitationStatus.UNSENT
                                 )
                                 sharedTripViewModel.addInvitation(newInvitation)
-                                // partnerListAdapter.notifyDataSetChanged() // Update RecyclerView
                                 Toast.makeText(requireContext(), "Invitation added", Toast.LENGTH_SHORT).show()
                             } else {
                                 tripViewModel.sendTripInvitation(
@@ -114,6 +129,7 @@ class InvitationListFragment : Fragment() {
                                 }
                             }
                         } else {
+                            Log.d("InvitePartner", "No current trip found.")
                             Toast.makeText(requireContext(), "No current trip found.", Toast.LENGTH_SHORT).show()
                         }
                     } else {
@@ -171,7 +187,7 @@ class InvitationListFragment : Fragment() {
 
 
     private fun setupRecyclerView() {
-        invitationListAdapter = InvitationListAdapter(userViewModel, viewLifecycleOwner)
+        invitationListAdapter = InvitationListAdapter(mutableListOf(), userViewModel, viewLifecycleOwner)
         binding.invitationList.adapter = invitationListAdapter
         binding.invitationList.layoutManager = LinearLayoutManager(requireContext())
 

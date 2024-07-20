@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class InvitationListAdapter(
+    private val invitations: MutableList<TripInvitation>,
     private val userViewModel: UserViewModel,
     private val lifecycleOwner: LifecycleOwner
 
@@ -60,6 +61,12 @@ class InvitationListAdapter(
         val currentList = currentList.toMutableList()
         currentList.removeAt(position)
         submitList(currentList)
+    }
+
+    fun updateInvitations(newInvitations: List<TripInvitation>) {
+        invitations.clear()
+        invitations.addAll(newInvitations)
+        notifyDataSetChanged()
     }
 
     class DiffCallback : DiffUtil.ItemCallback<TripInvitation>() {
