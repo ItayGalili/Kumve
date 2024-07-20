@@ -112,9 +112,8 @@ class InvitationListFragment : Fragment() {
                                     userId = user.id,
                                     status = TripInvitationStatus.UNSENT
                                 )
-                                val updateInivitationList = (currentTrip.invitations + newInvitation).toMutableList()
-                                sharedTripViewModel.addInvitation(newInvitation)
-                                sharedTripViewModel.updateTrip(currentTrip.copy(invitations = updateInivitationList))
+                                val updateInvitationList = (currentTrip.invitations + newInvitation).toMutableList()
+                                sharedTripViewModel.updateTrip(currentTrip.copy(invitations = updateInvitationList))
                                 Toast.makeText(requireContext(), "Invitation added", Toast.LENGTH_SHORT).show()
                             } else {
                                 tripViewModel.sendTripInvitation(

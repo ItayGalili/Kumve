@@ -67,10 +67,10 @@ class SharedTripViewModel : ViewModel() {
     }
 
 
-    fun addInvitation(invitation: TripInvitation) {
-        _partialTrip.value?.invitations?.add(invitation)
-        _partialTrip.value = _partialTrip.value // Notify observers of the change
-    }
+//    fun addInvitation(invitation: TripInvitation) {
+//        _partialTrip.value?.invitations?.add(invitation)
+//        _partialTrip.value = _partialTrip.value // Notify observers of the change
+//    }
 
     fun initTripViewModel(viewModelStoreOwner: ViewModelStoreOwner) {
         tripViewModel = ViewModelProvider(viewModelStoreOwner).get(TripViewModel::class.java)
