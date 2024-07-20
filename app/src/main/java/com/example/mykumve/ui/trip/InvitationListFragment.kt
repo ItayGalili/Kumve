@@ -29,10 +29,13 @@ import com.example.mykumve.util.UserManager
 import com.example.mykumve.util.UserUtils
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
 
 class InvitationListFragment : Fragment() {
+    val TAG = InvitationListFragment::class.java.simpleName
 
     private lateinit var binding: FragmentInvitationListBinding
     private lateinit var invitationListAdapter: InvitationListAdapter
@@ -79,7 +82,8 @@ class InvitationListFragment : Fragment() {
             }
         }
         binding.addPartner.setOnClickListener {
-            invitePartnerToTrip(it)
+            val phoneNumber = binding.phoneNumberToInvite.text.toString()
+            invitePartnerByPhone(phoneNumber)
         }
 
 
@@ -90,22 +94,16 @@ class InvitationListFragment : Fragment() {
         findNavController().navigate(R.id.action_invitationListFragment_to_partnerListFragment)
     }
 
-    private fun invitePartnerToTrip(button: View?) {
-        val phoneNumber = binding.phoneNumberToInvite.text.toString()
-        if (phoneNumber.isEmpty()) {
-            Log.d("InvitePartner", "Phone number is empty.")
-            return
-        }
-        Log.d("InvitePartner", "Phone number to invite: $phoneNumber")
-
-        // Fetch the user by phone number
-        userViewModel.fetchUserByPhone(phoneNumber)
-
+    private fun invitePartnerByPhone(phoneNumber: String) {
+        Log.d(TAG, "Phone number to invite: $phoneNumber")
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                userViewModel.userByPhone.collectLatest { user ->
-                    if (user != null) {
-                        Log.d("InvitePartner", "User found: ${UserUtils.getFullName(user)} with ID ${user.id}")
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                userViewModel.fetchUserByPhone(phoneNumber)  // Ensure this method updates the flow
+                userViewModel.userByPhone
+                    .filterNotNull()
+                    .distinctUntilChanged()
+                    .collectLatest { user ->
+                        Log.d(TAG, "User found: ${UserUtils.getFullName(user)} with ID ${user.id}")
                         val currentTrip = sharedTripViewModel.trip.value
                         if (currentTrip != null) {
                             if (sharedTripViewModel.isCreatingTripMode) {
@@ -114,7 +112,9 @@ class InvitationListFragment : Fragment() {
                                     userId = user.id,
                                     status = TripInvitationStatus.UNSENT
                                 )
+                                val updateInivitationList = (currentTrip.invitations + newInvitation).toMutableList()
                                 sharedTripViewModel.addInvitation(newInvitation)
+                                sharedTripViewModel.updateTrip(currentTrip.copy(invitations = updateInivitationList))
                                 Toast.makeText(requireContext(), "Invitation added", Toast.LENGTH_SHORT).show()
                             } else {
                                 tripViewModel.sendTripInvitation(
@@ -129,14 +129,17 @@ class InvitationListFragment : Fragment() {
                                 }
                             }
                         } else {
-                            Log.d("InvitePartner", "No current trip found.")
+                            Log.d(TAG, "No current trip found.")
                             Toast.makeText(requireContext(), "No current trip found.", Toast.LENGTH_SHORT).show()
                         }
-                    } else {
-                        Log.d("InvitePartner", "User not found for phone number: $phoneNumber")
+                    }
+                userViewModel.userByPhone
+                    .filter { user -> user == null }
+                    .distinctUntilChanged()
+                    .collectLatest {
+                        Log.d(TAG, "User not found for phone number: $phoneNumber")
                         Toast.makeText(requireContext(), "Can't find user with this phone number", Toast.LENGTH_SHORT).show()
                     }
-                }
             }
         }
     }
@@ -151,11 +154,11 @@ class InvitationListFragment : Fragment() {
                         val currentUserId = UserManager.getUser()?.id
                         val filteredUsers = users.filter { it.id != currentUserId }
                         Log.d(
-                            "PartnerListFragment",
+                            TAG,
                             filteredUsers.map { "${it.firstName}: ${it.phone}" }.toString()
                         )
                     } else {
-                        Log.d("PartnerListFragment", "No users found.")
+                        Log.d(TAG, "No users found.")
                     }
                 }
             }
@@ -166,6 +169,7 @@ class InvitationListFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 sharedTripViewModel.trip.collectLatest { trip ->
+                    Log.d(TAG, "observeTripInvitations. invitations: ${trip?.invitations}")
                     trip?.let {
                         if (sharedTripViewModel.isCreatingTripMode) {
                             // For temporary trip (partialTrip)
@@ -187,7 +191,7 @@ class InvitationListFragment : Fragment() {
 
 
     private fun setupRecyclerView() {
-        invitationListAdapter = InvitationListAdapter(mutableListOf(), userViewModel, viewLifecycleOwner)
+        invitationListAdapter = InvitationListAdapter(userViewModel, viewLifecycleOwner)
         binding.invitationList.adapter = invitationListAdapter
         binding.invitationList.layoutManager = LinearLayoutManager(requireContext())
 

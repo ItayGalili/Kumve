@@ -415,6 +415,6 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 }
 
 data class TripWithInfo(
-    val trip: Trip,
-    val tripInfo: TripInfo?
+    var trip: Trip,
+    var tripInfo: TripInfo?
 )

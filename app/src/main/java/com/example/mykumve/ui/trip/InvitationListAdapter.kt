@@ -18,10 +18,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class InvitationListAdapter(
-    private val invitations: MutableList<TripInvitation>,
     private val userViewModel: UserViewModel,
     private val lifecycleOwner: LifecycleOwner
-
 ) : ListAdapter<TripInvitation, InvitationListAdapter.InvitationViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InvitationViewHolder {
@@ -43,12 +41,14 @@ class InvitationListAdapter(
             lifecycleOwner.lifecycleScope.launch {
                 lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     userViewModel.userById.collectLatest { invitedUser ->
-                        val userFullName = UserUtils.getFullName(invitedUser)
-                        binding.textViewInvitedName.text = userFullName
-                        binding.invitationStatus.text = invitation.status.toString()
-                        Glide.with(binding.imageViewInvited.context)
-                            .load(invitedUser?.photo) // Assuming `photo` is the URL or path to the image
-                            .into(binding.imageViewInvited)
+                        invitedUser?.let {
+                            val userFullName = UserUtils.getFullName(it)
+                            binding.textViewInvitedName.text = userFullName
+                            binding.invitationStatus.text = invitation.status.toString()
+                            Glide.with(binding.imageViewInvited.context)
+                                .load(it.photo) // Assuming `photo` is the URL or path to the image
+                                .into(binding.imageViewInvited)
+                        }
                     }
                 }
             }
@@ -64,9 +64,7 @@ class InvitationListAdapter(
     }
 
     fun updateInvitations(newInvitations: List<TripInvitation>) {
-        invitations.clear()
-        invitations.addAll(newInvitations)
-        notifyDataSetChanged()
+        submitList(newInvitations)
     }
 
     class DiffCallback : DiffUtil.ItemCallback<TripInvitation>() {
@@ -79,3 +77,4 @@ class InvitationListAdapter(
         }
     }
 }
+

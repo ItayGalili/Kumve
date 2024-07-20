@@ -21,12 +21,12 @@ import kotlinx.coroutines.launch
 class SharedTripViewModel : ViewModel() {
     val TAG = SharedTripViewModel::class.java.simpleName
 
-    private val _selectedExistingTripWithInfo = MutableStateFlow<TripWithInfo?>(null)
     private lateinit var tripViewModel: TripViewModel
     var isCreatingTripMode: Boolean = false
     var isEditingExistingTrip: Boolean = false
     var isNavigatedFromTripList: Boolean = false
 
+    private val _selectedExistingTripWithInfo = MutableStateFlow<TripWithInfo?>(null)
     private val _partialTrip = MutableStateFlow<Trip?>(null)
     private val _partialTripInfo = MutableStateFlow<TripInfo?>(null)
 
@@ -92,6 +92,26 @@ class SharedTripViewModel : ViewModel() {
         }
     }
 
+    fun updateTrip(updatedTrip: Trip) {
+        viewModelScope.launch {
+            try {
+                if (isCreatingTripMode) {
+                    _partialTrip.emit(updatedTrip)
+                } else {
+
+                    _selectedExistingTripWithInfo.value?.trip = updatedTrip
+                    _selectedExistingTripWithInfo.emit(_selectedExistingTripWithInfo.value)
+                }
+                _operationResult.emit(Result(true, "Trip updated successfully"))
+            } catch (e: Exception) {
+                Log.e(TAG, "Error with updating trip \n${e.message}")
+                _operationResult.emit(Result(false, "Error with updating trip: ${e.message}"))
+            }
+        }
+    }
+
+
+    // Existing updateEquipment method
     fun updateEquipment(equipment: List<Equipment>?) {
         viewModelScope.launch {
             try {
@@ -115,6 +135,7 @@ class SharedTripViewModel : ViewModel() {
             }
         }
     }
+
 
     fun resetNewTripState() {
         if (!isEditingExistingTrip) {
