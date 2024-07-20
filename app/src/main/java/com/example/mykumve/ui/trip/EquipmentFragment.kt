@@ -28,6 +28,7 @@ import com.example.mykumve.databinding.EquipmentCardBinding
 import com.example.mykumve.ui.viewmodel.SharedTripViewModel
 import com.example.mykumve.util.UserUtils
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 class EquipmentFragment : Fragment() {
@@ -75,7 +76,9 @@ class EquipmentFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             loadTripData()
         }
-        Log.d(TAG, "Creating mode: ${sharedTripViewModel.isCreatingTripMode}\nEditing mode: ${sharedTripViewModel.isEditingExistingTrip}")
+        Log.d(TAG, "Creating mode: ${sharedTripViewModel.isCreatingTripMode}" +
+                "\nEditing mode: ${sharedTripViewModel.isEditingExistingTrip}" +
+                "\nNavigated From Trip List mode: ${sharedTripViewModel.isNavigatedFromTripList}")
     }
 
     private suspend fun loadTripData() {
@@ -142,10 +145,20 @@ class EquipmentFragment : Fragment() {
     }
 
     private fun saveData() {
-        val filteredList = adapter.getEquipmentList().filter { it.name.isNotEmpty() }.toMutableList() //don't save empty items
-        sharedTripViewModel.updateEquipment(filteredList)
-        Log.d(TAG, "saveData: Equipment data saved with size ${filteredList.size}")
+        val filteredList = adapter.getEquipmentList().filter { it.name.isNotEmpty() }.toMutableList() // Don't save empty items
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            sharedTripViewModel.updateEquipment(filteredList)
+            sharedTripViewModel.operationResult
+                .distinctUntilChanged()
+                .collectLatest { result ->
+                    result.let {
+                        Log.d(TAG, "saveData: Equipment data saved with result: ${it.reason}")
+                    }
+                }
+        }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
