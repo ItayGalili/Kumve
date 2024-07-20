@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.mykumve"
+    namespace = "il.co.erg.mykumve"
     compileSdk = 34
 
     buildFeatures{
@@ -22,7 +22,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.mykumve"
+        applicationId = "il.co.erg.mykumve"
         minSdk = 22
         targetSdk = 34
         versionCode = 1

@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/mainScreenManager"
-        android:name="com.example.mykumve.ui.main.MainScreenManager"
+        android:name="il.co.erg.mykumve.ui.main.MainScreenManager"
         android:label="main_screen"
         tools:layout="@layout/main_screen">
         <action
@@ -43,7 +43,7 @@
 
     <fragment
         android:id="@+id/registerManager"
-        android:name="com.example.mykumve.ui.register.RegisterManager"
+        android:name="il.co.erg.mykumve.ui.register.RegisterManager"
         android:label="register"
         tools:layout="@layout/register">
         <action
@@ -59,7 +59,7 @@
 
     <fragment
         android:id="@+id/travelManager"
-        android:name="com.example.mykumve.ui.trip.TripManager"
+        android:name="il.co.erg.mykumve.ui.trip.TripManager"
         android:label="travel_manager_view"
         tools:layout="@layout/travel_manager_view">
         <action
@@ -78,7 +78,7 @@
 
     <fragment
         android:id="@+id/UserReports"
-        android:name="com.example.mykumve.ui.reports.UsersReports"
+        android:name="il.co.erg.mykumve.ui.reports.UsersReports"
         android:label="user_reports"
         tools:layout="@layout/reports">
         <action
@@ -96,7 +96,7 @@
 
     <fragment
         android:id="@+id/networkManager"
-        android:name="com.example.mykumve.ui.SocialNetworkManager"
+        android:name="il.co.erg.mykumve.ui.SocialNetworkManager"
         android:label="travel_network"
         tools:layout="@layout/travel_network">
         <action
@@ -113,7 +113,7 @@
 
     <fragment
         android:id="@+id/loginManager"
-        android:name="com.example.mykumve.ui.login.LoginManager"
+        android:name="il.co.erg.mykumve.ui.login.LoginManager"
         android:label="login"
         tools:layout="@layout/login">
         <action
@@ -134,13 +134,13 @@
 
     <fragment
         android:id="@+id/tripReviewManager"
-        android:name="com.example.mykumve.ui.trip.TripReviewManager"
+        android:name="il.co.erg.mykumve.ui.trip.TripReviewManager"
         android:label="trip_review"
         tools:layout="@layout/trip_review" />
 
     <fragment
         android:id="@+id/equipmentFragment"
-        android:name="com.example.mykumve.ui.trip.EquipmentFragment"
+        android:name="il.co.erg.mykumve.ui.trip.EquipmentFragment"
         android:label="equipment_list"
         tools:layout="@layout/equipment_list">
         <action
@@ -156,13 +156,13 @@
 
     <fragment
         android:id="@+id/myProfile"
-        android:name="com.example.mykumve.ui.menu.MyProfile"
+        android:name="il.co.erg.mykumve.ui.menu.MyProfile"
         android:label="my_profile_page"
         tools:layout="@layout/my_profile_page" />
 
     <fragment
         android:id="@+id/partnerListFragment"
-        android:name="com.example.mykumve.ui.trip.PartnerListFragment"
+        android:name="il.co.erg.mykumve.ui.trip.PartnerListFragment"
         android:label="fragment_partner_list"
         tools:layout="@layout/fragment_partner_list">
         <action
@@ -178,13 +178,13 @@
 
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.example.mykumve.ui.map.MapFragment"
+        android:name="il.co.erg.mykumve.ui.map.MapFragment"
         android:label="map"
         tools:layout="@layout/map" />
 
     <fragment
         android:id="@+id/routeManager"
-        android:name="com.example.mykumve.ui.trip.RouteManager"
+        android:name="il.co.erg.mykumve.ui.trip.RouteManager"
         android:label="route"
         tools:layout="@layout/route">
         <action
@@ -197,7 +197,7 @@
 
     <fragment
         android:id="@+id/invitationListFragment"
-        android:name="com.example.mykumve.ui.trip.InvitationListFragment"
+        android:name="il.co.erg.mykumve.ui.trip.InvitationListFragment"
         android:label="InvitationListFragment">
         <action
             android:id="@+id/action_invitationListFragment_to_partnerListFragment"
