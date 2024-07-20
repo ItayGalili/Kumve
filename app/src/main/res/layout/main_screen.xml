@@ -2,10 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.main.MainScreenManager"
-    android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:context=".ui.main.MainScreenManager"
     android:background="#EFDBB8">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -13,17 +12,22 @@
         android:layout_height="wrap_content"
         android:id="@+id/appbar"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/mainRecyclerView"
-        >
+        app:layout_constraintBottom_toTopOf="@id/mainRecyclerView">
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/statusBarColor"
-            app:title="Kumve"
-            />
+            app:title="Kumve"/>
     </com.google.android.material.appbar.AppBarLayout>
 
+    <ImageView
+        android:layout_width="415dp"
+        android:layout_height="182dp"
+        android:src="@drawable/my_trips_background_empty_seek_the_lamb"
+        app:layout_constraintBottom_toTopOf="@id/linearLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/mainRecyclerView"
@@ -31,7 +35,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appbar" />
 
@@ -41,69 +45,83 @@
         android:layout_height="wrap_content"
         android:src="@drawable/baseline_add_24"
         android:layout_margin="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
-        tools:ignore="MissingConstraints"
-        android:backgroundTint="#B1DBFE"
-
-        />
-
-
+        android:backgroundTint="#B1DBFE"/>
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="70dp"
+        android:background="#FFFFFF"
         android:orientation="horizontal"
-
-       >
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/linearLayout3">
 
         <ImageButton
             android:id="@+id/partners_btn_ms"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:src="@drawable/network_no_bg_smashicons"
             android:layout_weight="1"
-            android:padding="5dp"
-            android:layout_margin="1dp"
-            android:scaleType="fitCenter"
-            android:backgroundTint="#BBA886"
-            android:background="@drawable/rounded_corner_btn"
-
-
-
-
-            />
+            android:background="@color/white"
+            android:src="@drawable/explore_vector" />
 
         <ImageButton
             android:id="@+id/ms_btn"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:padding="10dp"
-            android:layout_margin="1dp"
-            android:src="@drawable/my_trips_afif_fudina"
-            android:backgroundTint="#EFDBB8"
-            android:scaleType="fitCenter"
-            android:background="@drawable/rounded_corner_btn"
-
-            />
+            android:backgroundTint="@color/white"
+            android:src="@drawable/my_trips_vector" />
 
         <ImageButton
             android:id="@+id/reports_btn"
-            android:layout_width="match_parent"
-            android:layout_height="90dp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_margin="1dp"
-            android:padding="7dp"
-            android:src="@drawable/annoucements_yogi_aprelliyanto"
-            android:scaleType="fitCenter"
-            android:backgroundTint="#FFEFD2"
-            android:background="@drawable/rounded_corner_btn"
-
-            />
-
+            android:backgroundTint="@color/white"
+            android:src="@drawable/reports_vector" />
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
+        <TextView
+            android:id="@+id/partners_btn_ms_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:background="@color/white"
+            android:text="Explore"/>
+
+        <TextView
+            android:id="@+id/ms_btn_text"
+            android:layout_width="0dp"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="My Trips"/>
+
+        <TextView
+            android:id="@+id/reports_btn_text"
+            android:layout_width="0dp"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Live Reports" />
+    </LinearLayout>
     <TextView
         android:id="@+id/information_while_empty"
         android:layout_width="wrap_content"
@@ -115,6 +133,125 @@
         android:gravity="center"
         android:textSize="20sp"
         android:text="@string/welcome_when_my_trips_empty"/>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    tools:context=".ui.main.MainScreenManager"-->
+<!--    android:id="@+id/linearLayout"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:background="#EFDBB8">-->
+
+<!--    <com.google.android.material.appbar.AppBarLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:id="@+id/appbar"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/mainRecyclerView"-->
+<!--        >-->
+<!--        <androidx.appcompat.widget.Toolbar-->
+<!--            android:id="@+id/toolbar"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="?attr/actionBarSize"-->
+<!--            android:background="@color/statusBarColor"-->
+<!--            app:title="Kumve"-->
+<!--            />-->
+<!--    </com.google.android.material.appbar.AppBarLayout>-->
+
+
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/mainRecyclerView"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="1.0"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/appbar" />-->
+
+<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--        android:id="@+id/add_btn"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:src="@drawable/baseline_add_24"-->
+<!--        android:layout_margin="16dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"-->
+<!--        tools:ignore="MissingConstraints"-->
+<!--        android:backgroundTint="#B1DBFE"-->
+
+<!--        />-->
+
+
+<!--    <LinearLayout-->
+<!--        android:id="@+id/linearLayout2"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        android:orientation="horizontal"-->
+
+<!--       >-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/partners_btn_ms"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:src="@drawable/network_no_bg_smashicons"-->
+<!--            android:layout_weight="1"-->
+<!--            android:padding="5dp"-->
+<!--            android:layout_margin="1dp"-->
+<!--            android:scaleType="fitCenter"-->
+<!--            android:backgroundTint="#BBA886"-->
+<!--            android:background="@drawable/rounded_corner_btn"-->
+
+
+
+
+<!--            />-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/ms_btn"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_weight="1"-->
+<!--            android:padding="10dp"-->
+<!--            android:layout_margin="1dp"-->
+<!--            android:src="@drawable/my_trips_afif_fudina"-->
+<!--            android:backgroundTint="#EFDBB8"-->
+<!--            android:scaleType="fitCenter"-->
+<!--            android:background="@drawable/rounded_corner_btn"-->
+
+<!--            />-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/reports_btn"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="90dp"-->
+<!--            android:layout_weight="1"-->
+<!--            android:layout_margin="1dp"-->
+<!--            android:padding="7dp"-->
+<!--            android:src="@drawable/annoucements_yogi_aprelliyanto"-->
+<!--            android:scaleType="fitCenter"-->
+<!--            android:backgroundTint="#FFEFD2"-->
+<!--            android:background="@drawable/rounded_corner_btn"-->
+
+<!--            />-->
+
+<!--    </LinearLayout>-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/information_while_empty"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/linearLayout2"-->
+<!--        android:gravity="center"-->
+<!--        android:textSize="20sp"-->
+<!--        android:text="@string/welcome_when_my_trips_empty"/>-->
+
+
+<!--</androidx.constraintlayout.widget.ConstraintLayout>-->

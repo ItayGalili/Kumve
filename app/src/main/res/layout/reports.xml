@@ -33,51 +33,75 @@
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
+        android:background="#FFFFFF"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-
-        >
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/linearLayout3">
 
         <ImageButton
             android:id="@+id/partners_btn_ms"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_margin="1dp"
             android:layout_weight="1"
-            android:background="@drawable/rounded_corner_btn"
-            android:backgroundTint="#BBA886"
-            android:padding="5dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/network_no_bg_smashicons" />
+            android:background="@color/white"
+            android:src="@drawable/explore_vector" />
 
         <ImageButton
             android:id="@+id/ms_btn"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_margin="1dp"
             android:layout_weight="1"
-            android:background="@drawable/rounded_corner_btn"
-            android:backgroundTint="#EFDBB8"
-            android:padding="10dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/my_trips_afif_fudina"
-
-            />
+            android:backgroundTint="@color/white"
+            android:src="@drawable/my_trips_vector" />
 
         <ImageButton
             android:id="@+id/reports_btn"
-            android:layout_width="match_parent"
-            android:layout_height="90dp"
-            android:layout_margin="1dp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/rounded_corner_btn"
-            android:backgroundTint="#FFEFD2"
-            android:padding="7dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/annoucements_yogi_aprelliyanto" />
+            android:backgroundTint="@color/white"
+            android:src="@drawable/reports_vector" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
+        <TextView
+            android:id="@+id/partners_btn_ms_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:background="@color/white"
+            android:text="Explore"/>
+
+        <TextView
+            android:id="@+id/ms_btn_text"
+            android:layout_width="0dp"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="My Trips"/>
+
+        <TextView
+            android:id="@+id/reports_btn_text"
+            android:layout_width="0dp"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Live Reports" />
     </LinearLayout>
 
 
