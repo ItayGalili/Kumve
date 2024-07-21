@@ -32,7 +32,7 @@
     <string name="error_empty_name">השם חייב להכיל 3 אותיות לפחות</string>
     <string name="error_invalid_email">אימייל לא תקין</string>
     <string name="error_invalid_password">הסיסמא חייבת להכיל 6 תוים לפחות</string>
-    <string name="error_invalid_phone">פורמט שגוי: מספר הטלפון חייב להתחיל ב-\'0' ואחריו 9 ספרות. דוגמה: 0541234567.</string>
+    <string name="error_invalid_phone">פורמט שגוי: מספר הטלפון חייב להתחיל ב-0 ואחריו 9 ספרות. דוגמה: 0541234567.</string>
     <string name="logout_confirmation">את/ה בטוח/ה שאת/ה רוצה להתנתק?</string>
     <string name="yes">כן</string>
     <string name="no">לא</string>
@@ -43,6 +43,7 @@
     <string name="notifications">התראות</string>
     <string name="show_invitations">הצג זימונים</string>
     <string name="unknown_area">איזור לא ידוע</string>
-    <string name="trip_invitation_list_title">Invitation List</string>
+    <string name="trip_invitation_list_title">רשימת הזמנות</string>
+    <string name="permission_denied">הרשאה נדחתה</string>
 
 </resources>

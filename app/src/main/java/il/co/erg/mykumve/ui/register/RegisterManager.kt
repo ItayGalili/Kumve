@@ -52,15 +52,17 @@ class RegisterManager : Fragment(), CoroutineScope {
         setupFieldValidation(binding.PhoneRegister, getString(R.string.error_invalid_phone))
 
         // Initialize ImagePickerUtil
-        imagePickerUtil = ImagePickerUtil(this) { uri ->
+        imagePickerUtil = ImagePickerUtil(this, { uri ->
             binding.imagePersonRegister.setImageURI(uri)
-            imageUri = uri.toString()
             binding.imagePersonRegister.setPadding(0, 0, 0, 0)
-        }
+        }, { success, downloadUrl ->
+            if (success) {
+                imageUri = downloadUrl
+            } else {
+                Toast.makeText(requireContext(), "Image upload failed", Toast.LENGTH_SHORT).show()
+            }
+        })
 
-        binding.imagePersonRegister.setOnClickListener {
-            showImagePickerDialog()
-        }
 
         binding.RegisterBtn.setOnClickListener {
             if (validateInput()) {

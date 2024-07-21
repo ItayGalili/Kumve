@@ -102,9 +102,18 @@ class TripManager : Fragment() {
             Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()
         }
 
-        imagePickerUtil = ImagePickerUtil(this) { uri ->
-            binding.tripImage.setImageURI(uri)
-        }
+        imagePickerUtil = ImagePickerUtil(this,
+            onImagePicked = { uri ->
+                binding.tripImage.setImageURI(uri)
+            },
+            onImageUploadResult = { success, downloadUrl ->
+                if (success && downloadUrl != null) {
+                    // Handle successful upload if needed
+                } else {
+                    Toast.makeText(requireContext(), "Image upload failed", Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
 
         binding.dateStartBtn.setOnClickListener {
             showDateTimePicker(true)
@@ -304,7 +313,7 @@ class TripManager : Fragment() {
             ?: tripFromSharedViewModel?.invitationIds?.takeIf { it.isNotEmpty() }?.toMutableList()
             ?: mutableListOf()
 
-        val photo = imagePickerUtil.getImageUri().toString().takeIf { it != "null" }
+        val photo = imagePickerUtil.downloadUrl.toString().takeIf { it != "null" }
             ?: tripFromSharedViewModel?.image
         val notes = null
 

@@ -17,6 +17,7 @@ import il.co.erg.mykumve.databinding.MyProfilePageBinding
 import il.co.erg.mykumve.ui.viewmodel.UserViewModel
 import il.co.erg.mykumve.util.ImagePickerUtil
 import il.co.erg.mykumve.util.UserManager
+import il.co.erg.mykumve.util.UserUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,47 +36,45 @@ class MyProfile : Fragment(), CoroutineScope {
     private val userViewModel: UserViewModel by activityViewModels()
     private var imageUri: String? = null
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = MyProfilePageBinding.inflate(inflater, container, false)
         val view = binding.root
+
         // Initialize ImagePickerUtil
-        imagePickerUtil = ImagePickerUtil(this) { uri ->
-            uri?.let {
-                binding.profilePic.setImageURI(it)
-                launch {
-                    updateUserProfilePic(it)
+        imagePickerUtil = ImagePickerUtil(this,
+            onImagePicked = { uri ->
+                binding.profilePic.setImageURI(uri)
+            },
+            onImageUploadResult = { success, downloadUrl ->
+                if (success && downloadUrl != null) {
+                    updateUserProfilePic(downloadUrl.toUri())
+                } else {
+                    Toast.makeText(requireContext(), "Image upload failed", Toast.LENGTH_SHORT).show()
                 }
             }
-        }
+        )
+
 
         if (UserManager.isLoggedIn()) {
             UserManager.getUser()?.let { user ->
                 currentUser = user
                 binding.profilePic.setImageURI(user.photo?.toUri())
-                if (user.surname!=null){
-                    binding.profileUserFullNameTv.setText(user.firstName+" "+user.surname)                }
-                else{
-                    binding.profileUserFullNameTv.setText(user.firstName)
-                }
-                binding.changeProfilePic.setOnClickListener() {
+                binding.profileUserFullNameTv.setText(UserUtils.getFullName(user))
+                binding.changeProfilePic.setOnClickListener {
                     showImagePickerDialog()
                 }
                 binding.profileEmail.setText(user.email)
                 binding.profilePhoneNumber.setText(user.phone)
-                binding.changePassword.setOnClickListener(){
+                binding.changePassword.setOnClickListener {
                     showChangePasswordDialog()
-
                 }
             }
         } else {
-            // Handle the case where the user is not logged in
             Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()
-            // You can navigate to the login screen or take appropriate action
         }
 
         return view
@@ -108,10 +107,9 @@ class MyProfile : Fragment(), CoroutineScope {
         dialogFragment.show(parentFragmentManager, "ChangePasswordFragment")
     }
 
-
     private fun updateUserProfilePic(uri: Uri) {
         var error = ""
-        if ((::currentUser.isInitialized)) {
+        if (::currentUser.isInitialized) {
             currentUser.photo = uri.toString()
             userViewModel.updateUser(currentUser) { result ->
                 launch(Dispatchers.Main) {
@@ -129,7 +127,7 @@ class MyProfile : Fragment(), CoroutineScope {
         } else {
             error = "Failed to update profile picture"
         }
-        if (error.isNotEmpty()){
+        if (error.isNotEmpty()) {
             Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
             Log.e(TAG, error)
         }

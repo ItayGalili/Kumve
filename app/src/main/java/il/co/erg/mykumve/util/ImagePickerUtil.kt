@@ -10,10 +10,22 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.google.firebase.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.storage
+import kotlinx.coroutines.tasks.await
+import java.util.*
 
-class ImagePickerUtil(private val fragment: Fragment, private val onImagePicked: (Uri) -> Unit) {
-
+class ImagePickerUtil(
+    private val fragment: Fragment,
+    private val onImagePicked: (Uri) -> Unit,
+    private val onImageUploadResult: (Boolean, String?) -> Unit
+) {
     private var imageUri: Uri? = null
+    var downloadUrl: String? = null
+        private set
 
     val pickImageLauncher: ActivityResultLauncher<Array<String>> =
         fragment.registerForActivityResult(ActivityResultContracts.OpenDocument()) {
@@ -24,6 +36,7 @@ class ImagePickerUtil(private val fragment: Fragment, private val onImagePicked:
                 )
                 imageUri = uri
                 onImagePicked(uri)
+                uploadImageToFirestore(uri)
             }
         }
 
@@ -32,6 +45,7 @@ class ImagePickerUtil(private val fragment: Fragment, private val onImagePicked:
             if (success) {
                 imageUri?.let { uri ->
                     onImagePicked(uri)
+                    uploadImageToFirestore(uri)
                 }
             }
         }
@@ -86,5 +100,18 @@ class ImagePickerUtil(private val fragment: Fragment, private val onImagePicked:
     fun getImageUri(): Uri? {
         return imageUri
     }
-}
 
+    private fun uploadImageToFirestore(uri: Uri) {
+        val storageRef = Firebase.storage.reference.child("images/${uri.lastPathSegment}")
+        val uploadTask = storageRef.putFile(uri)
+
+        uploadTask.addOnSuccessListener { taskSnapshot ->
+            taskSnapshot.metadata?.reference?.downloadUrl?.addOnSuccessListener { downloadUri ->
+                downloadUrl = downloadUri.toString()
+                onImageUploadResult(true, downloadUrl)
+            }
+        }.addOnFailureListener {
+            onImageUploadResult(false, null)
+        }
+    }
+}
