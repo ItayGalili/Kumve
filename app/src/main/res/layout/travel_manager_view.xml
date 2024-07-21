@@ -139,11 +139,12 @@
         app:layout_constraintTop_toBottomOf="@id/trip_group_description">
 
         <TextView
+            android:paddingRight="20dp"
             android:id="@+id/StartView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/TextColor"
-            android:text="The trip will start at:"
+            android:text="The trip starts at:"
             android:textSize="20sp" />
 
         <TextView
@@ -205,6 +206,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/end_date_layout">
         <TextView
+            android:paddingLeft="12sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="@color/TextColor"
@@ -231,6 +233,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/equipementPick">
         <TextView
+            android:paddingLeft="12sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="@color/TextColor"

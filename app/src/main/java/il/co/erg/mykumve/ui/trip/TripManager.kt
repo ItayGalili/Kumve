@@ -217,17 +217,10 @@ class TripManager : Fragment() {
                         return@OnTimeSetListener
                     }
                     startDate = calendar.timeInMillis
-                    binding.StartView.text = SimpleDateFormat(
+                    binding.dateStartPick.text = SimpleDateFormat(
                         "dd/MM/yyyy HH:mm",
                         Locale.getDefault()
                     ).format(calendar.time)
-
-                    // Automatically set end date to 4 hours later
-                    endDate = startDate!! + eventLength
-                    binding.EndView.text = SimpleDateFormat(
-                        "dd/MM/yyyy HH:mm",
-                        Locale.getDefault()
-                    ).format(Date(endDate!!))
                 } else {
                     if (startDate == null) {
                         Toast.makeText(
@@ -255,7 +248,7 @@ class TripManager : Fragment() {
                         return@OnTimeSetListener
                     }
                     endDate = calendar.timeInMillis
-                    binding.EndView.text = SimpleDateFormat(
+                    binding.dateEndPick.text = SimpleDateFormat(
                         "dd/MM/yyyy HH:mm",
                         Locale.getDefault()
                     ).format(calendar.time)
