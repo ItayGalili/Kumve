@@ -135,8 +135,10 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun fetchUserById(id: String): Flow<Resource<User?>> {
-        return userRepository.getUserById(id)
+    fun fetchUserById(id: String): Flow<Resource<User?>>  = flow {
+        userRepository.getUserById(id).collect {
+            emit(it)
+        }
     }
 
     fun fetchUsersByIds(ids: List<String>): Flow<Resource<List<User>>> = flow {

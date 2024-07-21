@@ -23,6 +23,7 @@ import il.co.erg.mykumve.ui.viewmodel.UserViewModel
 import il.co.erg.mykumve.util.EncryptionUtils
 import il.co.erg.mykumve.util.UserManager
 import il.co.erg.mykumve.util.UserUtils.getFullName
+import il.co.erg.mykumve.util.bindLoadingView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -66,6 +67,7 @@ class LoginManager : Fragment() {
 
             userViewModel.loginUser(email, password)
         }
+        userViewModel.loginState.bindLoadingView(viewLifecycleOwner, viewLifecycleOwner.lifecycleScope, binding.progressBar)
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             userViewModel.loginState.collect { resource ->
