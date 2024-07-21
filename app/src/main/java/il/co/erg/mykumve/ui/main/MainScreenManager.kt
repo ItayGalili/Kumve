@@ -109,6 +109,7 @@ class MainScreenManager : Fragment() {
             currentUser?.let { user ->
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        Log.d(TAG, "Fetching trips for participant ${currentUser!!.id}")
                         tripViewModel.fetchTripsByParticipantUserIdWithInfo(currentUser!!.id)
                         tripViewModel.tripsWithInfo.collectLatest { tripsWithInfo ->
                             tripAdapter.updateTripList(tripsWithInfo)

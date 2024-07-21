@@ -62,18 +62,20 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
                         trip.participantIds?.any { it == userId } == true
                     }
 
-                    val tripsWithInfoList = tripsByParticipant.map { trip ->
-                        val tripInfoResource = trip.tripInfoId?.let {
-                            tripInfoRepository.getTripInfoById(it)
-                                .first { info -> info.status != Status.LOADING }
+                    val tripsWithInfoList = mutableListOf<TripWithInfo>()
+                    tripsByParticipant.forEach { trip ->
+                        trip.tripInfoId?.let { tripInfoId ->
+                            tripInfoRepository.getTripInfoById(tripInfoId).collectLatest { tripInfoResource ->
+                                val tripInfo = if (tripInfoResource.status == Status.SUCCESS) tripInfoResource.data else null
+                                val tripWithInfo = TripWithInfo(trip, tripInfo)
+                                if (!tripsWithInfoList.any { it.trip.id == tripWithInfo.trip.id }) { // for duplication
+                                    tripsWithInfoList.add(tripWithInfo)
+                                }
+                            }
                         }
-                        val tripInfo =
-                            if (tripInfoResource?.status == Status.SUCCESS) tripInfoResource.data else null
-                        TripWithInfo(trip, tripInfo)
                     }
-
                     _tripsWithInfo.emit(tripsWithInfoList)
-                    _operationResult.emit(Resource.success(null))  // Emit success with null for Void?
+                    _operationResult.emit(Resource.success(null))  // Emit success after processing all trips
                 } else {
                     _operationResult.emit(
                         Resource.error(
@@ -357,59 +359,32 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     fun respondToTripInvitation(invitation: TripInvitation, callback: (Resource<Void>) -> Unit) {
         viewModelScope.launch {
             val result = safeCall {
-                val status = invitation.status
-                Log.d(TAG, "Updating trip invitation with status: $status, TripId ${invitation.tripId}")
-
-                // First, check if the invitation exists
-                val invitationExists = tripRepository.checkTripInvitationExists(invitation.id)
-                if (invitationExists) {
-                    Log.d(TAG, "Invitation found: ${invitation.id}")
-                    if (status == TripInvitationStatus.APPROVED) {
-                        handleApprovedInvitation(invitation)
-                    } else {
-                        tripRepository.updateTripInvitation(invitation)
-                    }
-                } else {
-                    Log.e(TAG, "Invitation not found: ${invitation.id}")
-                    Resource.error("Invitation not found: ${invitation.id}", null)
-                }
+                Log.d(TAG, "Starting to respond to trip invitation: ${invitation.id}")
+                handleApprovedInvitation(invitation)
             }
             callback(result)
         }
     }
 
+
+
     private suspend fun handleApprovedInvitation(invitation: TripInvitation): Resource<Void> {
         return safeCall {
-            FirebaseFirestore.getInstance().runTransaction { transaction ->
-                val tripRef = tripRepository.getTripDocumentReference(invitation.tripId)
-                val tripSnapshot = transaction.get(tripRef)
-                if (!tripSnapshot.exists()) {
-                    throw IllegalStateException("Trip not found: ${invitation.tripId}")
+            val db = FirebaseFirestore.getInstance()
+                viewModelScope.launch {
+                    tripRepository.getTripById(invitation.tripId).collectLatest { tripResource ->
+                        val trip = tripResource.data
+                        if (trip != null) {
+                            trip.participantIds?.add(invitation.userId)
+                            tripRepository.updateTrip(trip)
+                            tripInfoRepository.updateTripInvitation(invitation)
+                            Resource.success(trip)
+                        } else {
+                            Resource.error(tripResource.message.toString())
+                        }
+                    }
                 }
-                val trip = tripSnapshot.toObject(Trip::class.java)
-                    ?: throw IllegalStateException("Trip deserialization error")
-
-                val userRef = userRepository.getUserDocumentReference(invitation.userId)
-                val userSnapshot = transaction.get(userRef)
-                if (!userSnapshot.exists()) {
-                    throw IllegalStateException("User not found: ${invitation.userId}")
-                }
-                val user = userSnapshot.toObject(User::class.java)
-                    ?: throw IllegalStateException("User deserialization error")
-
-                // Add user ID to participant IDs
-                trip.participantIds = trip.participantIds?.toMutableList() ?: mutableListOf()
-                trip.participantIds?.add(user.id)
-
-                // Update the trip
-                transaction.set(tripRef, trip)
-
-                // Update the invitation status
-                transaction.update(tripRepository.getTripInvitationDocumentReference(invitation.id), "status", TripInvitationStatus.APPROVED)
-
-                null
-            }.await()
-
+            Log.d(TAG, "Successfully responded to trip invitation: ${invitation.id}")
             Resource.success(null)
         }
     }
