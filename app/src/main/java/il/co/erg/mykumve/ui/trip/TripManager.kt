@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.net.toUri
+import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -76,6 +77,7 @@ class TripManager : Fragment() {
                             binding.tripImage.setImageResource(R.drawable.placeholder)
                         }
                         binding.tripImage.setImageURI(trip.image?.toUri())
+                        binding.tripImage.setPadding(0)
                         binding.nameTrip.setText(trip.title)
                         binding.description.setText(trip.description.toString())
                         binding.dateStartPick.text = timestampToString(trip.gatherTime)
