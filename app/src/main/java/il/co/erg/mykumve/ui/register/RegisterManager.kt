@@ -63,6 +63,9 @@ class RegisterManager : Fragment(), CoroutineScope {
             }
         })
 
+        binding.imagePersonRegister.setOnClickListener {
+            showImagePickerDialog()
+        }
 
         binding.RegisterBtn.setOnClickListener {
             if (validateInput()) {
