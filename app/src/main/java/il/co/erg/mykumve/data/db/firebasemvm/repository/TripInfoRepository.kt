@@ -1,5 +1,6 @@
 package il.co.erg.mykumve.data.db.firebasemvm.repository
 
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import il.co.erg.mykumve.data.db.model.Area
@@ -7,11 +8,15 @@ import il.co.erg.mykumve.data.db.model.SubArea
 import il.co.erg.mykumve.data.db.model.TripInfo
 import il.co.erg.mykumve.data.db.model.TripInvitation
 import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
+import il.co.erg.mykumve.data.db.model.User
+import il.co.erg.mykumve.ui.explore.ExploreFragment
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
 class TripInfoRepository {
+
+    val TAG = TripInfoRepository::class.java.simpleName
 
     private val db = FirebaseFirestore.getInstance()
     private val tripInfoCollection = db.collection("trip_info")
@@ -24,6 +29,27 @@ class TripInfoRepository {
             val snapshot = areasCollection.get().await()
             val areas = snapshot.documents.mapNotNull { it.toObject<Area>() }
             emit(Resource.success(areas))
+        } catch (e: Exception) {
+            emit(Resource.error(e.message ?: "Unknown error", null))
+        }
+    }
+    fun getAreaById(areaId: String): Flow<Resource<Area>> = flow {
+        emit(Resource.loading(null))
+        try {
+            val snapshot = areasCollection.document(areaId).collection("areas").get().await()
+            val areas = snapshot.documents.firstOrNull()?.toObject<Area>()
+            emit(Resource.success(areas))
+        } catch (e: Exception) {
+            emit(Resource.error(e.message ?: "Unknown error", null))
+        }
+    }
+
+    fun getSubAreaById(subAreaId: String): Flow<Resource<SubArea>> = flow {
+        emit(Resource.loading(null))
+        try {
+            val snapshot = areasCollection.document(subAreaId).collection("subareas").get().await()
+            val subareas = snapshot.documents.firstOrNull()?.toObject<SubArea>()
+            emit(Resource.success(subareas))
         } catch (e: Exception) {
             emit(Resource.error(e.message ?: "Unknown error", null))
         }
@@ -44,12 +70,27 @@ class TripInfoRepository {
         emit(Resource.loading(null))
         try {
             val snapshot = tripInfoCollection.get().await()
-            val tripInfoList = snapshot.documents.mapNotNull { it.toObject<TripInfo>() }
+            val tripInfoList = snapshot.documents.mapNotNull { document ->
+                TripInfo.fromFirestoreDocument(document)
+            }
             emit(Resource.success(tripInfoList))
         } catch (e: Exception) {
+            Log.e("FetchTrips", "Error fetching trip info", e)
             emit(Resource.error(e.message ?: "Unknown error", null))
         }
     }
+
+
+//    fun getAllTripInfo(): Flow<Resource<List<TripInfo>>> = flow {
+//        emit(Resource.loading(null))
+//        try {
+//            val snapshot = tripInfoCollection.get().await()
+//            val tripInfoList = snapshot.documents.mapNotNull { it.toObject<TripInfo>() }
+//            emit(Resource.success(tripInfoList))
+//        } catch (e: Exception) {
+//            emit(Resource.error(e.message ?: "Unknown error", null))
+//        }
+//    }
 
     fun getTripInfoById(id: String): Flow<Resource<TripInfo?>> = flow {
         emit(Resource.loading(null))

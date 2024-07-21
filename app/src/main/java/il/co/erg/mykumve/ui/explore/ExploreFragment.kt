@@ -1,10 +1,12 @@
 package il.co.erg.mykumve.ui.explore
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -18,6 +20,7 @@ import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.databinding.ExploreBinding
 import il.co.erg.mykumve.explore.ExploreAdapter
 import il.co.erg.mykumve.ui.main.MainActivity
+import il.co.erg.mykumve.ui.menu.TripInvitationAdapter
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
 import il.co.erg.mykumve.ui.viewmodel.TripViewModel
 import il.co.erg.mykumve.util.UserManager
@@ -25,6 +28,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class ExploreFragment : Fragment() {
+    val TAG = ExploreFragment::class.java.simpleName
     private val sharedViewModel: SharedTripViewModel by activityViewModels()
     private var _binding : ExploreBinding? = null
     private val binding get() = _binding!!
@@ -40,6 +44,10 @@ class ExploreFragment : Fragment() {
     ): View {
         _binding = ExploreBinding.inflate(inflater, container, false)
         val view = binding.root
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            findNavController().navigate(R.id.exploreFragment)
+        }
 
         binding.msBtn.setOnClickListener{
             findNavController().navigate(R.id.action_exploreFragment_to_mainScreenManager)
@@ -67,8 +75,9 @@ class ExploreFragment : Fragment() {
             currentUser?.let { user ->
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        tripInfoViewModel.fetchAllTripsInExplore()
+                        tripInfoViewModel.fetchAllTripsInfo()
                         tripInfoViewModel.tripsInfo.collectLatest { tripsInfo ->
+                            Log.d(TAG,"${tripsInfo.size} trips info found")
                             exploreAdapter.updateTripList(tripsInfo)
                             exploreAdapter.notifyDataSetChanged()
                             if (MainActivity.DEBUG_MODE) {
@@ -88,7 +97,9 @@ class ExploreFragment : Fragment() {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 // Handle search query submission
                 query?.let {
-                    // Perform search or filter logic here
+                    Toast.makeText(context,
+                        "Kumve found ${exploreAdapter.itemCount} trips that matches your search",
+                        Toast.LENGTH_SHORT).show()
                 }
                 return false
             }

@@ -15,6 +15,8 @@ import il.co.erg.mykumve.data.db.firebasemvm.repository.UserRepository
 import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
 import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.data.db.firebasemvm.util.safeCall
+import il.co.erg.mykumve.data.db.model.Area
+import il.co.erg.mykumve.data.db.model.SubArea
 import il.co.erg.mykumve.util.TripInvitationStatus
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -36,6 +38,10 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     private val _tripsInfo = MutableStateFlow<List<TripInfo>>(emptyList())
     val trips: StateFlow<List<Trip>> get() = _trips.asStateFlow()
     val tripsInfo: StateFlow<List<TripInfo>> get() = _tripsInfo.asStateFlow()
+    private val _area = MutableStateFlow<Area?>(null)
+    private val _subArea = MutableStateFlow<SubArea?>(null)
+//    val area: StateFlow<Area> get() = _area.asStateFlow()
+//    val subArea: StateFlow<SubArea> get() = _subArea.asStateFlow()
 
     private val _tripInvitations = MutableStateFlow<List<TripInvitation>>(emptyList())
     val tripInvitations: StateFlow<List<TripInvitation>> get() = _tripInvitations.asStateFlow()
@@ -46,9 +52,6 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     private val _operationResult = MutableSharedFlow<Resource<Void?>>()
     val operationResult: SharedFlow<Resource<Void?>> get() = _operationResult
 
-    fun fetchAllTripsInExplore(){
-        _tripsInfo.asStateFlow()
-    }
 
     fun fetchTripsByParticipantUserIdWithInfo(userId: String) {
         viewModelScope.launch {
@@ -117,6 +120,20 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+//    fun fetchAreaById(id: String) {
+//        viewModelScope.launch {
+//            tripInfoRepository.getAreaById(id).collectLatest { resource ->
+//                _area.value = resource.data
+//            }
+//    }
+//    fun fetchSubAreaById() {
+//        viewModelScope.launch {
+//            tripInfoRepository.getSubAreaById(id).collectLatest { resource ->
+//                _subArea.value = resource.data
+//            }
+//    }
+
 
     fun fetchAllTripsInfo() {
         viewModelScope.launch {

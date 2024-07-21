@@ -5,10 +5,11 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#BBA886"
+    android:background="@color/white"
     tools:context=".ui.explore.ExploreFragment">
     <androidx.appcompat.widget.SearchView
         android:layout_width="0dp"
+        android:backgroundTint="@color/almostWhite"
         android:background="@drawable/search_view_background"
         android:layout_height="wrap_content"
         android:id="@+id/search_view"
