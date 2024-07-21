@@ -6,7 +6,7 @@ import kotlinx.coroutines.tasks.await
 
 suspend fun deleteAllCollections(ignoreTables: List<String>? = null) {
     val db = FirebaseFirestore.getInstance()
-    val collections = listOf("trips", "trip_info", "trip_invitations", "reports", "areas", "users")
+    val collections = listOf("trips", "trip_invitations", "reports", "users")
 
     for (collection in collections) {
         if (ignoreTables == null || !ignoreTables.contains(collection)) {
