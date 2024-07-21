@@ -41,6 +41,17 @@ class UserRepository {
         }
     }
 
+    fun getUsersByIds(ids: List<String>): Flow<Resource<List<User>>> = flow {
+        emit(Resource.loading(null))
+        try {
+            val snapshot = usersCollection.whereIn("id", ids).get().await()
+            val users = snapshot.documents.mapNotNull { it.toObject<User>() }
+            emit(Resource.success(users))
+        } catch (e: Exception) {
+            emit(Resource.error(e.message ?: "Unknown error", null))
+        }
+    }
+
     fun getUserByEmail(email: String): Flow<Resource<User?>> = flow {
         emit(Resource.loading(null))
         try {

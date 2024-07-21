@@ -130,9 +130,9 @@ class TripRepository {
     suspend fun deleteTrip(trip: Trip): Resource<Void> {
         return try {
             tripsCollection.document(trip.id).delete().await()
-            tripInfoCollection.whereEqualTo("tripId", trip.id).get().await().documents.forEach {
-                tripInfoCollection.document(it.id).delete().await()
-            }
+//            tripInfoCollection.whereEqualTo("tripId", trip.id).get().await().documents.forEach {
+//                tripInfoCollection.document(it.id).delete().await()
+//            }
             tripInvitationsCollection.whereEqualTo("tripId", trip.id).get().await().documents.forEach {
                 tripInvitationsCollection.document(it.id).delete().await()
             }

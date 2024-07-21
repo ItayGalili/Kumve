@@ -111,11 +111,13 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun fetchUserById(id: String) {
-        viewModelScope.launch {
-            userRepository.getUserById(id).collectLatest { resource ->
-                _userById.emit(resource.data)
-            }
+    fun fetchUserById(id: String): Flow<Resource<User?>> {
+        return userRepository.getUserById(id)
+    }
+
+    fun fetchUsersByIds(ids: List<String>): Flow<Resource<List<User>>> = flow {
+        userRepository.getUsersByIds(ids).collect {
+            emit(it)
         }
     }
 

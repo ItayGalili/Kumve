@@ -216,7 +216,7 @@ class MainScreenManager : Fragment() {
                 |    gatherTime: ${trip.gatherTime},
                 |    tripInfoId: ${trip.tripInfoId},
                 |    endDate: ${trip.endDate},
-                |    participants: ${trip.participants?.size},
+                |    participants: ${trip.participantIds?.size},
                 |    equipment: ${trip.equipment?.size},
                 |    invitations: ${trip.invitationIds.size},
                 |    shareLevel: ${trip.shareLevel}

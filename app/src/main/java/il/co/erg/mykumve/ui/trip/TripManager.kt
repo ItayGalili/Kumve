@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 class TripManager : Fragment() {
@@ -292,9 +291,6 @@ class TripManager : Fragment() {
 
     private fun formToTripObject(
         user: User,
-        equipmentList: List<Equipment>? = null,
-        participantList: List<User>? = null,
-        invitationList: List<String>? = null,
         tripFromSharedViewModel: Trip? = null,
 
         ): Trip {
@@ -303,14 +299,11 @@ class TripManager : Fragment() {
         val description = binding.description.text.toString()
         val gatherTime = startDate ?: sharedViewModel.trip.value?.gatherTime
         val endTime = endDate ?: sharedViewModel.trip.value?.endDate
-        val equipments = equipmentList?.takeIf { it.isNotEmpty() }?.toMutableList()
-            ?: tripFromSharedViewModel?.equipment?.toMutableList()
+        val equipments = tripFromSharedViewModel?.equipment?.toMutableList()
 
-        val participants =
-            participantList?.takeIf { it.isNotEmpty() }?.toMutableList() ?: mutableListOf(user)
+        val participantsIds = mutableListOf(user.id)
 
-        val invitationsIds = invitationList?.takeIf { it.isNotEmpty() }?.toMutableList()
-            ?: tripFromSharedViewModel?.invitationIds?.takeIf { it.isNotEmpty() }?.toMutableList()
+        val invitationsIds = tripFromSharedViewModel?.invitationIds?.takeIf { it.isNotEmpty() }?.toMutableList()
             ?: mutableListOf()
 
         val photo = imagePickerUtil.downloadUrl.toString().takeIf { it != "null" }
@@ -325,7 +318,7 @@ class TripManager : Fragment() {
             endDate = endTime,
             description = description,
             notes = notes,
-            participants = participants,
+            participantIds = participantsIds,
             invitationIds = invitationsIds,
             equipment = equipments,
             userId = user.id,

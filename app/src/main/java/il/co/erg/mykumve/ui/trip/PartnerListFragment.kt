@@ -17,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import il.co.erg.mykumve.R
+import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.databinding.FragmentPartnerListBinding
 import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
@@ -76,8 +77,20 @@ class PartnerListFragment : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 sharedTripViewModel.trip.collectLatest { trip ->
                     if (trip != null) {
-                        val participants = trip.participants?.toMutableList() ?: mutableListOf()
-                        partnerListAdapter.submitList(participants)
+                        val participantIds = trip.participantIds ?: emptyList()
+                        if (participantIds.isNotEmpty()) {
+                            userViewModel.fetchUsersByIds(participantIds).collectLatest { resource ->
+                                if (resource.status == Status.SUCCESS) {
+                                    val participants = resource.data ?: emptyList()
+                                    partnerListAdapter.submitList(participants)
+                                } else {
+                                    // Handle the error case
+                                    Log.e(TAG, "Failed to fetch users: ${resource.message}")
+                                }
+                            }
+                        } else {
+                            partnerListAdapter.submitList(emptyList())
+                        }
                     }
                 }
             }

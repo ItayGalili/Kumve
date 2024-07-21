@@ -9,7 +9,7 @@ data class Trip(
     var title: String = "",
     var description: String? = null,
     var gatherTime: Long? = null,
-    var participants: MutableList<User>? = null,
+    var participantIds: MutableList<String>? = null,
     var image: String? = null,
     var equipment: MutableList<Equipment>? = null,
     var userId: String = "",

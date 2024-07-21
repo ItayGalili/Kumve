@@ -3,10 +3,8 @@ package il.co.erg.mykumve.ui.viewmodel
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import il.co.erg.mykumve.data.db.model.Trip
 import il.co.erg.mykumve.data.db.model.TripInfo
@@ -15,7 +13,6 @@ import il.co.erg.mykumve.data.db.firebasemvm.repository.TripInfoRepository
 import il.co.erg.mykumve.data.db.firebasemvm.repository.TripRepository
 import il.co.erg.mykumve.data.db.firebasemvm.repository.UserRepository
 import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
-import il.co.erg.mykumve.data.data_classes.Equipment
 import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.data.db.firebasemvm.util.safeCall
 import il.co.erg.mykumve.util.TripInvitationStatus
@@ -59,7 +56,7 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
                 if (allTripsResource.status == Status.SUCCESS) {
                     val allTrips = allTripsResource.data ?: emptyList()
                     val tripsByParticipant = allTrips.filter { trip ->
-                        trip.participants?.any { it.id == userId } == true
+                        trip.participantIds?.any { it == userId } == true
                     }
 
                     val tripsWithInfoList = tripsByParticipant.map { trip ->
@@ -388,10 +385,10 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
                     val trip = tripResource.data
                     val user = userResource.data
                     if (trip != null && user != null) {
-                        trip.participants?.add(user)
+                        trip.participantIds?.add(user.id)
                         Log.d(
                             TAG,
-                            "Adding user ${user.firstName} to trip participants ${trip.participants}"
+                            "Adding user ${user.firstName} to trip participants ${trip.participantIds}"
                         )
                         val updateTripResult = tripRepository.updateTrip(trip)
                         callback(updateTripResult)
