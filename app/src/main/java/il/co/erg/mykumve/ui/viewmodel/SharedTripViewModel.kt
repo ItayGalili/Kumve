@@ -21,9 +21,9 @@ class SharedTripViewModel : ViewModel() {
     val TAG = SharedTripViewModel::class.java.simpleName
 
     private lateinit var tripViewModel: TripViewModel
-    var isCreatingTripMode: Boolean = false
-    var isEditingExistingTrip: Boolean = false
-    var isNavigatedFromTripList: Boolean = false
+    var isCreatingTripMode: Boolean = false //true when I want to create a brand new trip
+    var isEditingExistingTrip: Boolean = false //true when I longpress an existing trip
+    var isNavigatedFromTripList: Boolean = false //true when I press on the icons of the existing trip item
 
     private val _selectedExistingTripWithInfo = MutableStateFlow<TripWithInfo?>(null)
     private val _partialTrip = MutableStateFlow<Trip?>(null)
