@@ -36,6 +36,31 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     private val _allUsers = MutableStateFlow<List<User>>(emptyList())
     val allUsers: StateFlow<List<User>> get() = _allUsers.asStateFlow()
 
+    private val _loginState = MutableStateFlow<Resource<String>>(Resource.loading())
+    val loginState: StateFlow<Resource<String>> = _loginState.asStateFlow()
+
+    fun loginUser(email: String, password: String) {
+        viewModelScope.launch {
+            _loginState.value = Resource.loading()
+
+            try {
+                val authResult = auth.signInWithEmailAndPassword(email, password).await()
+                val firebaseUser = authResult.user
+                if (firebaseUser != null) {
+                    fetchUserByEmail(email)
+                    userByEmail.value?.let {  user ->
+                        UserManager.saveUser(user)
+                        _loginState.value = Resource.success(user.id)
+                    }
+                } else {
+                    _loginState.value = Resource.error("Authentication failed")
+                }
+            } catch (e: Exception) {
+                _loginState.value = Resource.error(e.message ?: "Authentication failed")
+            }
+        }
+    }
+
 //    fun updatePassword(user: User, newPassword: String) {
 //        viewModelScope.launch {
 //            try {
