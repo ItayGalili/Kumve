@@ -28,6 +28,7 @@ import il.co.erg.mykumve.ui.viewmodel.UserViewModel
 import il.co.erg.mykumve.util.TripInvitationStatus
 import il.co.erg.mykumve.util.UserManager
 import il.co.erg.mykumve.util.UserUtils
+import il.co.erg.mykumve.util.UserUtils.normalizePhoneNumber
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -87,7 +88,7 @@ class InvitationListFragment : Fragment() {
         }
         binding.addPartner.setOnClickListener {
             val phoneNumber = binding.phoneNumberToInvite.text.toString()
-            invitePartnerByPhone(phoneNumber)
+            invitePartnerByPhone(normalizePhoneNumber(phoneNumber))
         }
 
 

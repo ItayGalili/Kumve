@@ -21,6 +21,8 @@ import il.co.erg.mykumve.databinding.RegisterBinding
 import il.co.erg.mykumve.ui.viewmodel.UserViewModel
 import il.co.erg.mykumve.util.ImagePickerUtil
 import il.co.erg.mykumve.util.PATTERNS
+import il.co.erg.mykumve.util.UserUtils.isValidPhoneNumber
+import il.co.erg.mykumve.util.UserUtils.normalizePhoneNumber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -181,33 +183,13 @@ class RegisterManager : Fragment(), CoroutineScope {
         }
     }
 
-    private fun _normalizePhoneNumber(phoneNumber: String, defaultCountryCode: String = "+972"): String {
-        // Remove all spaces and other non-digit characters
-        val cleanedPhoneNumber = phoneNumber.replace("\\D".toRegex(), "")
 
-        // Ensure the number matches the valid phone pattern
-        if (!isValidPhoneNumber(cleanedPhoneNumber)) {
-            throw IllegalArgumentException("Invalid format: Phone number must start with '0' followed by 9 digits.")
-        }
-
-        // Remove the leading zero and add the default country code
-        val normalizedPhoneNumber = defaultCountryCode + cleanedPhoneNumber.substring(1)
-
-        return normalizedPhoneNumber
-    }
-
-    private fun isValidPhoneNumber(phone: String): Boolean {
-        // Regex to match an international phone number with a country code (+1 to +9999) optionally followed by a space,
-        // then either 10 digits starting with 0 or 9 digits not starting with 0.
-        val phoneRegex = Regex(PATTERNS.VALID_PHONE)
-        return phoneRegex.matches(phone)
-    }
 
     private fun registerUser(registerBtn: View?) {
         val fullName = binding.name.text.toString()
         val password = binding.passwordRegister.text.toString()
         val email = binding.emailRegister.text.toString()
-        val phone = _normalizePhoneNumber(binding.PhoneRegister.text.toString())
+        val phone = normalizePhoneNumber(binding.PhoneRegister.text.toString())
         val photo = imageUri
 
         val nameParts = fullName.split(" ")

@@ -96,13 +96,13 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-//    fun fetchTripInfoById(id: String) {
-//        viewModelScope.launch {
-//            tripInfoRepository.getTripInfoById(id).collectLatest { resource ->
-//                _tripInfo.value = resource.data
-//            }
-//        }
-//    }
+    fun fetchTripInfoById(id: String) {
+        viewModelScope.launch {
+            tripInfoRepository.getTripInfoById(id).collectLatest { resource ->
+                _tripInfo.value = resource.data
+            }
+        }
+    }
 
     fun fetchAllTrips() {
         viewModelScope.launch {
@@ -150,19 +150,19 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 //        }
 //    }
 
-//    fun addTrip(trip: Trip) {
-//        viewModelScope.launch {
-//            val result = tripRepository.insertTrip(trip)
-//            _operationResult.emit(result)
-//        }
-//    }
-//
-//    fun insertTripInfo(tripInfo: TripInfo) {
-//        viewModelScope.launch {
-//            val result = tripInfoRepository.insertTripInfo(tripInfo)
-//            _operationResult.emit(result)
-//        }
-//    }
+    fun addTrip(trip: Trip) {
+        viewModelScope.launch {
+            val result = tripRepository.insertTrip(trip)
+            _operationResult.emit(result)
+        }
+    }
+
+    fun insertTripInfo(tripInfo: TripInfo) {
+        viewModelScope.launch {
+            val result = tripInfoRepository.insertTripInfo(tripInfo)
+            _operationResult.emit(result)
+        }
+    }
 
     fun addTripWithInfo(trip: Trip, tripInfo: TripInfo, lifecycleOwner: LifecycleOwner) {
         Log.d(TAG, "Starting addTripWithInfo")
