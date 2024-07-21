@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
 class TripRepository {
-
+    val TAG = TripRepository::class.java.simpleName
     private val db = FirebaseFirestore.getInstance()
     private val tripsCollection = db.collection("trips")
     private val tripInfoCollection = db.collection("trip_info")
@@ -166,11 +166,9 @@ class TripRepository {
     }
 
     suspend fun updateTripInvitation(invitation: TripInvitation): Resource<Void> {
-        return try {
-            tripInvitationsCollection.document(invitation.id).set(invitation).await()
+        return safeCall {
+            getTripInvitationDocumentReference(invitation.id).set(invitation).await()
             Resource.success(null)
-        } catch (e: Exception) {
-            Resource.error(e.message ?: "Failed to update trip invitation", null)
         }
     }
 
@@ -220,4 +218,22 @@ class TripRepository {
             emit(Resource.error(e.message ?: "Unknown error", null))
         }
     }
+
+    suspend fun checkTripInvitationExists(invitationId: String): Boolean {
+        return try {
+            val documentSnapshot = getTripInvitationDocumentReference(invitationId).get().await()
+            val exists = documentSnapshot.exists()
+            Log.d(TAG, "checkTripInvitationExists: Document $invitationId exists: $exists")
+            exists
+        } catch (e: Exception) {
+            Log.e(TAG, "checkTripInvitationExists: Error checking existence of document $invitationId", e)
+            false
+        }
+    }
+    fun getTripDocumentReference(tripId: String) =
+        FirebaseFirestore.getInstance().collection("trips").document(tripId)
+
+    fun getTripInvitationDocumentReference(invitationId: String) =
+        FirebaseFirestore.getInstance().collection("tripInvitations").document(invitationId)
+
 }

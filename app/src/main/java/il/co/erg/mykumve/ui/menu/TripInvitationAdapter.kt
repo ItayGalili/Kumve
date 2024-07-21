@@ -123,7 +123,8 @@ class TripInvitationAdapter(
 
     private fun respondToTripInvitation(invitation: TripInvitation) {
         tripViewModel.respondToTripInvitation(invitation) { result ->
-            Log.d(TAG, if (result.status == Status.SUCCESS) "TripInvitation Accepted" else "TripInvitation Rejected")
+            Log.d(TAG, if (result.status == Status.SUCCESS) "TripInvitation Accepted" else "TripInvitation Rejected/Remain the same\n" +
+            "${result.message}")
         }
     }
 

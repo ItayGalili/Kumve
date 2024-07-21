@@ -51,8 +51,4 @@ object UserManager {
         Log.v(TAG, "User cleared... ${getUser()}")
     }
 
-    fun signOut() {
-        clearUser()
-        auth.signOut()
-    }
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.FirebaseFirestore
 import il.co.erg.mykumve.data.db.model.Trip
 import il.co.erg.mykumve.data.db.model.TripInfo
 import il.co.erg.mykumve.data.db.model.TripInvitation
@@ -15,9 +16,11 @@ import il.co.erg.mykumve.data.db.firebasemvm.repository.UserRepository
 import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
 import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.data.db.firebasemvm.util.safeCall
+import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.util.TripInvitationStatus
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class TripViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -356,50 +359,61 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
             val result = safeCall {
                 val status = invitation.status
                 Log.d(TAG, "Updating trip invitation with status: $status, TripId ${invitation.tripId}")
-                val updateResult = tripRepository.updateTripInvitation(invitation)
-                if (updateResult.status == Status.SUCCESS && status == TripInvitationStatus.APPROVED) {
-                    handleApprovedInvitation(invitation)
+
+                // First, check if the invitation exists
+                val invitationExists = tripRepository.checkTripInvitationExists(invitation.id)
+                if (invitationExists) {
+                    Log.d(TAG, "Invitation found: ${invitation.id}")
+                    if (status == TripInvitationStatus.APPROVED) {
+                        handleApprovedInvitation(invitation)
+                    } else {
+                        tripRepository.updateTripInvitation(invitation)
+                    }
                 } else {
-                    updateResult
+                    Log.e(TAG, "Invitation not found: ${invitation.id}")
+                    Resource.error("Invitation not found: ${invitation.id}", null)
                 }
             }
             callback(result)
         }
     }
 
-    private suspend fun handleApprovedInvitation(
-        invitation: TripInvitation
-    ): Resource<Void> {
+    private suspend fun handleApprovedInvitation(invitation: TripInvitation): Resource<Void> {
         return safeCall {
-            val tripResource = tripRepository.getTripById(invitation.tripId).first()
-            val userResource = userRepository.getUserById(invitation.userId).first()
-
-            if (tripResource.status == Status.SUCCESS && userResource.status == Status.SUCCESS) {
-                val trip = tripResource.data
-                val user = userResource.data
-
-                if (trip != null && user != null) {
-                    Log.d(TAG, "Current participants before adding: ${trip.participantIds}")
-                    trip.participantIds = trip.participantIds?.toMutableList() ?: mutableListOf()
-                    trip.participantIds?.add(user.id)
-                    Log.d(TAG, "Adding user ${user.firstName} to trip participants ${trip.participantIds}")
-
-                    val updateTripResult = tripRepository.updateTrip(trip)
-                    if (updateTripResult.status == Status.SUCCESS) {
-                        Resource.success(null)
-                    } else {
-                        Resource.error("Failed to update trip with new participant", null)
-                    }
-                } else {
-                    Log.e(TAG, "Trip or user data is null")
-                    Resource.error("Trip or user data is null", null)
+            FirebaseFirestore.getInstance().runTransaction { transaction ->
+                val tripRef = tripRepository.getTripDocumentReference(invitation.tripId)
+                val tripSnapshot = transaction.get(tripRef)
+                if (!tripSnapshot.exists()) {
+                    throw IllegalStateException("Trip not found: ${invitation.tripId}")
                 }
-            } else {
-                Log.e(TAG, "Failed to fetch trip or user data: Trip status: ${tripResource.status}, User status: ${userResource.status}")
-                Resource.error("Failed to fetch trip or user data", null)
-            }
+                val trip = tripSnapshot.toObject(Trip::class.java)
+                    ?: throw IllegalStateException("Trip deserialization error")
+
+                val userRef = userRepository.getUserDocumentReference(invitation.userId)
+                val userSnapshot = transaction.get(userRef)
+                if (!userSnapshot.exists()) {
+                    throw IllegalStateException("User not found: ${invitation.userId}")
+                }
+                val user = userSnapshot.toObject(User::class.java)
+                    ?: throw IllegalStateException("User deserialization error")
+
+                // Add user ID to participant IDs
+                trip.participantIds = trip.participantIds?.toMutableList() ?: mutableListOf()
+                trip.participantIds?.add(user.id)
+
+                // Update the trip
+                transaction.set(tripRef, trip)
+
+                // Update the invitation status
+                transaction.update(tripRepository.getTripInvitationDocumentReference(invitation.id), "status", TripInvitationStatus.APPROVED)
+
+                null
+            }.await()
+
+            Resource.success(null)
         }
     }
+
 
     fun fetchTripInvitationById(invitationId: String): TripInvitation? {
         var invitation: TripInvitation? = null
