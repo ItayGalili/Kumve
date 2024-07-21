@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId = "il.co.erg.mykumve"
-        minSdk = 22
+        minSdk = 23
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -81,6 +81,7 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("com.google.firebase:firebase-firestore-ktx:25.0.0")
     implementation("com.google.firebase:firebase-storage-ktx:21.0.0")
+    implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("com.google.code.gson:gson:2.11.0") // Make sure to use the latest version
     implementation("androidx.core:core-ktx:1.13.1")
