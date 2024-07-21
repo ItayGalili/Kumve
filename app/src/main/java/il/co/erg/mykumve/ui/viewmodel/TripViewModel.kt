@@ -353,54 +353,50 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     fun respondToTripInvitation(invitation: TripInvitation, callback: (Resource<Void>) -> Unit) {
         viewModelScope.launch {
-            try {
+            val result = safeCall {
                 val status = invitation.status
-                Log.d(
-                    TAG,
-                    "Updating trip invitation with status: $status, TripId ${invitation.tripId}"
-                )
+                Log.d(TAG, "Updating trip invitation with status: $status, TripId ${invitation.tripId}")
                 val updateResult = tripRepository.updateTripInvitation(invitation)
                 if (updateResult.status == Status.SUCCESS && status == TripInvitationStatus.APPROVED) {
-                    handleApprovedInvitation(invitation, callback)
+                    handleApprovedInvitation(invitation)
                 } else {
-                    callback(updateResult)
+                    updateResult
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to respond to trip invitation: ${e.message}")
-                callback(Resource.error("Failed to respond to trip invitation: ${e.message}", null))
             }
+            callback(result)
         }
     }
 
-    private fun handleApprovedInvitation(
-        invitation: TripInvitation,
-        callback: (Resource<Void>) -> Unit
-    ) {
-        viewModelScope.launch {
-            try {
-                val tripResource = tripRepository.getTripById(invitation.tripId).first()
-                val userResource = userRepository.getUserById(invitation.userId).first()
+    private suspend fun handleApprovedInvitation(
+        invitation: TripInvitation
+    ): Resource<Void> {
+        return safeCall {
+            val tripResource = tripRepository.getTripById(invitation.tripId).first()
+            val userResource = userRepository.getUserById(invitation.userId).first()
 
-                if (tripResource.status == Status.SUCCESS && userResource.status == Status.SUCCESS) {
-                    val trip = tripResource.data
-                    val user = userResource.data
-                    if (trip != null && user != null) {
-                        trip.participantIds?.add(user.id)
-                        Log.d(
-                            TAG,
-                            "Adding user ${user.firstName} to trip participants ${trip.participantIds}"
-                        )
-                        val updateTripResult = tripRepository.updateTrip(trip)
-                        callback(updateTripResult)
+            if (tripResource.status == Status.SUCCESS && userResource.status == Status.SUCCESS) {
+                val trip = tripResource.data
+                val user = userResource.data
+
+                if (trip != null && user != null) {
+                    Log.d(TAG, "Current participants before adding: ${trip.participantIds}")
+                    trip.participantIds = trip.participantIds?.toMutableList() ?: mutableListOf()
+                    trip.participantIds?.add(user.id)
+                    Log.d(TAG, "Adding user ${user.firstName} to trip participants ${trip.participantIds}")
+
+                    val updateTripResult = tripRepository.updateTrip(trip)
+                    if (updateTripResult.status == Status.SUCCESS) {
+                        Resource.success(null)
                     } else {
-                        callback(Resource.error("Trip or user data is null", null))
+                        Resource.error("Failed to update trip with new participant", null)
                     }
                 } else {
-                    callback(Resource.error("Failed to fetch trip or user data", null))
+                    Log.e(TAG, "Trip or user data is null")
+                    Resource.error("Trip or user data is null", null)
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to handle approved invitation: ${e.message}")
-                callback(Resource.error("Failed to handle approved invitation: ${e.message}", null))
+            } else {
+                Log.e(TAG, "Failed to fetch trip or user data: Trip status: ${tripResource.status}, User status: ${userResource.status}")
+                Resource.error("Failed to fetch trip or user data", null)
             }
         }
     }
