@@ -126,8 +126,8 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
+        android:id="@+id/start_date_layout"
         android:alpha="0.8"
-        android:id="@+id/dateStartPick"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="7dp"
@@ -139,6 +139,7 @@
         app:layout_constraintTop_toBottomOf="@id/trip_group_description">
 
         <TextView
+            android:id="@+id/StartView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/TextColor"
@@ -146,7 +147,7 @@
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/StartView"
+            android:id="@+id/dateStartPick"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:gravity="left"
@@ -160,7 +161,7 @@
 
     </LinearLayout>
     <LinearLayout
-        android:id="@+id/dateEndPick"
+        android:id="@+id/end_date_layout"
         android:alpha="0.8"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -170,15 +171,16 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dateStartPick">
+        app:layout_constraintTop_toBottomOf="@id/start_date_layout">
         <TextView
+            android:id="@+id/EndView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="And will end by:"
             android:textColor="@color/TextColor"
             android:textSize="20sp" />
         <TextView
-            android:id="@+id/EndView"
+            android:id="@+id/dateEndPick"
             android:layout_width="188dp"
             android:layout_height="wrap_content"
             android:gravity="left"
@@ -201,7 +203,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dateEndPick">
+        app:layout_constraintTop_toBottomOf="@id/end_date_layout">
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
