@@ -93,10 +93,10 @@ class TripInvitationAdapter(
                                 )
                             } else {
                                 binding.acceptButton.setOnClickListener {
-                                    handleAccept(invitation)
+                                    handleAccept(invitation, adapterPosition)
                                 }
                                 binding.rejectButton.setOnClickListener {
-                                    handleReject(invitation)
+                                    handleReject(invitation, adapterPosition)
                                 }
                             }
                         }
@@ -126,26 +126,27 @@ class TripInvitationAdapter(
         notifyDataSetChanged()
     }
 
-    private fun handleAccept(invitation: TripInvitation) {
+    private fun handleAccept(invitation: TripInvitation, adapterPosition: Int) {
         Log.d(TAG, "ACCEPT selected - Responding to trip invitation")
         invitation.status = TripInvitationStatus.APPROVED
-        respondToTripInvitation(invitation)
+        respondToTripInvitation(invitation, adapterPosition)
     }
 
 
-    private fun handleReject(invitation: TripInvitation) {
+    private fun handleReject(invitation: TripInvitation, adapterPosition: Int) {
         Log.d(TAG, "REJECT selected - Responding to trip invitation")
         invitation.status = TripInvitationStatus.REJECTED
-        respondToTripInvitation(invitation)
+        respondToTripInvitation(invitation, adapterPosition)
     }
 
-    private fun respondToTripInvitation(invitation: TripInvitation) {
+    private fun respondToTripInvitation(invitation: TripInvitation, adapterPosition: Int) {
         tripViewModel.respondToTripInvitation(invitation) { result ->
             Log.d(
                 TAG,
                 if (result.status == Status.SUCCESS) "TripInvitation Accepted" else "TripInvitation Rejected/Remain the same\n" +
                         "${result.message}"
             )
+            notifyItemChanged(adapterPosition)
         }
     }
 
