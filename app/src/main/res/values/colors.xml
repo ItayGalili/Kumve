@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
+    <color name="black">#000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="statusBarColor">#C49649</color>
     <color name="TextColor">#513D1B</color>
-    <color name="back">#000000</color>
     <color name="no">#DE6A6D</color>
-    <color name="btn">#FF9800</color>
+    <color name="marker">#D9FF00</color>
     <color name="lightGrey">#A9A9A9</color>
     <color name="blueSky">#36A4FF</color>
     <color name="ground">#98640C</color>

@@ -1,241 +1,350 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.trip.TripManager"
-    android:background="@color/white"
-    >
-
+    android:background="@drawable/my_trips_kama_full"
+    android:padding="3dp">
     <TextView
+        android:id="@+id/header_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_weight="1"
         android:gravity="center_horizontal"
-        android:text="Creat your trip - general Information"
-        android:textColor="@color/statusBarColor"
-        android:textSize="20sp" />
-
-
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/tripImage"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:layout_weight="1"
-        android:scaleType="centerCrop"
-        android:src="@android:drawable/ic_menu_upload"
-        app:shapeAppearanceOverlay="@style/RoundImage" />
-
+        android:text="PLAN A TRIP"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="32sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+    <androidx.cardview.widget.CardView
+        android:id="@+id/new_trip_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:alpha="0.8"
+        app:cardCornerRadius="100dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_title">
+        <ImageButton
+            android:id="@+id/trip_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@drawable/fully_rounded_corner_btn"
+            android:backgroundTint="@color/white"
+            android:padding="30dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/add_photo_vector"
+            android:contentDescription="trip_group_image">
+        </ImageButton>
+    </androidx.cardview.widget.CardView>
     <TextView
+        android:layout_marginTop="10dp"
+        android:id="@+id/trip_image_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="center"
-        android:text="Upload a photo for your trip"
-        android:textColor="@color/statusBarColor"
-        android:textSize="20sp" />
+        android:gravity="center_horizontal"
+        android:text="Add a picture to specify your trip/group"
+        android:textStyle="bold"
+        android:textColor="@color/TextColor"
+        android:background="@color/white"
+        android:alpha="0.8"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/new_trip_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
 
     <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+        android:id="@+id/trip_group_name"
+        android:paddingTop="10dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_weight="1"
-        android:textColorHint="#C49649"
-        app:hintTextColor="@color/statusBarColor">
+        android:hint="Name your trip"
+        android:textColorHint="@color/TextColor"
+        app:boxBackgroundColor="@color/white"
+        app:boxStrokeColor="@color/TextColor"
+        app:boxStrokeErrorColor="#FF0000"
+        app:boxStrokeWidth="2dp"
+        android:alpha="0.8"
+        app:hintTextColor="@color/TextColor"
+        app:layout_constraintTop_toBottomOf="@id/trip_image_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="232dp"
+        app:helperTextEnabled="true"
+        app:helperText="*Required"
+        app:helperTextTextColor="@color/marker"
+        app:helperTextTextAppearance="@style/CustomHelperTextAppearance">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/name_trip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Choose a name for the trip"
-            android:textColorHint="#B1DBFE" />
+            android:inputType="text"
+            android:textColor="@color/royalBlue"
+            android:textSize="20sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
+
     <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+        android:id="@+id/trip_group_description"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textColorHint="#C49649"
-        app:hintTextColor="@color/statusBarColor">
-
+        app:layout_constraintTop_toBottomOf="@id/trip_group_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:hint="Define your trip here"
+        app:helperTextEnabled="true"
+        android:textColorHint="@color/TextColor"
+        app:boxBackgroundColor="@color/white"
+        app:boxStrokeColor="@color/TextColor"
+        app:boxStrokeErrorColor="#FF0000"
+        app:boxStrokeWidth="2dp"
+        android:alpha="0.8"
+        app:hintTextColor="@color/TextColor">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter a description"
-
+            android:textColor="@color/royalBlue"
+            android:inputType="text"
+            android:textSize="20sp"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
-
     <LinearLayout
+        android:id="@+id/start_date_layout"
+        android:alpha="0.8"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_weight="70"
-        android:orientation="vertical">
+        android:layout_marginTop="7dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/trip_group_description">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:paddingRight="20dp"
+            android:id="@+id/StartView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:textColor="@color/TextColor"
+            android:text="The trip starts at:"
+            android:textSize="20sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/dateStartPick"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="start date"
-                        android:textSize="20sp" />
-
-                    <ImageButton
-                        android:id="@+id/dateStartBtn"
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/white"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/calendar" />
-
-                    <TextView
-                        android:id="@+id/StartView"
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:textSize="20sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/dateEndPick"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="end date"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        />
-
-                    <ImageButton
-                        android:id="@+id/dateEndBtn"
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/white"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/calendar" />
-
-                    <TextView
-                        android:id="@+id/EndView"
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:textSize="20sp" />
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/textView6"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="select partner"
-                        android:gravity="center"
-                        />
-
-                    <ImageButton
-                        android:id="@+id/Partners_btn"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/white"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/partners"
-                        android:layout_gravity="center"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/textView5"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="select equipment"
-                        android:gravity="center"
-                        />
-
-                    <ImageButton
-                        android:id="@+id/equipment_list_btn"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/white"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/list"
-                        android:layout_gravity="center"/>
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-
+        <TextView
+            android:id="@+id/dateStartPick"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/TextColor"
+            android:textSize="20sp"/>
+        <ImageView
+            android:id="@+id/dateStartBtn"
+            android:layout_width="57dp"
+            android:layout_height="53dp"
+            android:src="@drawable/trip_start_vector" />
 
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/end_date_layout"
+        android:alpha="0.8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/start_date_layout">
+        <TextView
+            android:id="@+id/EndView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="And will end by:"
+            android:textColor="@color/TextColor"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/dateEndPick"
+            android:layout_width="188dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/TextColor"
+            android:textSize="20sp"/>
+        <ImageView
+            android:id="@+id/dateEndBtn"
+            android:layout_width="57dp"
+            android:layout_height="53dp"
+            android:src="@drawable/trip_end_vector" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/equipementPick"
+        android:alpha="0.8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/end_date_layout">
+        <TextView
+            android:paddingLeft="12sp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/TextColor"
+            android:text="List the items needed for the trip"
+            android:textSize="20sp"
+            android:layout_weight="4"/>
 
+        <ImageView
+            android:id="@+id/equipmentListBtn"
+            android:layout_width="0dp"
+            android:layout_height="53dp"
+            android:layout_weight="1"
+            android:src="@drawable/items_list_vector" />
+    </LinearLayout>
+    <LinearLayout
+        android:alpha="0.8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/equipementPick">
+        <TextView
+            android:paddingLeft="12sp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/TextColor"
+            android:text="Invite group members"
+            android:textSize="20sp"
+            android:layout_weight="5"/>
+        <ImageView
+            android:id="@+id/PartnersBtn"
+            android:layout_width="0dp"
+            android:layout_height="53dp"
+            android:layout_weight="1"
+            android:src="@drawable/invite_vector" />
+    </LinearLayout>
 
-    <Button
+    <android.widget.Button
         android:id="@+id/NextBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="10dp"
-        android:layout_weight="1"
-        android:backgroundTint="#C49649"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/gradient_background_grey_to_blue"
+        android:drawableTint="@color/white"
         android:gravity="center"
-        android:text="Next" />
-</LinearLayout>
+        android:text="Next"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.52"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.924" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_weight="1"-->
+<!--            android:orientation="horizontal">-->
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:orientation="vertical">-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/textView6"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:text="select partner"-->
+<!--                    android:gravity="center"-->
+<!--                    />-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/Partners_btn"-->
+<!--                    android:layout_width="60dp"-->
+<!--                    android:layout_height="60dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:backgroundTint="@color/white"-->
+<!--                    android:scaleType="fitCenter"-->
+<!--                    android:src="@drawable/partners"-->
+<!--                    android:layout_gravity="center"/>-->
+<!--            </LinearLayout>-->
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:orientation="vertical">-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/textView5"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:text="select equipment"-->
+<!--                    android:gravity="center"-->
+<!--                    />-->
+
+<!--                <ImageButton-->
+<!--                    android:id="@+id/equipment_list_btn"-->
+<!--                    android:layout_width="60dp"-->
+<!--                    android:layout_height="60dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:backgroundTint="@color/white"-->
+<!--                    android:scaleType="fitCenter"-->
+<!--                    android:src="@drawable/list"-->
+<!--                    android:layout_gravity="center"/>-->
+<!--            </LinearLayout>-->
+<!--        </LinearLayout>-->
+<!--    </LinearLayout>-->
+
+
+<!--</LinearLayout>-->
+
+
+<!--<Button-->
+<!--    android:id="@+id/NextBtn"-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:layout_gravity="center"-->
+<!--    android:layout_marginTop="10dp"-->
+<!--    android:layout_weight="1"-->
+<!--    android:backgroundTint="#C49649"-->
+<!--    android:gravity="center"-->
+<!--    android:text="Next" />-->
+<!--</LinearLayout>-->
+
+

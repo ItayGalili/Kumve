@@ -54,7 +54,6 @@
 
     <TextView
         android:id="@+id/textView7"
-
         android:text="the area of the trip:"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -62,7 +61,6 @@
         android:layout_weight="1"
         android:textColor="@color/statusBarColor"
         android:textSize="20sp"/>
-
     <Spinner
         android:id="@+id/AreaSpinner"
         android:layout_width="match_parent"

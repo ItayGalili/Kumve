@@ -8,17 +8,17 @@
         android:id="@+id/report_image"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:src="@drawable/my_alerts"/>
+        android:src="@drawable/my_alerts" />
 
     <EditText
         android:id="@+id/report_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Report Description"
-        android:padding="16dp"
         android:inputType="textMultiLine"
         android:maxLines="3"
-        android:scrollbars="vertical"/>
+        android:padding="16dp"
+        android:scrollbars="vertical" />
 
     <Button
         android:id="@+id/report_now"
