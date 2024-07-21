@@ -1,13 +1,9 @@
 package il.co.erg.mykumve.data.repository
 
-import il.co.erg.mykumve.data.db.local_db.UserDao
-import il.co.erg.mykumve.data.db.repository.UserRepository
 import org.junit.Before
 
 class UserRepositoryTest {
 
-    private lateinit var userDao: UserDao
-    private lateinit var userRepository: UserRepository
 
     @Before
     fun setUp() {

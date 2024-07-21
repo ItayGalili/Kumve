@@ -52,7 +52,7 @@
     <string name="no">No</string>
     <string name="delete_db_confirmation">Are you sure you want to delete db?</string>
 
-    <string name="error_invalid_phone">Invalid format: Use \'+[country code] [9–10 digits]\'. Example: +1234567890 or +123 04567890.</string>
+    <string name="error_invalid_phone">Invalid format: Phone number must start with 0 followed by 9 digits. Example: 0541111111.</string>
     <string name="api_key_placeholder" translatable="false">YOUR_API_KEY_HERE</string>
     <string name="register">Register</string>
     <string name="trip_partner_list_title">Partners List</string>
@@ -89,4 +89,5 @@
     </string-array>
     <string name="unknown_area">unkown area</string>
     <string name="trip_invitation_list_title">Invitation List</string>
+    <string name="permission_denied">Permission Denied</string>
 </resources>

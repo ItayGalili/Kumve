@@ -21,7 +21,6 @@ import il.co.erg.mykumve.R
 import il.co.erg.mykumve.data.data_classes.Equipment
 import il.co.erg.mykumve.data.db.model.Trip
 import il.co.erg.mykumve.data.db.model.TripInfo
-import il.co.erg.mykumve.data.db.model.TripInvitation
 import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.databinding.TravelManagerViewBinding
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
@@ -35,7 +34,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 class TripManager : Fragment() {
@@ -103,9 +101,18 @@ class TripManager : Fragment() {
             Toast.makeText(requireContext(), R.string.please_log_in, Toast.LENGTH_SHORT).show()
         }
 
-        imagePickerUtil = ImagePickerUtil(this) { uri ->
-            binding.tripImage.setImageURI(uri)
-        }
+        imagePickerUtil = ImagePickerUtil(this,
+            onImagePicked = { uri ->
+                binding.tripImage.setImageURI(uri)
+            },
+            onImageUploadResult = { success, downloadUrl ->
+                if (success && downloadUrl != null) {
+                    // Handle successful upload if needed
+                } else {
+                    Toast.makeText(requireContext(), "Image upload failed", Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
 
         binding.dateStartBtn.setOnClickListener {
             showDateTimePicker(true)
@@ -292,9 +299,6 @@ class TripManager : Fragment() {
 
     private fun formToTripObject(
         user: User,
-        equipmentList: List<Equipment>? = null,
-        participantList: List<User>? = null,
-        invitationList: List<TripInvitation>? = null,
         tripFromSharedViewModel: Trip? = null,
 
         ): Trip {
@@ -303,17 +307,14 @@ class TripManager : Fragment() {
         val description = binding.description.text.toString()
         val gatherTime = startDate ?: sharedViewModel.trip.value?.gatherTime
         val endTime = endDate ?: sharedViewModel.trip.value?.endDate
-        val equipments = equipmentList?.takeIf { it.isNotEmpty() }?.toMutableList()
-            ?: tripFromSharedViewModel?.equipment?.toMutableList()
+        val equipments = tripFromSharedViewModel?.equipment?.toMutableList()
 
-        val participants =
-            participantList?.takeIf { it.isNotEmpty() }?.toMutableList() ?: mutableListOf(user)
+        val participantsIds = mutableListOf(user.id)
 
-        val invitations = invitationList?.takeIf { it.isNotEmpty() }?.toMutableList()
-            ?: tripFromSharedViewModel?.invitations?.takeIf { it.isNotEmpty() }?.toMutableList()
+        val invitationsIds = tripFromSharedViewModel?.invitationIds?.takeIf { it.isNotEmpty() }?.toMutableList()
             ?: mutableListOf()
 
-        val photo = imagePickerUtil.getImageUri().toString().takeIf { it != "null" }
+        val photo = imagePickerUtil.downloadUrl.toString().takeIf { it != "null" }
             ?: tripFromSharedViewModel?.image
         val notes = null
 
@@ -325,8 +326,8 @@ class TripManager : Fragment() {
             endDate = endTime,
             description = description,
             notes = notes,
-            participants = participants,
-            invitations = invitations,
+            participantIds = participantsIds,
+            invitationIds = invitationsIds,
             equipment = equipments,
             userId = user.id,
             image = photo,

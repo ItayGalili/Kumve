@@ -3,10 +3,8 @@ package il.co.erg.mykumve.ui.viewmodel
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import il.co.erg.mykumve.data.db.model.Trip
 import il.co.erg.mykumve.data.db.model.TripInfo
@@ -15,8 +13,8 @@ import il.co.erg.mykumve.data.db.firebasemvm.repository.TripInfoRepository
 import il.co.erg.mykumve.data.db.firebasemvm.repository.TripRepository
 import il.co.erg.mykumve.data.db.firebasemvm.repository.UserRepository
 import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
-import il.co.erg.mykumve.data.data_classes.Equipment
 import il.co.erg.mykumve.data.db.firebasemvm.util.Status
+import il.co.erg.mykumve.data.db.firebasemvm.util.safeCall
 import il.co.erg.mykumve.util.TripInvitationStatus
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -57,31 +55,40 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 _operationResult.emit(Resource.loading(null))
 
-                val allTripsResource = tripRepository.getAllTrips().first { it.status != Status.LOADING } // Wait until it's not loading
+                val allTripsResource = tripRepository.getAllTrips()
+                    .first { it.status != Status.LOADING } // Wait until it's not loading
                 if (allTripsResource.status == Status.SUCCESS) {
                     val allTrips = allTripsResource.data ?: emptyList()
                     val tripsByParticipant = allTrips.filter { trip ->
-                        trip.participants?.any { it.id == userId } == true
+                        trip.participantIds?.any { it == userId } == true
                     }
 
                     val tripsWithInfoList = tripsByParticipant.map { trip ->
                         val tripInfoResource = trip.tripInfoId?.let {
-                            tripInfoRepository.getTripInfoById(it).first { info -> info.status != Status.LOADING }
+                            tripInfoRepository.getTripInfoById(it)
+                                .first { info -> info.status != Status.LOADING }
                         }
-                        val tripInfo = if (tripInfoResource?.status == Status.SUCCESS) tripInfoResource.data else null
+                        val tripInfo =
+                            if (tripInfoResource?.status == Status.SUCCESS) tripInfoResource.data else null
                         TripWithInfo(trip, tripInfo)
                     }
 
                     _tripsWithInfo.emit(tripsWithInfoList)
                     _operationResult.emit(Resource.success(null))  // Emit success with null for Void?
                 } else {
-                    _operationResult.emit(Resource.error("Failed to fetch trips: ${allTripsResource.message}", null))
+                    _operationResult.emit(
+                        Resource.error(
+                            "Failed to fetch trips: ${allTripsResource.message}",
+                            null
+                        )
+                    )
                 }
             } catch (e: Exception) {
                 _operationResult.emit(Resource.error("An error occurred: ${e.message}", null))
             }
         }
     }
+
     fun fetchTripById(id: String) {
         viewModelScope.launch {
             tripRepository.getTripById(id).collectLatest { resource ->
@@ -124,25 +131,25 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun observeTrips(lifecycleOwner: LifecycleOwner, handleTripUpdates: (Trip?) -> Unit) {
-        lifecycleOwner.lifecycleScope.launch {
-            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                trip.collectLatest { trip ->
-                    handleTripUpdates(trip)
-                }
-            }
-        }
-    }
+//    fun observeTrips(lifecycleOwner: LifecycleOwner, handleTripUpdates: (Trip?) -> Unit) {
+//        lifecycleOwner.lifecycleScope.launch {
+//            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                trip.collectLatest { trip ->
+//                    handleTripUpdates(trip)
+//                }
+//            }
+//        }
+//    }
 
-    fun observeTripInfo(lifecycleOwner: LifecycleOwner, handleTripInfoUpdates: (TripInfo?) -> Unit) {
-        lifecycleOwner.lifecycleScope.launch {
-            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                tripInfo.collectLatest { tripInfo ->
-                    handleTripInfoUpdates(tripInfo)
-                }
-            }
-        }
-    }
+//    fun observeTripInfo(lifecycleOwner: LifecycleOwner, handleTripInfoUpdates: (TripInfo?) -> Unit) {
+//        lifecycleOwner.lifecycleScope.launch {
+//            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                tripInfo.collectLatest { tripInfo ->
+//                    handleTripInfoUpdates(tripInfo)
+//                }
+//            }
+//        }
+//    }
 
     fun addTrip(trip: Trip) {
         viewModelScope.launch {
@@ -163,31 +170,44 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
         lifecycleOwner.lifecycleScope.launch {
             try {
-                tripRepository.insertTripWithInfo(trip, tripInfo) { result ->
-                    if (result.status == Status.SUCCESS) {
-                        val insertedTripId = trip.id
-                        Log.d(TAG, "Inserted Trip ID: $insertedTripId")
+                val result = tripRepository.insertTripWithInfo(trip, tripInfo)
+                if (result.status == Status.SUCCESS) {
+                    val insertedTripId = trip.id
+                    Log.d(TAG, "Inserted Trip ID: $insertedTripId")
 
-                        val updatedTrip = trip.copy(_id = insertedTripId)
-                        processAndSendUnsentInvitations(updatedTrip) { success ->
-                            lifecycleOwner.lifecycleScope.launch {
-                                if (success) {
-                                    _operationResult.emit(Resource.success(null))
-                                } else {
-                                    _operationResult.emit(Resource.error("Failed to send some invitations", null))
-                                }
+                    val updatedTrip = trip.copy(_id = insertedTripId)
+                    processAndSendUnsentInvitations(updatedTrip) { invitationResult ->
+                        lifecycleOwner.lifecycleScope.launch {
+                            if (invitationResult.status == Status.SUCCESS) {
+                                _operationResult.emit(Resource.success(null))
+                            } else {
+                                _operationResult.emit(
+                                    Resource.error(
+                                        "Failed to send some invitations: ${invitationResult.message}",
+                                        null
+                                    )
+                                )
                             }
                         }
-                    } else {
-                        lifecycleOwner.lifecycleScope.launch {
-                            _operationResult.emit(Resource.error(result.message ?: "Failed to insert trip and trip info", null))
-                        }
+                    }
+                } else {
+                    lifecycleOwner.lifecycleScope.launch {
+                        _operationResult.emit(
+                            Resource.error(
+                                result.message ?: "Failed to insert trip and trip info", null
+                            )
+                        )
                     }
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to insert trip and trip info: ${e.message}")
                 lifecycleOwner.lifecycleScope.launch {
-                    _operationResult.emit(Resource.error("Failed to insert trip and trip info: ${e.message}", null))
+                    _operationResult.emit(
+                        Resource.error(
+                            "Failed to insert trip and trip info: ${e.message}",
+                            null
+                        )
+                    )
                 }
             }
         }
@@ -206,7 +226,12 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to update trip and trip info: ${e.message}")
                 lifecycleOwner.lifecycleScope.launch {
-                    _operationResult.emit(Resource.error("Failed to update trip and trip info: ${e.message}", null))
+                    _operationResult.emit(
+                        Resource.error(
+                            "Failed to update trip and trip info: ${e.message}",
+                            null
+                        )
+                    )
                 }
             }
         }
@@ -219,12 +244,12 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun updateTripInfo(tripInfo: TripInfo) {
-        viewModelScope.launch {
-            val result = tripInfoRepository.updateTripInfo(tripInfo)
-            _operationResult.emit(result)
-        }
-    }
+//    fun updateTripInfo(tripInfo: TripInfo) {
+//        viewModelScope.launch {
+//            val result = tripInfoRepository.updateTripInfo(tripInfo)
+//            _operationResult.emit(result)
+//        }
+//    }
 
     fun deleteTrip(trip: Trip) {
         viewModelScope.launch {
@@ -238,92 +263,157 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun deleteTripInfo(tripInfo: TripInfo) {
-        viewModelScope.launch {
-            val result = tripInfoRepository.deleteTripInfo(tripInfo)
-            _operationResult.emit(result)
-        }
-    }
+//    fun deleteTripInfo(tripInfo: TripInfo) {
+//        viewModelScope.launch {
+//            val result = tripInfoRepository.deleteTripInfo(tripInfo)
+//            _operationResult.emit(result)
+//        }
+//    }
+//
+//    fun fetchTripsByUserId(userId: String) {
+//        viewModelScope.launch {
+//            tripRepository.getTripsByUserId(userId).collectLatest { resource ->
+//                _trips.value = resource.data ?: emptyList()
+//            }
+//        }
+//    }
 
-    fun fetchTripsByUserId(userId: String) {
-        viewModelScope.launch {
-            tripRepository.getTripsByUserId(userId).collectLatest { resource ->
-                _trips.value = resource.data ?: emptyList()
-            }
-        }
-    }
+//    fun sendTripInvitation(tripId: String, userId: String, callback: (Resource<Void>) -> Unit) {
+//        viewModelScope.launch {
+//            val invitation = TripInvitation(tripId = tripId, userId = userId)
+//            val result = tripRepository.sendTripInvitation(invitation)
+//            if (result.status == Status.SUCCESS) {
+//                val invitationId = result.data
+//                val updateResult = updateTripWithInvitation(tripId, invitationId)
+//                callback(updateResult)
+//            } else {
+//                callback(Resource.error(result.message ?: "Failed to send invitation", null))
+//            }
+//        }
+//    }
 
-    fun sendTripInvitation(tripId: String, userId: String, callback: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            val invitation = TripInvitation(tripId = tripId, userId = userId)
-            val result = tripRepository.sendTripInvitation(invitation)
-            callback(result.status == Status.SUCCESS)
-        }
-    }
-
-    private fun processAndSendUnsentInvitations(trip: Trip, callback: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            var success = true
-            trip.invitations.filter { it.status == TripInvitationStatus.UNSENT }.forEach { invitation ->
-                val updatedInvitation = invitation.copy(tripId = trip.id)
-                sendTripInvitation(updatedInvitation) { result ->
-                    if (!result) {
-                        success = false
-                    }
-                }
-            }
-            callback(success)
-        }
-    }
-
-    private fun sendTripInvitation(invitation: TripInvitation, callback: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            invitation.status = TripInvitationStatus.PENDING
-            val result = tripRepository.sendTripInvitation(invitation)
-            callback(result.status == Status.SUCCESS)
-        }
-    }
-
-    fun respondToTripInvitation(invitation: TripInvitation, callback: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            try {
-                val status = invitation.status
-                Log.d(TAG, "Updating trip invitation with status: $status, TripId ${invitation.tripId}")
-                tripRepository.updateTripInvitation(invitation).let {
-                    if (it.status == Status.SUCCESS && status == TripInvitationStatus.APPROVED) {
-                        handleApprovedInvitation(invitation, callback)
+    private suspend fun updateTripWithInvitation(
+        tripId: String,
+        invitationId: String
+    ): Resource<Void> {
+        return safeCall {
+            val tripResource = tripRepository.getTripById(tripId).first()
+            if (tripResource.status == Status.SUCCESS) {
+                val trip =
+                    tripResource.data ?: return@safeCall Resource.error("Trip not found", null)
+                trip.invitationIds.add(invitationId)
+                tripRepository.updateTrip(trip).also { updateResult ->
+                    if (updateResult.status == Status.SUCCESS) {
+                        Resource.success(null)
                     } else {
-                        callback(it.status == Status.SUCCESS)
+                        Resource.error("Failed to update trip with new invitation", null)
                     }
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to respond to trip invitation: ${e.message}")
-                callback(false)
-            }
-        }
-    }
-
-    private fun handleApprovedInvitation(invitation: TripInvitation, callback: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            val tripResource = tripRepository.getTripById(invitation.tripId).firstOrNull()
-            val userResource = userRepository.getUserById(invitation.userId).firstOrNull()
-
-            if (tripResource?.status == Status.SUCCESS && userResource?.status == Status.SUCCESS) {
-                val trip = tripResource.data
-                val user = userResource.data
-                if (trip != null && user != null) {
-                    trip.participants?.add(user)
-                    Log.d(TAG, "Adding user ${user.firstName} to trip participants ${trip.participants}")
-                    tripRepository.updateTrip(trip).let {
-                        callback(it.status == Status.SUCCESS)
-                    }
-                } else {
-                    callback(false)
                 }
             } else {
-                callback(false)
+                Resource.error("Failed to fetch trip: ${tripResource.message}", null)
             }
         }
+    }
+
+
+    private fun processAndSendUnsentInvitations(trip: Trip, callback: (Resource<Void>) -> Unit) {
+        viewModelScope.launch {
+            var success = true
+            val unsentInvitations = trip.invitationIds.filter { invitationId ->
+                val invitationResource = tripRepository.getTripInvitationById(invitationId).first()
+                invitationResource.data?.status == TripInvitationStatus.UNSENT
+            }
+
+            for (invitationId in unsentInvitations) {
+                val invitationResource = tripRepository.getTripInvitationById(invitationId).first()
+                if (invitationResource.status == Status.SUCCESS) {
+                    val invitation = invitationResource.data?.copy(tripId = trip.id)
+                    if (invitation != null) {
+                        sendTripInvitation(invitation) { result ->
+                            if (result.status != Status.SUCCESS) {
+                                success = false
+                            }
+                        }
+                    }
+                } else {
+                    success = false
+                }
+            }
+
+            if (success) {
+                callback(Resource.success(null))
+            } else {
+                callback(Resource.error("Failed to send some invitations", null))
+            }
+        }
+    }
+
+    fun sendTripInvitation(invitation: TripInvitation, callback: (Resource<Void>) -> Unit) {
+        viewModelScope.launch {
+            val result = tripRepository.sendTripInvitation(invitation)
+            callback(result)
+        }
+    }
+
+    fun respondToTripInvitation(invitation: TripInvitation, callback: (Resource<Void>) -> Unit) {
+        viewModelScope.launch {
+            val result = safeCall {
+                val status = invitation.status
+                Log.d(TAG, "Updating trip invitation with status: $status, TripId ${invitation.tripId}")
+                val updateResult = tripRepository.updateTripInvitation(invitation)
+                if (updateResult.status == Status.SUCCESS && status == TripInvitationStatus.APPROVED) {
+                    handleApprovedInvitation(invitation)
+                } else {
+                    updateResult
+                }
+            }
+            callback(result)
+        }
+    }
+
+    private suspend fun handleApprovedInvitation(
+        invitation: TripInvitation
+    ): Resource<Void> {
+        return safeCall {
+            val tripResource = tripRepository.getTripById(invitation.tripId).first()
+            val userResource = userRepository.getUserById(invitation.userId).first()
+
+            if (tripResource.status == Status.SUCCESS && userResource.status == Status.SUCCESS) {
+                val trip = tripResource.data
+                val user = userResource.data
+
+                if (trip != null && user != null) {
+                    Log.d(TAG, "Current participants before adding: ${trip.participantIds}")
+                    trip.participantIds = trip.participantIds?.toMutableList() ?: mutableListOf()
+                    trip.participantIds?.add(user.id)
+                    Log.d(TAG, "Adding user ${user.firstName} to trip participants ${trip.participantIds}")
+
+                    val updateTripResult = tripRepository.updateTrip(trip)
+                    if (updateTripResult.status == Status.SUCCESS) {
+                        Resource.success(null)
+                    } else {
+                        Resource.error("Failed to update trip with new participant", null)
+                    }
+                } else {
+                    Log.e(TAG, "Trip or user data is null")
+                    Resource.error("Trip or user data is null", null)
+                }
+            } else {
+                Log.e(TAG, "Failed to fetch trip or user data: Trip status: ${tripResource.status}, User status: ${userResource.status}")
+                Resource.error("Failed to fetch trip or user data", null)
+            }
+        }
+    }
+
+    fun fetchTripInvitationById(invitationId: String): TripInvitation? {
+        var invitation: TripInvitation? = null
+        viewModelScope.launch {
+            val resource = tripRepository.getTripInvitationById(invitationId).first()
+            if (resource.status == Status.SUCCESS) {
+                invitation = resource.data
+            }
+        }
+        return invitation
     }
 
     fun fetchTripInvitationsByTripId(tripId: String) {
@@ -342,67 +432,67 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun deleteTripInvitation(invitation: TripInvitation) {
-        viewModelScope.launch {
-            val result = tripRepository.deleteTripInvitation(invitation)
-            _operationResult.emit(result)
-        }
-    }
-
-    fun hasPendingInvitations(userId: String, tripId: String, callback: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            val invitations = tripRepository.getTripInvitationsByTripId(tripId).firstOrNull()?.data
-            val hasPending = invitations?.any { it.userId == userId && it.status == TripInvitationStatus.PENDING } == true
-            callback(hasPending)
-        }
-    }
-
-    fun addEquipment(tripId: String, equipment: Equipment, callback: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            val trip = tripRepository.getTripById(tripId).firstOrNull()?.data
-            if (trip != null) {
-                trip.equipment = trip.equipment.orEmpty().toMutableList().apply { add(equipment) }
-                tripRepository.updateTrip(trip).let {
-                    callback(it.status == Status.SUCCESS)
-                }
-            } else {
-                callback(false)
-            }
-        }
-    }
-
-    fun removeEquipment(tripId: String, equipment: Equipment, callback: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            val trip = tripRepository.getTripById(tripId).firstOrNull()?.data
-            if (trip != null) {
-                trip.equipment = trip.equipment.orEmpty().toMutableList().apply { remove(equipment) }
-                tripRepository.updateTrip(trip).let {
-                    callback(it.status == Status.SUCCESS)
-                }
-            } else {
-                callback(false)
-            }
-        }
-    }
-
-    fun updateEquipment(tripId: String, oldEquipment: Equipment, newEquipment: Equipment, callback: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            val trip = tripRepository.getTripById(tripId).firstOrNull()?.data
-            if (trip != null) {
-                trip.equipment = trip.equipment.orEmpty().toMutableList().apply {
-                    val index = indexOf(oldEquipment)
-                    if (index != -1) {
-                        set(index, newEquipment)
-                    }
-                }
-                tripRepository.updateTrip(trip).let {
-                    callback(it.status == Status.SUCCESS)
-                }
-            } else {
-                callback(false)
-            }
-        }
-    }
+//    fun deleteTripInvitation(invitation: TripInvitation) {
+//        viewModelScope.launch {
+//            val result = tripRepository.deleteTripInvitation(invitation)
+//            _operationResult.emit(result)
+//        }
+//    }
+//
+//    fun hasPendingInvitations(userId: String, tripId: String, callback: (Boolean) -> Unit) {
+//        viewModelScope.launch {
+//            val invitations = tripRepository.getTripInvitationsByTripId(tripId).firstOrNull()?.data
+//            val hasPending = invitations?.any { it.userId == userId && it.status == TripInvitationStatus.PENDING } == true
+//            callback(hasPending)
+//        }
+//    }
+//
+//    fun addEquipment(tripId: String, equipment: Equipment, callback: (Boolean) -> Unit) {
+//        viewModelScope.launch {
+//            val trip = tripRepository.getTripById(tripId).firstOrNull()?.data
+//            if (trip != null) {
+//                trip.equipment = trip.equipment.orEmpty().toMutableList().apply { add(equipment) }
+//                tripRepository.updateTrip(trip).let {
+//                    callback(it.status == Status.SUCCESS)
+//                }
+//            } else {
+//                callback(false)
+//            }
+//        }
+//    }
+//
+//    fun removeEquipment(tripId: String, equipment: Equipment, callback: (Boolean) -> Unit) {
+//        viewModelScope.launch {
+//            val trip = tripRepository.getTripById(tripId).firstOrNull()?.data
+//            if (trip != null) {
+//                trip.equipment = trip.equipment.orEmpty().toMutableList().apply { remove(equipment) }
+//                tripRepository.updateTrip(trip).let {
+//                    callback(it.status == Status.SUCCESS)
+//                }
+//            } else {
+//                callback(false)
+//            }
+//        }
+//    }
+//
+//    fun updateEquipment(tripId: String, oldEquipment: Equipment, newEquipment: Equipment, callback: (Boolean) -> Unit) {
+//        viewModelScope.launch {
+//            val trip = tripRepository.getTripById(tripId).firstOrNull()?.data
+//            if (trip != null) {
+//                trip.equipment = trip.equipment.orEmpty().toMutableList().apply {
+//                    val index = indexOf(oldEquipment)
+//                    if (index != -1) {
+//                        set(index, newEquipment)
+//                    }
+//                }
+//                tripRepository.updateTrip(trip).let {
+//                    callback(it.status == Status.SUCCESS)
+//                }
+//            } else {
+//                callback(false)
+//            }
+//        }
+//    }
 }
 
 data class TripWithInfo(

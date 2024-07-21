@@ -24,6 +24,7 @@ import il.co.erg.mykumve.ui.viewmodel.TripViewModel
 import il.co.erg.mykumve.util.DifficultyLevel
 import il.co.erg.mykumve.util.TripInfoUtils
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class RouteManager : Fragment() {
@@ -81,28 +82,35 @@ class RouteManager : Fragment() {
 
         // Restore data if available
         loadFormData()
-        Log.d(TAG, "Creating mode: ${sharedViewModel.isCreatingTripMode}\nEditing mode: ${sharedViewModel.isEditingExistingTrip}")
+        Log.d(
+            TAG,
+            "Creating mode: ${sharedViewModel.isCreatingTripMode}\nEditing mode: ${sharedViewModel.isEditingExistingTrip}"
+        )
         sharedViewModel.isNavigatedFromTripList = false
     }
 
     private suspend fun saveTrip(): Boolean {
-        var result = false
-        sharedViewModel.trip.collectLatest { trip ->
-            if (trip != null) {
-                val tripInfo = formToTripInfoObject(passedTripId = trip.id)
-                if (!sharedViewModel.isEditingExistingTrip) { // creating new trip
-                    tripViewModel.addTripWithInfo(trip, tripInfo, viewLifecycleOwner)
-                } else {
-                    tripViewModel.updateTripWithInfo(trip, tripInfo, viewLifecycleOwner)
-                }
-                result = true
-            }
+        val trip = sharedViewModel.trip.firstOrNull()?.copy(tripInfoId = "05WMl7n2srKicjVqeQnE")
+        if (trip == null) {
+            Log.e(TAG, "saveTrip: trip is Null")
+            return false
         }
+        var result = false
+        val job = viewLifecycleOwner.lifecycleScope.launch {
+            if (!sharedViewModel.isEditingExistingTrip) { // creating new trip
+                tripViewModel.addTrip(trip)
+            } else {
+                tripViewModel.updateTrip(trip)
+            }
+            result = true
+        }
+        job.join() // Ensure the coroutine completes before returning
         return result
     }
 
     private fun formToTripInfoObject(passedTripId: String? = null): TripInfo {
-        val title = binding.RouteTitle.text.toString().takeIf { it.isNotEmpty() } ?: sharedViewModel.tripInfo.value?.title?.takeIf { it.isNotEmpty() } ?: ""
+        val title = binding.RouteTitle.text.toString().takeIf { it.isNotEmpty() }
+            ?: sharedViewModel.tripInfo.value?.title?.takeIf { it.isNotEmpty() } ?: ""
         val points = listOf<Point>() ?: sharedViewModel.tripInfo.value?.points
         val routeDescription = binding.RouteDescription.text.toString().takeIf { it.isNotEmpty() }
             ?: sharedViewModel.tripInfo.value?.routeDescription
@@ -113,7 +121,8 @@ class RouteManager : Fragment() {
         val areaId = -1 //TripInfoUtils.mapAreaToModel(requireContext(), selectedArea)
         val subAreaId = TripInfoUtils.mapAreaToModel(requireContext(), selectedArea)
             ?: sharedViewModel.tripInfo.value?.areaId ?: -1
-        val difficulty = TripInfoUtils.mapDifficultyToModel(requireContext(), selectedDifficulty).takeIf { it != DifficultyLevel.UNSET }
+        val difficulty = TripInfoUtils.mapDifficultyToModel(requireContext(), selectedDifficulty)
+            .takeIf { it != DifficultyLevel.UNSET }
             ?: sharedViewModel.tripInfo.value?.difficulty
             ?: DifficultyLevel.UNSET
 
@@ -122,7 +131,6 @@ class RouteManager : Fragment() {
         val isCircular = false
         val likes = 0
         val description = ""
-        val tripId = passedTripId ?: sharedViewModel.trip.value?.id ?: ""
         val tripInfo = TripInfo(
             title = title,
             points = points,
@@ -135,7 +143,6 @@ class RouteManager : Fragment() {
             tags = tags,
             isCircular = isCircular,
             likes = likes,
-            tripId = tripId
         )
         return tripInfo
     }
@@ -154,8 +161,14 @@ class RouteManager : Fragment() {
                         binding.RouteDescription.setText(tripInfo.routeDescription)
                         setArea(tripInfo.subAreaId)
                         setDifficulty(tripInfo.difficulty)
-                        Log.d(TAG, "Route data loaded. title: ${tripInfo.title}, id: ${tripInfo.id}")
-                        Log.d(TAG, "Trip data: ${sharedViewModel.trip.value?.title}, id: ${sharedViewModel.trip.value?.id}")
+                        Log.d(
+                            TAG,
+                            "Route data loaded. title: ${tripInfo.title}, id: ${tripInfo.id}"
+                        )
+                        Log.d(
+                            TAG,
+                            "Trip data: ${sharedViewModel.trip.value?.title}, id: ${sharedViewModel.trip.value?.id}"
+                        )
                     } else {
                         Log.e(TAG, "No route data to load.")
                     }
@@ -176,9 +189,10 @@ class RouteManager : Fragment() {
         binding.DifficultySpinner.setSelection(
             (binding.DifficultySpinner.adapter as ArrayAdapter<String>).getPosition(
                 TripInfoUtils.mapDifficultyToString(requireContext(), difficulty)
-            ).takeIf { it != -1 } ?: (binding.DifficultySpinner.adapter as ArrayAdapter<String>).getPosition(
-                getString(R.string.difficulty_unset)
-            )
+            ).takeIf { it != -1 }
+                ?: (binding.DifficultySpinner.adapter as ArrayAdapter<String>).getPosition(
+                    getString(R.string.difficulty_unset)
+                )
         )
     }
 
@@ -190,14 +204,20 @@ class RouteManager : Fragment() {
     private fun setupSpinners() {
         // Load difficulty options from strings.xml
         val difficultyOptions = resources.getStringArray(R.array.difficulty_options)
-        val filteredDifficultyOptions = difficultyOptions.filter { it != getString(R.string.difficulty_unset) }.toTypedArray()
-        val difficultyAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, filteredDifficultyOptions)
+        val filteredDifficultyOptions =
+            difficultyOptions.filter { it != getString(R.string.difficulty_unset) }.toTypedArray()
+        val difficultyAdapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            filteredDifficultyOptions
+        )
         difficultyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.DifficultySpinner.adapter = difficultyAdapter
 
         // Load area options from strings.xml
         val areaOptions = resources.getStringArray(R.array.area_options)
-        val areaAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, areaOptions)
+        val areaAdapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, areaOptions)
         areaAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.AreaSpinner.adapter = areaAdapter
     }

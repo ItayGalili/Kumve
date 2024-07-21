@@ -23,6 +23,7 @@ import il.co.erg.mykumve.ui.trip.TripAdapter
 import il.co.erg.mykumve.R
 import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.data.db.firebasemvm.util.Status
+import il.co.erg.mykumve.data.db.firebasemvm.util.deleteAllCollections
 import il.co.erg.mykumve.databinding.MainScreenBinding
 import il.co.erg.mykumve.ui.main.MainActivity.Companion.DEBUG_MODE
 import il.co.erg.mykumve.ui.menu.NotificationsFragment
@@ -200,7 +201,6 @@ class MainScreenManager : Fragment() {
                 |    Description: ${it.description}
                 |    Route Description: ${it.routeDescription}
                 |    Difficulty: ${it.difficulty}
-                |    Trip ID: ${it.tripId}
                 """.trimMargin()
                 } ?: "No trip info available"
 
@@ -212,9 +212,9 @@ class MainScreenManager : Fragment() {
                 |    gatherTime: ${trip.gatherTime},
                 |    tripInfoId: ${trip.tripInfoId},
                 |    endDate: ${trip.endDate},
-                |    participants: ${trip.participants?.size},
+                |    participants: ${trip.participantIds?.size},
                 |    equipment: ${trip.equipment?.size},
-                |    invitations: ${trip.invitations.size},
+                |    invitations: ${trip.invitationIds.size},
                 |    shareLevel: ${trip.shareLevel}
                 |)
                 |$detailedTripInfo
@@ -297,18 +297,28 @@ class MainScreenManager : Fragment() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setMessage(R.string.delete_db_confirmation)
             .setPositiveButton(R.string.yes) { dialog, _ ->
-                // delete the database
-                UserManager.clearUser()
-                requireContext().deleteDatabase("kumve_db")
-                Toast.makeText(
-                    requireContext(),
-                    "Database deleted. Restarting app...",
-                    Toast.LENGTH_SHORT
-                ).show()
-                // restart the app
-                val intent = requireActivity().intent
-                requireActivity().finish()
-                startActivity(intent)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    try {
+                        val ignoreTables = listOf("ignoreTable1", "ignoreTable2") // Add tables to ignore here
+                        deleteAllCollections(ignoreTables)
+                        UserManager.clearUser()
+                        Toast.makeText(
+                            requireContext(),
+                            "Database deleted. Restarting app...",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        // restart the app
+                        val intent = requireActivity().intent
+                        requireActivity().finish()
+                        startActivity(intent)
+                    } catch (e: Exception) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Failed to delete database: ${e.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
             }
             .setNegativeButton(R.string.no) { dialog, _ ->
                 dialog.dismiss()

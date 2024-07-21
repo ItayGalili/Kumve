@@ -1,7 +1,9 @@
 package il.co.erg.mykumve.data.db.model
 
+import com.google.firebase.firestore.PropertyName
+
 data class SubArea(
-    internal var _id: String = "",
+    @PropertyName("id") internal var _id: String = "",
     val areaId: String,
     val nameKey: String
 ) {

@@ -4,11 +4,14 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import il.co.erg.mykumve.data.db.firebasemvm.repository.UserRepository
 import il.co.erg.mykumve.data.db.model.Report
 import il.co.erg.mykumve.databinding.AddReportDialogBinding
 import il.co.erg.mykumve.ui.viewmodel.ReportsViewModel
@@ -20,6 +23,7 @@ import java.util.Date
 import java.util.Locale
 
 class AddReportDialogFragment : DialogFragment() {
+    private val TAG = AddReportDialogFragment::class.java.simpleName
 
     interface OnReportAddedListener {
         fun onReportAdded(report: Report)
@@ -40,12 +44,23 @@ class AddReportDialogFragment : DialogFragment() {
     ): View? {
         _binding = AddReportDialogBinding.inflate(inflater, container, false)
 
-        imagePickerUtil = ImagePickerUtil(this) { uri ->
-            uri?.let {
-                binding.reportImage.setImageURI(it)
-                capturedImageBitmap = uriToBitmap(it)
+        imagePickerUtil = ImagePickerUtil(this,
+            onImagePicked = { uri ->
+                uri?.let {
+                    binding.reportImage.setImageURI(it)
+                    capturedImageBitmap = uriToBitmap(it)
+                }
+            },
+            onImageUploadResult = { success, downloadUrl ->
+                if (success && downloadUrl != null) {
+                    // Handle the upload success if needed, for example:
+                    Log.d(TAG, "Image uploaded successfully: $downloadUrl")
+                } else {
+                    Toast.makeText(requireContext(), "Image upload failed", Toast.LENGTH_SHORT).show()
+                }
             }
-        }
+        )
+
 
         binding.reportImage.setOnClickListener {
             showImagePickerDialog()
