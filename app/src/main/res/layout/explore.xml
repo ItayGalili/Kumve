@@ -6,16 +6,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#BBA886"
-    tools:context=".ui.SocialNetworkManager">
+    tools:context=".ui.explore.ExploreFragment">
+    <androidx.appcompat.widget.SearchView
+        android:layout_width="0dp"
+        android:background="@drawable/search_view_background"
+        android:layout_height="wrap_content"
+        android:id="@+id/search_view"
+        android:layout_margin="8dp"
+        app:queryHint="Search an area in Israel to explore..."
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:iconifiedByDefault="false"/>
+
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/exploreRecyclerView"
+        android:layout_width="395dp"
+        android:layout_height="574dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toTopOf="@id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toBottomOf="@id/search_view"/>
 
     <LinearLayout
         android:id="@+id/linearLayout2"

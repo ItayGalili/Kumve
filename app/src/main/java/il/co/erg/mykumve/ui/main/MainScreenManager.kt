@@ -64,7 +64,7 @@ class MainScreenManager : Fragment() {
         }
 
         binding.partnersBtnMs.setOnClickListener {
-            findNavController().navigate(R.id.action_mainScreenManager_to_networkManager)
+            findNavController().navigate(R.id.action_mainScreenManager_to_exploreFragment)
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -78,10 +78,6 @@ class MainScreenManager : Fragment() {
     private fun initializeComponent() {
         sharedViewModel.isEditingExistingTrip = false
         sharedViewModel.isCreatingTripMode = false
-    }
-
-    private fun clearFragmentBackStack() {
-        parentFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

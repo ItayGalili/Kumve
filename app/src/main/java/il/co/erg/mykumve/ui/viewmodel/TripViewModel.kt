@@ -48,6 +48,10 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     private val _operationResult = MutableSharedFlow<Resource<Void?>>()
     val operationResult: SharedFlow<Resource<Void?>> get() = _operationResult
 
+    fun fetchAllTripsInExplore(){
+        _tripsInfo.asStateFlow()
+    }
+
     fun fetchTripsByParticipantUserIdWithInfo(userId: String) {
         viewModelScope.launch {
             try {

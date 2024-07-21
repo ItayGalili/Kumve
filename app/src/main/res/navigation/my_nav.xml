@@ -13,8 +13,8 @@
             android:id="@+id/action_mainScreenManager_to_UsersReports"
             app:destination="@id/UserReports" />
         <action
-            android:id="@+id/action_mainScreenManager_to_networkManager"
-            app:destination="@id/networkManager" />
+            android:id="@+id/action_mainScreenManager_to_exploreFragment"
+            app:destination="@id/exploreFragment" />
         <action
             android:id="@+id/action_mainScreenManager_to_travelManager"
             app:destination="@id/travelManager"
@@ -24,7 +24,7 @@
             app:popExitAnim="@anim/to_right" />
         <action
             android:id="@+id/action_mainScreenManager_to_tripReviewManager"
-            app:destination="@id/tripReviewManager" />
+            app:destination="@id/tripDetails" />
         <action
             android:id="@+id/action_mainScreenManager_to_equipmentFragment"
             app:destination="@id/equipmentFragment" />
@@ -39,6 +39,14 @@
         <action
             android:id="@+id/action_mainScreenManager_to_partnerListFragment"
             app:destination="@id/partnerListFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/tripDetails"
+        android:name="il.co.erg.mykumve.ui.trip.TripDetailFragment"
+        android:label="main_screen"
+        tools:layout="@layout/trip_details">
+
     </fragment>
 
     <fragment
@@ -88,25 +96,36 @@
             app:popUpToInclusive="true"
             />
         <action
-            android:id="@+id/action_UsersReports_to_networkManager"
-            app:destination="@id/networkManager"
+            android:id="@+id/action_UsersReports_to_exploreFragment"
+            app:destination="@id/exploreFragment"
             />
+
 
     </fragment>
 
     <fragment
-        android:id="@+id/networkManager"
-        android:name="il.co.erg.mykumve.ui.SocialNetworkManager"
-        android:label="travel_network"
-        tools:layout="@layout/travel_network">
+        android:id="@+id/exploreFragment"
+        android:name="il.co.erg.mykumve.ui.explore.ExploreFragment"
+        android:label="explore_screen"
+        tools:layout="@layout/explore">
         <action
-            android:id="@+id/action_networkManager_to_mainScreenManager"
+            android:id="@+id/action_exploreFragment_to_mainScreenManager"
             app:destination="@id/mainScreenManager"
             app:popUpTo="@id/mainScreenManager"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_networkManager_to_UsersReports"
+            android:id="@+id/action_exploreFragment_to_UsersReports"
             app:destination="@id/UserReports"/>
+        <action
+            android:id="@+id/action_exploreFragment_to_tripReview"
+            app:destination="@id/tripReview"/>
+        <action
+            android:id="@+id/action_exploreFragment_to_loginManager"
+            app:destination="@id/loginManager"/>
+        <action
+            android:id="@+id/action_exploreFragment_to_travelManager"
+            app:destination="@id/travelManager"/>
+
 
 
     </fragment>
@@ -133,10 +152,16 @@
     </fragment>
 
     <fragment
-        android:id="@+id/tripReviewManager"
-        android:name="il.co.erg.mykumve.ui.trip.TripReviewManager"
+        android:id="@+id/tripReview"
+        android:name="il.co.erg.mykumve.ui.explore.ExploreFragment"
         android:label="trip_review"
-        tools:layout="@layout/trip_review" />
+        tools:layout="@layout/trip_info">
+        <action
+            android:id="@+id/action_tripReview_to_ExploreFragment"
+            app:destination="@id/exploreFragment"/>
+
+
+    </fragment>
 
     <fragment
         android:id="@+id/equipmentFragment"

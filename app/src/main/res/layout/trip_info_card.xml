@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:background="@color/white">
+
+    <ImageView
+        android:id="@+id/trip_info_image"
+        android:layout_width="134dp"
+        android:layout_height="148dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/my_alerts"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
+    <TextView
+        android:id="@+id/trip_info_image_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_image"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/trip_info_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toTopOf="@id/trip_info_image"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/trip_info_length"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_title"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/trip_info_creation_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_length"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/trip_info_area"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_creation_date"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <TextView
+        android:id="@+id/trip_info_subarea"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_area"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <TextView
+        android:id="@+id/trip_info_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_subarea"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/trip_info_add"
+        android:layout_width="159dp"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="Start planning this trip"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_description" />
+
+    <ImageButton
+        android:id="@+id/expand_trip_info"
+        android:layout_width="35dp"
+        android:layout_height="30dp"
+        android:background="@color/white"
+        android:src="@drawable/expand_vector"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/black" />
+
+    <ImageButton
+        android:id="@+id/add_trip_info_card_to_my_trips"
+        android:layout_width="39dp"
+        android:layout_height="33dp"
+        android:layout_marginLeft="4dp"
+        android:background="@color/white"
+        android:scaleType="fitXY"
+        android:src="@drawable/add_circle_vector"
+        app:layout_constraintEnd_toStartOf="@id/trip_info_add"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_description"
+        app:tint="@color/black" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

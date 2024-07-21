@@ -55,7 +55,6 @@ class TripManager : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "On view created")
         // Logic to determine if it's a new trip creation
-
         loadFormData()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
