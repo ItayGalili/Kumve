@@ -3,6 +3,7 @@ package il.co.erg.mykumve.ui.menu
 import androidx.core.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
@@ -42,27 +43,34 @@ class TripInvitationAdapter(
                             Log.d(TAG, "Binding trip invitation, tripId ${invitation.tripId}")
                             binding.invitationTitle.text = trip.title
                             binding.invitationStatus.text = "Status: ${invitation.status}"
-                            if(trip.image?.toUri()!=null){
+                            if (trip.image?.toUri() != null) {
                                 binding.invitationIcon.setImageURI(trip.image?.toUri())
                             }
-                            if(trip.gatherTime!=null){
-                                binding.invitationGatherTime.text = Utility.timestampToString(trip.gatherTime)
+                            if (trip.gatherTime != null) {
+                                binding.invitationGatherTime.text =
+                                    Utility.timestampToString(trip.gatherTime)
                             }
 
-                            userViewModel.fetchUserById(trip.userId)
                             lifecycleOwner.lifecycleScope.launch {
                                 lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                                    userViewModel.userById.collectLatest { user ->
-                                        if (user != null) {
-                                            binding.invitationCreator.text = "Created by: ${user.firstName} ${user.surname ?: ""}"
-                                        } else {
-                                            binding.invitationCreator.text = "Created by: Unknown"
+                                    userViewModel.fetchUserById(trip.userId)
+                                        .collectLatest { userResource ->
+                                            val user = userResource.data
+                                            if (user != null) {
+                                                binding.invitationCreator.text =
+                                                    "Created by: ${user.firstName} ${user.surname ?: ""}"
+                                            } else {
+                                                binding.invitationCreator.text =
+                                                    "Created by: Unknown"
+                                            }
                                         }
-                                    }
                                 }
                             }
-                            if(trip.description!=null) {
+
+                            if (trip.description != null) {
                                 binding.invitationDescription.text = trip.description
+                            } else {
+                                binding.invitationDescription.visibility = View.GONE
                             }
                             if (invitation.status in setOf(
                                     TripInvitationStatus.APPROVED,
@@ -71,14 +79,24 @@ class TripInvitationAdapter(
                             ) {
                                 binding.acceptButton.isEnabled = false
                                 binding.rejectButton.isEnabled = false
-                                binding.acceptButton.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.lightGrey))
-                                binding.rejectButton.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.lightGrey))
+                                binding.acceptButton.setBackgroundColor(
+                                    ContextCompat.getColor(
+                                        binding.root.context,
+                                        R.color.lightGrey
+                                    )
+                                )
+                                binding.rejectButton.setBackgroundColor(
+                                    ContextCompat.getColor(
+                                        binding.root.context,
+                                        R.color.lightGrey
+                                    )
+                                )
                             } else {
                                 binding.acceptButton.setOnClickListener {
-                                    handleAccept(invitation)
+                                    handleAccept(invitation, adapterPosition)
                                 }
                                 binding.rejectButton.setOnClickListener {
-                                    handleReject(invitation)
+                                    handleReject(invitation, adapterPosition)
                                 }
                             }
                         }
@@ -108,22 +126,27 @@ class TripInvitationAdapter(
         notifyDataSetChanged()
     }
 
-    private fun handleAccept(invitation: TripInvitation) {
+    private fun handleAccept(invitation: TripInvitation, adapterPosition: Int) {
         Log.d(TAG, "ACCEPT selected - Responding to trip invitation")
         invitation.status = TripInvitationStatus.APPROVED
-        respondToTripInvitation(invitation)
+        respondToTripInvitation(invitation, adapterPosition)
     }
 
 
-    private fun handleReject(invitation: TripInvitation) {
+    private fun handleReject(invitation: TripInvitation, adapterPosition: Int) {
         Log.d(TAG, "REJECT selected - Responding to trip invitation")
         invitation.status = TripInvitationStatus.REJECTED
-        respondToTripInvitation(invitation)
+        respondToTripInvitation(invitation, adapterPosition)
     }
 
-    private fun respondToTripInvitation(invitation: TripInvitation) {
+    private fun respondToTripInvitation(invitation: TripInvitation, adapterPosition: Int) {
         tripViewModel.respondToTripInvitation(invitation) { result ->
-            Log.d(TAG, if (result.status == Status.SUCCESS) "TripInvitation Accepted" else "TripInvitation Rejected")
+            Log.d(
+                TAG,
+                if (result.status == Status.SUCCESS) "TripInvitation Accepted" else "TripInvitation Rejected/Remain the same\n" +
+                        "${result.message}"
+            )
+            notifyItemChanged(adapterPosition)
         }
     }
 

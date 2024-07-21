@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import il.co.erg.mykumve.data.db.firebasemvm.repository.UserRepository
 import il.co.erg.mykumve.data.db.model.Report
 import il.co.erg.mykumve.databinding.AddReportDialogBinding
 import il.co.erg.mykumve.ui.viewmodel.ReportsViewModel

@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.FirebaseFirestore
 import il.co.erg.mykumve.data.db.model.Trip
 import il.co.erg.mykumve.data.db.model.TripInfo
 import il.co.erg.mykumve.data.db.model.TripInvitation
@@ -15,11 +16,13 @@ import il.co.erg.mykumve.data.db.firebasemvm.repository.UserRepository
 import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
 import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.data.db.firebasemvm.util.safeCall
+import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.data.db.model.Area
 import il.co.erg.mykumve.data.db.model.SubArea
 import il.co.erg.mykumve.util.TripInvitationStatus
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class TripViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -52,7 +55,6 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     private val _operationResult = MutableSharedFlow<Resource<Void?>>()
     val operationResult: SharedFlow<Resource<Void?>> get() = _operationResult
 
-
     fun fetchTripsByParticipantUserIdWithInfo(userId: String) {
         viewModelScope.launch {
             try {
@@ -66,18 +68,20 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
                         trip.participantIds?.any { it == userId } == true
                     }
 
-                    val tripsWithInfoList = tripsByParticipant.map { trip ->
-                        val tripInfoResource = trip.tripInfoId?.let {
-                            tripInfoRepository.getTripInfoById(it)
-                                .first { info -> info.status != Status.LOADING }
+                    val tripsWithInfoList = mutableListOf<TripWithInfo>()
+                    tripsByParticipant.forEach { trip ->
+                        trip.tripInfoId?.let { tripInfoId ->
+                            tripInfoRepository.getTripInfoById(tripInfoId).collectLatest { tripInfoResource ->
+                                val tripInfo = if (tripInfoResource.status == Status.SUCCESS) tripInfoResource.data else null
+                                val tripWithInfo = TripWithInfo(trip, tripInfo)
+                                if (!tripsWithInfoList.any { it.trip.id == tripWithInfo.trip.id }) { // for duplication
+                                    tripsWithInfoList.add(tripWithInfo)
+                                }
+                            }
                         }
-                        val tripInfo =
-                            if (tripInfoResource?.status == Status.SUCCESS) tripInfoResource.data else null
-                        TripWithInfo(trip, tripInfo)
                     }
-
                     _tripsWithInfo.emit(tripsWithInfoList)
-                    _operationResult.emit(Resource.success(null))  // Emit success with null for Void?
+                    _operationResult.emit(Resource.success(null))  // Emit success after processing all trips
                 } else {
                     _operationResult.emit(
                         Resource.error(
@@ -375,52 +379,36 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     fun respondToTripInvitation(invitation: TripInvitation, callback: (Resource<Void>) -> Unit) {
         viewModelScope.launch {
             val result = safeCall {
-                val status = invitation.status
-                Log.d(TAG, "Updating trip invitation with status: $status, TripId ${invitation.tripId}")
-                val updateResult = tripRepository.updateTripInvitation(invitation)
-                if (updateResult.status == Status.SUCCESS && status == TripInvitationStatus.APPROVED) {
-                    handleApprovedInvitation(invitation)
-                } else {
-                    updateResult
-                }
+                Log.d(TAG, "Starting to respond to trip invitation: ${invitation.id}")
+                handleApprovedInvitation(invitation)
             }
             callback(result)
         }
     }
 
-    private suspend fun handleApprovedInvitation(
-        invitation: TripInvitation
-    ): Resource<Void> {
+
+
+    private suspend fun handleApprovedInvitation(invitation: TripInvitation): Resource<Void> {
         return safeCall {
-            val tripResource = tripRepository.getTripById(invitation.tripId).first()
-            val userResource = userRepository.getUserById(invitation.userId).first()
-
-            if (tripResource.status == Status.SUCCESS && userResource.status == Status.SUCCESS) {
-                val trip = tripResource.data
-                val user = userResource.data
-
-                if (trip != null && user != null) {
-                    Log.d(TAG, "Current participants before adding: ${trip.participantIds}")
-                    trip.participantIds = trip.participantIds?.toMutableList() ?: mutableListOf()
-                    trip.participantIds?.add(user.id)
-                    Log.d(TAG, "Adding user ${user.firstName} to trip participants ${trip.participantIds}")
-
-                    val updateTripResult = tripRepository.updateTrip(trip)
-                    if (updateTripResult.status == Status.SUCCESS) {
-                        Resource.success(null)
-                    } else {
-                        Resource.error("Failed to update trip with new participant", null)
+            val db = FirebaseFirestore.getInstance()
+                viewModelScope.launch {
+                    tripRepository.getTripById(invitation.tripId).collectLatest { tripResource ->
+                        val trip = tripResource.data
+                        if (trip != null) {
+                            trip.participantIds?.add(invitation.userId)
+                            tripRepository.updateTrip(trip)
+                            tripInfoRepository.updateTripInvitation(invitation)
+                            Resource.success(trip)
+                        } else {
+                            Resource.error(tripResource.message.toString())
+                        }
                     }
-                } else {
-                    Log.e(TAG, "Trip or user data is null")
-                    Resource.error("Trip or user data is null", null)
                 }
-            } else {
-                Log.e(TAG, "Failed to fetch trip or user data: Trip status: ${tripResource.status}, User status: ${userResource.status}")
-                Resource.error("Failed to fetch trip or user data", null)
-            }
+            Log.d(TAG, "Successfully responded to trip invitation: ${invitation.id}")
+            Resource.success(null)
         }
     }
+
 
     fun fetchTripInvitationById(invitationId: String): TripInvitation? {
         var invitation: TripInvitation? = null

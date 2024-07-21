@@ -45,5 +45,6 @@
     <string name="unknown_area">איזור לא ידוע</string>
     <string name="trip_invitation_list_title">רשימת הזמנות</string>
     <string name="permission_denied">הרשאה נדחתה</string>
+    <string name="password_changed_successfully">הסיסמא שונתה בהצלחה</string>
 
 </resources>

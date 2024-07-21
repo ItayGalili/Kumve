@@ -18,6 +18,7 @@ import il.co.erg.mykumve.ui.viewmodel.UserViewModel
 import il.co.erg.mykumve.util.ImagePickerUtil
 import il.co.erg.mykumve.util.UserManager
 import il.co.erg.mykumve.util.UserUtils
+import il.co.erg.mykumve.util.loadImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,6 +63,13 @@ class MyProfile : Fragment(), CoroutineScope {
         if (UserManager.isLoggedIn()) {
             UserManager.getUser()?.let { user ->
                 currentUser = user
+                user.photo?.let { imageUrl ->
+                    loadImage(imageUrl, binding.profilePic)
+                } ?: run {
+                    // Handle case where there is no profile image URL
+                    binding.profilePic.setImageResource(R.drawable.placeholder)
+                }
+
                 binding.profilePic.setImageURI(user.photo?.toUri())
                 binding.profileUserFullNameTv.setText(UserUtils.getFullName(user))
                 binding.changeProfilePic.setOnClickListener {

@@ -117,4 +117,7 @@ class UserRepository {
     fun signOut() {
         auth.signOut()
     }
+
+    fun getUserDocumentReference(userId: String) =
+        FirebaseFirestore.getInstance().collection("users").document(userId)
 }

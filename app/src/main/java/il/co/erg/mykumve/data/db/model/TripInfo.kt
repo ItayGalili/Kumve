@@ -23,7 +23,7 @@ data class TripInfo(
     var link:  String? = null,
     var publishedDate: String? = null,
     var isImported: Boolean = false,
-    val imageInfo: Map<String, String>?=null,
+    val imageInfo: Map<String, String>? = null,
 ) {
     val id: String
         get() = _id  // Public read-only property
@@ -48,5 +48,3 @@ data class TripInfo(
         }
     }
 }
-
-

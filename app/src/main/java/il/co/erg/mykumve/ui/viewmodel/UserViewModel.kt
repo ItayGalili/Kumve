@@ -2,7 +2,6 @@ package il.co.erg.mykumve.ui.viewmodel
 
 import android.app.Application
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -37,17 +36,42 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     private val _allUsers = MutableStateFlow<List<User>>(emptyList())
     val allUsers: StateFlow<List<User>> get() = _allUsers.asStateFlow()
 
-    fun updatePassword(user: User, newPassword: String) {
+    private val _loginState = MutableStateFlow<Resource<String>>(Resource.loading())
+    val loginState: StateFlow<Resource<String>> = _loginState.asStateFlow()
+
+    fun loginUser(email: String, password: String) {
         viewModelScope.launch {
+            _loginState.value = Resource.loading()
+
             try {
-                val updatedUser = user.copy(hashedPassword = newPassword)
-                val result = userRepository.updateUser(updatedUser)
-                _operationResult.emit(result)
+                val authResult = auth.signInWithEmailAndPassword(email, password).await()
+                val firebaseUser = authResult.user
+                if (firebaseUser != null) {
+                    fetchUserByEmail(email)
+                    userByEmail.value?.let {  user ->
+                        UserManager.saveUser(user)
+                        _loginState.value = Resource.success(user.id)
+                    }
+                } else {
+                    _loginState.value = Resource.error("Authentication failed")
+                }
             } catch (e: Exception) {
-                _operationResult.emit(Resource.error(e.message ?: "Failed to update password", null))
+                _loginState.value = Resource.error(e.message ?: "Authentication failed")
             }
         }
     }
+
+//    fun updatePassword(user: User, newPassword: String) {
+//        viewModelScope.launch {
+//            try {
+//                val updatedUser = user.copy(hashedPassword = newPassword)
+//                val result = userRepository.updateUser(updatedUser)
+//                _operationResult.emit(result)
+//            } catch (e: Exception) {
+//                _operationResult.emit(Resource.error(e.message ?: "Failed to update password", null))
+//            }
+//        }
+//    }
 
     fun registerUser(
         user: User,
@@ -111,8 +135,10 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun fetchUserById(id: String): Flow<Resource<User?>> {
-        return userRepository.getUserById(id)
+    fun fetchUserById(id: String): Flow<Resource<User?>>  = flow {
+        userRepository.getUserById(id).collect {
+            emit(it)
+        }
     }
 
     fun fetchUsersByIds(ids: List<String>): Flow<Resource<List<User>>> = flow {

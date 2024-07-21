@@ -1,6 +1,7 @@
 package il.co.erg.mykumve.data.db.firebasemvm.repository
 
 import android.util.Log
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import il.co.erg.mykumve.data.db.model.Trip
@@ -10,10 +11,13 @@ import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
 import il.co.erg.mykumve.data.db.firebasemvm.util.safeCall
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class TripRepository {
-
+    val TAG = TripRepository::class.java.simpleName
     private val db = FirebaseFirestore.getInstance()
     private val tripsCollection = db.collection("trips")
     private val tripInfoCollection = db.collection("trip_info")
@@ -70,16 +74,16 @@ class TripRepository {
     }
 
 
-    fun getTripById(id: String): Flow<Resource<Trip?>> = flow {
-        emit(Resource.loading(null))
-        try {
-            val document = tripsCollection.document(id).get().await()
-            val trip = document.toObject<Trip>()
-            emit(Resource.success(trip))
-        } catch (e: Exception) {
-            emit(Resource.error(e.message ?: "Unknown error", null))
-        }
-    }
+//    fun getTripById(id: String): Flow<Resource<Trip?>> = flow {
+//        emit(Resource.loading(null))
+//        try {
+//            val document = tripsCollection.document(id).get().await()
+//            val trip = document.toObject<Trip>()
+//            emit(Resource.success(trip))
+//        } catch (e: Exception) {
+//            emit(Resource.error(e.message ?: "Unknown error", null))
+//        }
+//    }
 
     suspend fun insertTrip(trip: Trip): Resource<Void> {
         return try {
@@ -165,15 +169,6 @@ class TripRepository {
         }
     }
 
-    suspend fun updateTripInvitation(invitation: TripInvitation): Resource<Void> {
-        return try {
-            tripInvitationsCollection.document(invitation.id).set(invitation).await()
-            Resource.success(null)
-        } catch (e: Exception) {
-            Resource.error(e.message ?: "Failed to update trip invitation", null)
-        }
-    }
-
     fun getTripInvitationsByTripId(tripId: String): Flow<Resource<List<TripInvitation>>> = flow {
         emit(Resource.loading(null))
         try {
@@ -187,18 +182,55 @@ class TripRepository {
 
     fun getTripInvitationById(invitationId: String): Flow<Resource<TripInvitation>> = flow {
         emit(Resource.loading(null))
+
         val result = safeCall {
-            val document = tripInvitationsCollection.document(invitationId).get().await()
-            val invitation = document.toObject<TripInvitation>()
-            if (invitation != null) {
-                Resource.success(invitation)
-            } else {
-                Resource.error("Invitation not found", null)
+            try {
+                val tripInvitation = getDocument<TripInvitation>(tripInvitationsCollection, invitationId)
+                if (tripInvitation != null) {
+                    Resource.success(tripInvitation)
+                } else {
+                    Resource.error("No such document")
+                }
+            } catch (e: Exception) {
+                Resource.error("get failed with ${e.message}")
             }
         }
         emit(result)
     }
 
+    fun getTripById(tripId: String): Flow<Resource<Trip>> = flow {
+        emit(Resource.loading(null))
+
+        val result = safeCall {
+            try {
+                val trip = getDocument<Trip>(tripsCollection, tripId)
+                if (trip != null) {
+                    Resource.success(trip)
+                } else {
+                    Resource.error("No such document")
+                }
+            } catch (e: Exception) {
+                Resource.error("get failed with ${e.message}")
+            }
+        }
+        emit(result)
+    }
+
+    private suspend inline fun <reified T> getDocument(collection: CollectionReference, documentId: String): T? = suspendCancellableCoroutine { continuation ->
+        val docRef = collection.document(documentId)
+        val addOnFailureListener = docRef.get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val result = document.toObject(T::class.java)
+                    continuation.resume(result)
+                } else {
+                    continuation.resume(null)
+                }
+            }
+            .addOnFailureListener { exception ->
+                continuation.resumeWithException(exception)
+            }
+    }
 
     fun getTripInvitationsForUser(userId: String): Flow<Resource<List<TripInvitation>>> = flow {
         emit(Resource.loading(null))

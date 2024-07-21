@@ -90,4 +90,5 @@
     <string name="unknown_area">unkown area</string>
     <string name="trip_invitation_list_title">Invitation List</string>
     <string name="permission_denied">Permission Denied</string>
+    <string name="password_changed_successfully">Password changed successfully</string>
 </resources>
