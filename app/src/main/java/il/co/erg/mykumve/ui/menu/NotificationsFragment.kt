@@ -13,7 +13,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.databinding.FragmentNotificationsBinding
-import il.co.erg.mykumve.ui.menu.TripInvitationAdapter
 import il.co.erg.mykumve.ui.viewmodel.TripViewModel
 import il.co.erg.mykumve.ui.viewmodel.UserViewModel
 import il.co.erg.mykumve.util.UserManager

@@ -20,7 +20,6 @@ import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.databinding.RegisterBinding
 import il.co.erg.mykumve.ui.viewmodel.UserViewModel
 import il.co.erg.mykumve.util.ImagePickerUtil
-import il.co.erg.mykumve.util.PATTERNS
 import il.co.erg.mykumve.util.UserUtils.isValidPhoneNumber
 import il.co.erg.mykumve.util.UserUtils.normalizePhoneNumber
 import kotlinx.coroutines.CoroutineScope

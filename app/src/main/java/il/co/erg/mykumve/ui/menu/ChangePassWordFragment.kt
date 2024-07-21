@@ -9,15 +9,10 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import il.co.erg.mykumve.R
-import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.ui.viewmodel.UserViewModel
-import il.co.erg.mykumve.util.EncryptionUtils
 import il.co.erg.mykumve.util.UserManager
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class ChangePasswordFragment : DialogFragment() {
@@ -44,78 +39,86 @@ class ChangePasswordFragment : DialogFragment() {
             val previousPassword = previousPasswordEditText.text.toString()
             val newPassword = newPasswordEditText.text.toString()
             val confirmNewPassword = confirmNewPasswordEditText.text.toString()
-
-            if(UserManager.isLoggedIn()){
-                if (newPassword == confirmNewPassword) {
-                    if(newPassword!=previousPassword){
-                        UserManager.getUser()?.let { user -> val oldpasswordHash = EncryptionUtils.hashPassword(previousPassword, user.salt)
-                            if (user.hashedPassword == oldpasswordHash) {
-                                if (newPassword.isBlank() || newPassword.length < 6) {
-                                        Toast.makeText(
-                                            requireContext(),
-                                            R.string.error_invalid_password,
-                                            Toast.LENGTH_SHORT
-                                        )
-                                            .show()
-                                    } else {
-                                        val newPasswordHash = EncryptionUtils.hashPassword(newPassword, user.salt)
-                                        userViewModel.updatePassword(user, newPasswordHash)
-                                        viewLifecycleOwner.lifecycleScope.launch {
-                                            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                                                userViewModel.operationResult.collectLatest { result ->
-                                                    if (result.status == Status.SUCCESS) {
-                                                        // Handle success, e.g., show a success message
-                                                        Toast.makeText(requireContext(), result.message, Toast.LENGTH_SHORT).show()
-                                                    } else {
-                                                        // Handle failure, e.g., show a failure message
-                                                        Toast.makeText(requireContext(), result.message, Toast.LENGTH_SHORT).show()
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        Toast.makeText(
-                                            requireContext(),
-                                            "password changed successfully",
-                                            Toast.LENGTH_SHORT
-                                        )
-                                            .show()
-                                        dismiss()
-                                    }
-                                } else {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "previous password incorrect",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
-                                }
-                            }
-                    }
-                    else{
-                        Toast.makeText(requireContext(),
-                            "New password and Old password are the same", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                else{
-                    Toast.makeText(requireContext(),
-                        "New passwords do not match", Toast.LENGTH_SHORT).show()
-                }
-            }
-            else{
-                Toast.makeText(requireContext(),
-                    "Please Login first", Toast.LENGTH_SHORT).show()
-
-            }
+            changePassword(previousPassword, newPassword, confirmNewPassword)
         }
-
         btnCancel.setOnClickListener {
             dismiss()
         }
         return view
     }
+
+    private fun changePassword(
+        previousPassword: String,
+        newPassword: String,
+        confirmNewPassword: String
+    ) {
+        if (UserManager.isLoggedIn()) {
+            if (newPassword == confirmNewPassword) {
+                if (newPassword != previousPassword) {
+                    UserManager.getUser()?.let { user ->
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            val isOldPasswordCorrect =
+                                UserManager.checkOldPassword(previousPassword)
+                            if (isOldPasswordCorrect) {
+                                if (newPassword.isBlank() || newPassword.length < 6) {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        R.string.error_invalid_password,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    val updateSuccess = UserManager.updatePassword(newPassword)
+                                    if (updateSuccess) {
+                                        Toast.makeText(
+                                            requireContext(),
+                                            R.string.password_changed_successfully,
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Password changed successfully",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    dismiss()
+                                }
+                            } else {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Old password incorrect",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "New password and old password are the same",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "New passwords do not match",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        } else {
+            Toast.makeText(
+                requireContext(),
+                "User not logged in",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
     override fun onStart() {
         super.onStart()
-        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
     }
 }
-

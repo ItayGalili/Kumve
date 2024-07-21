@@ -10,8 +10,6 @@ data class User(
     var email: String = "",
     var photo: String? = null,
     var phone: String? = null,
-    var hashedPassword: String = "",
-    val salt: String = ""
 ) {
     val id: String
         get() = _id // Public read-only property
