@@ -28,6 +28,7 @@ import il.co.erg.mykumve.util.ImagePickerUtil
 import il.co.erg.mykumve.util.ShareLevel
 import il.co.erg.mykumve.util.UserManager
 import il.co.erg.mykumve.util.Utility.timestampToString
+import il.co.erg.mykumve.util.loadImage
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -68,6 +69,12 @@ class TripManager : Fragment() {
                 Log.v(TAG, "Loading trip data into form")
                 sharedViewModel.trip.collectLatest { trip ->
                     if (trip != null) {
+                        trip.image?.let { imageUrl ->
+                            loadImage(imageUrl, binding.tripImage)
+                        } ?: run {
+                            // Handle case where there is no profile image URL
+                            binding.tripImage.setImageResource(R.drawable.placeholder)
+                        }
                         binding.tripImage.setImageURI(trip.image?.toUri())
                         binding.nameTrip.setText(trip.title)
                         binding.description.setText(trip.description.toString())
