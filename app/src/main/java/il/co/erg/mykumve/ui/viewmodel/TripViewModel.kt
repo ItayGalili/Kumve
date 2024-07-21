@@ -117,18 +117,18 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-//    fun fetchAllTripsInfo() {
-//        viewModelScope.launch {
-//            try {
-//                tripInfoRepository.getAllTripInfo().collectLatest { resource ->
-//                    _tripsInfo.value = resource.data ?: emptyList()
-//                    _operationResult.emit(Resource.success(null))
-//                }
-//            } catch (e: Exception) {
-//                _operationResult.emit(Resource.error(e.message ?: "Failed to fetch trips info", null))
-//            }
-//        }
-//    }
+    fun fetchAllTripsInfo() {
+        viewModelScope.launch {
+            try {
+                tripInfoRepository.getAllTripInfo().collectLatest { resource ->
+                    _tripsInfo.value = resource.data ?: emptyList()
+                    _operationResult.emit(Resource.success(null))
+                }
+            } catch (e: Exception) {
+                _operationResult.emit(Resource.error(e.message ?: "Failed to fetch trips info", null))
+            }
+        }
+    }
 
 //    fun observeTrips(lifecycleOwner: LifecycleOwner, handleTripUpdates: (Trip?) -> Unit) {
 //        lifecycleOwner.lifecycleScope.launch {

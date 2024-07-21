@@ -18,7 +18,7 @@ enum class DifficultyLevel(val id: Int, val stringResId: Int) {
 }
 
 object PATTERNS {
-    const val PHONE = "^\\+(\\d{1,4})\\s?(0\\d{9}|\\d{9})$"
+    const val PHONE = "^\\+?(\\d{1,4})?\\s?(0\\d{9}|\\d{9})$"
 }
 
 

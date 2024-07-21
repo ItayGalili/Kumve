@@ -1,12 +1,11 @@
 package il.co.erg.mykumve.ui.viewmodel
 
 import android.app.Application
+import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import il.co.erg.mykumve.data.db.firebasemvm.repository.UserRepository
 import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
@@ -15,14 +14,16 @@ import il.co.erg.mykumve.util.EncryptionUtils
 import il.co.erg.mykumve.util.UserManager
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class UserViewModel(application: Application) : AndroidViewModel(application) {
-    val TAG = UserViewModel::class.java.simpleName
+    private val TAG = UserViewModel::class.java.simpleName
 
     private val _operationResult = MutableSharedFlow<Resource<Void>>()
     val operationResult: SharedFlow<Resource<Void>> = _operationResult
 
     private val userRepository: UserRepository = UserRepository()
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     private val _userByEmail = MutableStateFlow<User?>(null)
     val userByEmail: StateFlow<User?> get() = _userByEmail.asStateFlow()
@@ -58,27 +59,27 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         callback: (Resource<Void>) -> Unit
     ) {
         viewModelScope.launch {
-            userRepository.getUserByEmail(email).collectLatest { resource ->
-                val existingUser = resource.data
-                if (existingUser != null) {
-                    callback(Resource.error("User already registered.", null))
-                } else {
-                    val salt = EncryptionUtils.generateSalt()
-                    val passwordHashed = EncryptionUtils.hashPassword(password, salt)
-                    val newUser = User(firstName=firstName
-                        , surname= surname
-                        , email = email
-                        , photo = photo
-                        , phone = phone
-                        , hashedPassword = passwordHashed
-                        , salt = salt
-                    )
+            try {
+                val userCredential = auth.createUserWithEmailAndPassword(email, password).await()
+                val firebaseUser = userCredential.user
+                if (firebaseUser != null) {
+                    val profileUpdates = UserProfileChangeRequest.Builder()
+                        .setDisplayName("$firstName $surname")
+                        .setPhotoUri(photo?.let { Uri.parse(it) })
+                        .build()
+                    firebaseUser.updateProfile(profileUpdates).await()
+
+                    val newUser = User.fromFirebaseUser(firebaseUser).copy(phone = phone)
                     val result = userRepository.insertUser(newUser)
                     if (result.status == Status.SUCCESS) {
                         UserManager.saveUser(newUser)
                     }
                     callback(result)
+                } else {
+                    callback(Resource.error("Failed to register user", null))
                 }
+            } catch (e: Exception) {
+                callback(Resource.error(e.message ?: "Failed to register user", null))
             }
         }
     }
@@ -128,7 +129,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun observeUserByEmail(lifecycleOwner: androidx.lifecycle.LifecycleOwner, handleUserUpdate: (User?) -> Unit) {
+    fun observeUserByEmail(lifecycleOwner: LifecycleOwner, handleUserUpdate: (User?) -> Unit) {
         lifecycleOwner.lifecycleScope.launch {
             lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 userByEmail.collectLatest { user ->
@@ -138,7 +139,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun observeUserByPhone(lifecycleOwner: androidx.lifecycle.LifecycleOwner, handleUserUpdate: (User?) -> Unit) {
+    fun observeUserByPhone(lifecycleOwner: LifecycleOwner, handleUserUpdate: (User?) -> Unit) {
         lifecycleOwner.lifecycleScope.launch {
             lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 userByPhone.collectLatest { user ->
@@ -148,7 +149,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun observeUserById(lifecycleOwner: androidx.lifecycle.LifecycleOwner, handleUserUpdate: (User?) -> Unit) {
+    fun observeUserById(lifecycleOwner: LifecycleOwner, handleUserUpdate: (User?) -> Unit) {
         lifecycleOwner.lifecycleScope.launch {
             lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 userById.collectLatest { user ->
@@ -158,7 +159,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun observeAllUsers(lifecycleOwner: androidx.lifecycle.LifecycleOwner, handleUsersUpdate: (List<User>) -> Unit) {
+    fun observeAllUsers(lifecycleOwner: LifecycleOwner, handleUsersUpdate: (List<User>) -> Unit) {
         lifecycleOwner.lifecycleScope.launch {
             lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 allUsers.collectLatest { users ->

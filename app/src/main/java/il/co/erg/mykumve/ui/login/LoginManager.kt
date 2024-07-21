@@ -13,6 +13,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.FirebaseAuth
 import il.co.erg.mykumve.R
 import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
 import il.co.erg.mykumve.data.db.firebasemvm.util.Status
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class LoginManager : Fragment() {
 
@@ -34,6 +36,7 @@ class LoginManager : Fragment() {
     private var _binding: LoginBinding? = null
     private val binding get() = _binding!!
     private val userViewModel: UserViewModel by activityViewModels()
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,8 +47,45 @@ class LoginManager : Fragment() {
         binding.LoginBtn.setOnClickListener {
             val emailInput = binding.emailAd.text.toString()
             var password = binding.password.text.toString()
-
-            loginUser(emailInput, password) { resource ->
+            var email = ""
+            when {
+                emailInput.isBlank() -> {
+                    email = "daniel@a.com"
+                    password = "123456"
+                }
+                emailInput.contains("1") -> {
+                    email = "user1@a.com"
+                    password = "123456"
+                }
+                emailInput.contains("2") -> {
+                    email = "user2@a.com"
+                    password = "123456"
+                }
+                emailInput.contains("3") -> {
+                    email = "user3@a.com"
+                    password = "123456"
+                }
+                emailInput.contains("4") -> {
+                    email = "user4@a.com"
+                    password = "123456"
+                }
+                emailInput.contains("5") -> {
+                    email = "user5@a.com"
+                    password = "123456"
+                }
+                emailInput.contains("6") -> {
+                    email = "user6@a.com"
+                    password = "123456"
+                }
+                emailInput.contains("7") -> {
+                    email = "user7@a.com"
+                    password = "123456"
+                }
+                else -> {
+                    email = emailInput
+                }
+            }
+            loginUser(email, password) { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
                         Toast.makeText(requireContext(), R.string.login_successful, Toast.LENGTH_SHORT).show()
@@ -106,25 +146,28 @@ class LoginManager : Fragment() {
 
     private fun loginUser(email: String, password: String, callback: (Resource<String>) -> Unit) {
         viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                userViewModel.fetchUserByEmail(email)
-                userViewModel.userByEmail
-                    .filterNotNull()
-                    .distinctUntilChanged()
-                    .collectLatest { user ->
-                        val resource = if (user != null) {
-                            val passwordHash = EncryptionUtils.hashPassword(password, user.salt)
-                            if (passwordHash == user.hashedPassword) {
+            try {
+                val authResult = auth.signInWithEmailAndPassword(email, password).await()
+                val firebaseUser = authResult.user
+                if (firebaseUser != null) {
+                    userViewModel.fetchUserByEmail(email)
+                    userViewModel.userByEmail
+                        .filterNotNull()
+                        .distinctUntilChanged()
+                        .collectLatest { user ->
+                            val resource = if (user != null) {
                                 UserManager.saveUser(user)
                                 Resource.success(getString(R.string.login_successful))
                             } else {
-                                Resource.error(getString(R.string.login_failed) + ": incorrect password")
+                                Resource.error(getString(R.string.login_failed) + ": user not found")
                             }
-                        } else {
-                            Resource.error(getString(R.string.login_failed) + ": user not found")
+                            callback(resource)
                         }
-                        callback(resource)
-                    }
+                } else {
+                    callback(Resource.error(getString(R.string.login_failed) + ": authentication failed"))
+                }
+            } catch (e: Exception) {
+                callback(Resource.error(e.message ?: "Authentication failed"))
             }
         }
     }

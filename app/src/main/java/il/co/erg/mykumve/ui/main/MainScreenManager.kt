@@ -205,7 +205,6 @@ class MainScreenManager : Fragment() {
                 |    Description: ${it.description}
                 |    Route Description: ${it.routeDescription}
                 |    Difficulty: ${it.difficulty}
-                |    Trip ID: ${it.tripId}
                 """.trimMargin()
                 } ?: "No trip info available"
 
