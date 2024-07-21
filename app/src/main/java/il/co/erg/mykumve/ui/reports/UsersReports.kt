@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import il.co.erg.mykumve.R
 import il.co.erg.mykumve.data.db.model.Report
 import il.co.erg.mykumve.databinding.ReportsBinding
-import il.co.erg.mykumve.ui.reports.reports.AddReportDialogFragment
 import il.co.erg.mykumve.ui.reports.reports.ReportsAdapter
 import il.co.erg.mykumve.ui.viewmodel.ReportsViewModel
 import kotlinx.coroutines.flow.collectLatest

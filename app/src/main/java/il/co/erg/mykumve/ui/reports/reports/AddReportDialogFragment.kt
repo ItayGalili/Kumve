@@ -9,8 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import il.co.erg.mykumve.data.model.Report
+import il.co.erg.mykumve.data.db.model.Report
 import il.co.erg.mykumve.databinding.AddReportDialogBinding
+import il.co.erg.mykumve.ui.viewmodel.ReportsViewModel
 import il.co.erg.mykumve.util.ImagePickerUtil
 import il.co.erg.mykumve.util.UserManager
 import il.co.erg.mykumve.util.UserUtils
