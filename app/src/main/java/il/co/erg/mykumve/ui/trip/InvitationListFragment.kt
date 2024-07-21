@@ -76,8 +76,11 @@ class InvitationListFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 sharedTripViewModel.trip.collectLatest { trip ->
-                    trip?.invitations?.let { invitations ->
-                        invitationListAdapter.updateInvitations(invitations)
+                    trip?.invitationIds?.let { invitationIds ->
+                        val invitations = invitationIds.mapNotNull { invitationId ->
+                            tripViewModel.fetchTripInvitationById(invitationId)
+                        }
+                        invitationListAdapter.updateInvitations(invitations.toMutableList())
                     }
                 }
             }
@@ -113,13 +116,12 @@ class InvitationListFragment : Fragment() {
                                     userId = user.id,
                                     status = TripInvitationStatus.UNSENT
                                 )
-                                val updateInvitationList = (currentTrip.invitations + newInvitation).toMutableList()
-                                sharedTripViewModel.updateTrip(currentTrip.copy(invitations = updateInvitationList))
+                                val updateInvitationList = (currentTrip.invitationIds + newInvitation.id).toMutableList()
+                                sharedTripViewModel.updateTrip(currentTrip.copy(invitationIds = updateInvitationList))
                                 Toast.makeText(requireContext(), "Invitation added", Toast.LENGTH_SHORT).show()
                             } else {
                                 tripViewModel.sendTripInvitation(
-                                    tripId = currentTrip.id,
-                                    userId = user.id
+                                    TripInvitation(tripId = currentTrip.id, userId = user.id)
                                 ) { result ->
                                     when (result.status) {
                                         Status.SUCCESS -> {
@@ -175,12 +177,14 @@ class InvitationListFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 sharedTripViewModel.trip.collectLatest { trip ->
-                    Log.d(TAG, "observeTripInvitations. invitations: ${trip?.invitations}")
-                    Log.d(TAG, "observeTripInvitations. user ids: ${trip?.invitations?.map { it.userId }}")
+                    Log.d(TAG, "observeTripInvitations. invitations: ${trip?.invitationIds}")
                     trip?.let { currentTrip ->
                         if (sharedTripViewModel.isCreatingTripMode) {
                             // For temporary trip (partialTrip)
-                            invitationListAdapter.submitList(currentTrip.invitations.toMutableList())
+                            val invitations = currentTrip.invitationIds.mapNotNull { invitationId ->
+                                tripViewModel.fetchTripInvitationById(invitationId)
+                            }
+                            invitationListAdapter.submitList(invitations.toMutableList())
                         } else {
                             tripViewModel.fetchTripInvitationsByTripId(currentTrip.id) // Ensure this is called to fetch data
                             tripViewModel.tripInvitations.collectLatest { invitations ->

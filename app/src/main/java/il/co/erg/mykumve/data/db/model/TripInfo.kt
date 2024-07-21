@@ -1,11 +1,12 @@
 package il.co.erg.mykumve.data.db.model
 
+import com.google.firebase.firestore.PropertyName
 import il.co.erg.mykumve.data.data_classes.Point
 import il.co.erg.mykumve.util.DifficultyLevel
 
 
 data class TripInfo(
-    internal var _id: String = "",  // Internal mutable field
+    @PropertyName("id") internal var _id: String = "",  // Internal mutable field
     var title: String,
     var points: List<Point>? = null,
     var areaId: Int? = null,

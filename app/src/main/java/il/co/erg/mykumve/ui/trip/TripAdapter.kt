@@ -56,7 +56,7 @@ class TripAdapter(
         fun bind(tripWithInfo: TripWithInfo, sharedViewModel: SharedTripViewModel) {
             val trip = tripWithInfo.trip
             val tripInfo = tripWithInfo.tripInfo
-            Log.d(TAG, "Binding trip ${trip.title}, with total ${trip.invitations.size} invitations and ${trip.participants?.size} participants")
+            Log.d(TAG, "Binding trip ${trip.title}, with total ${trip.invitationIds.size} invitations and ${trip.participants?.size} participants")
             binding.tripTitle.text = trip.title
             binding.areaCard.text = mapAreaToString(context, tripInfo?.subAreaId)
             binding.dateCard.text = trip.gatherTime?.let { Date(it).toFormattedString() }

@@ -92,25 +92,22 @@ class TripRepository {
         }
     }
 
-    suspend fun insertTripWithInfo(trip: Trip, tripInfo: TripInfo, callback: (Resource<Void>) -> Unit) {
-        try {
-            val tripDocument = tripsCollection.document()
-            trip._id = tripDocument.id  // Set the internal mutable field
-            tripDocument.set(trip).await()
+    suspend fun insertTripWithInfo(trip: Trip, tripInfo: TripInfo): Resource<Void> {
+        return safeCall {
+            val tripDocRef = tripsCollection.document()
+            trip._id = tripDocRef.id
 
-            tripInfo.tripId = trip.id
-            val tripInfoDocument = tripInfoCollection.document()
-            tripInfo._id = tripInfoDocument.id  // Set the internal mutable field
-            tripInfoDocument.set(tripInfo).await()
+            FirebaseFirestore.getInstance().runTransaction { transaction ->
+                transaction.set(tripDocRef, trip)
+                val tripInfoDocRef = tripInfoCollection.document()
+                tripInfo._id = tripInfoDocRef.id
+                transaction.set(tripInfoDocRef, tripInfo)
 
-            val updatedTrip = trip.copy(tripInfoId = tripInfo.id)
-            tripDocument.set(updatedTrip).await()
-
-            callback(Resource.success(null))
-        } catch (e: Exception) {
-            callback(Resource.error(e.message ?: "Failed to insert trip and trip info", null))
+                Resource.success(null)
+            }.await()
         }
     }
+
 
     suspend fun updateTrip(trip: Trip): Resource<Void> {
         return try {
@@ -158,7 +155,7 @@ class TripRepository {
                 }
 
                 val trip = tripSnapshot.toObject(Trip::class.java) ?: return@runTransaction Resource.error<Void>("Trip deserialization error")
-                trip.invitations.add(invitation)
+                trip.invitationIds.add(invitation.id)
 
                 transaction.set(tripDocRef, trip)
                 transaction.set(invitationDocRef, invitation)
@@ -188,15 +185,29 @@ class TripRepository {
         }
     }
 
+    fun getTripInvitationById(invitationId: String): Flow<Resource<TripInvitation>> = flow {
+        emit(Resource.loading(null))
+        val result = safeCall {
+            val document = tripInvitationsCollection.document(invitationId).get().await()
+            val invitation = document.toObject<TripInvitation>()
+            if (invitation != null) {
+                Resource.success(invitation)
+            } else {
+                Resource.error("Invitation not found", null)
+            }
+        }
+        emit(result)
+    }
+
+
     fun getTripInvitationsForUser(userId: String): Flow<Resource<List<TripInvitation>>> = flow {
         emit(Resource.loading(null))
-        try {
+        val result = safeCall {
             val snapshot = tripInvitationsCollection.whereEqualTo("userId", userId).get().await()
             val invitations = snapshot.documents.mapNotNull { it.toObject<TripInvitation>() }
-            emit(Resource.success(invitations))
-        } catch (e: Exception) {
-            emit(Resource.error(e.message ?: "Unknown error", null))
+            Resource.success(invitations)
         }
+        emit(result)
     }
 
     fun getTripsByUserId(userId: String): Flow<Resource<List<Trip>>> = flow {

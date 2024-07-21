@@ -12,6 +12,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import il.co.erg.mykumve.data.db.model.TripInvitation
 import il.co.erg.mykumve.R
+import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.databinding.ItemNotificationBinding
 import il.co.erg.mykumve.ui.viewmodel.TripViewModel
 import il.co.erg.mykumve.ui.viewmodel.UserViewModel
@@ -122,7 +123,7 @@ class TripInvitationAdapter(
 
     private fun respondToTripInvitation(invitation: TripInvitation) {
         tripViewModel.respondToTripInvitation(invitation) { result ->
-            Log.d(TAG, if (result) "TripInvitation Accepted" else "TripInvitation Rejected")
+            Log.d(TAG, if (result.status == Status.SUCCESS) "TripInvitation Accepted" else "TripInvitation Rejected")
         }
     }
 

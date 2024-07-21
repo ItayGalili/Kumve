@@ -20,7 +20,6 @@ import il.co.erg.mykumve.R
 import il.co.erg.mykumve.data.data_classes.Equipment
 import il.co.erg.mykumve.data.db.model.Trip
 import il.co.erg.mykumve.data.db.model.TripInfo
-import il.co.erg.mykumve.data.db.model.TripInvitation
 import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.databinding.TravelManagerViewBinding
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
@@ -293,7 +292,7 @@ class TripManager : Fragment() {
         user: User,
         equipmentList: List<Equipment>? = null,
         participantList: List<User>? = null,
-        invitationList: List<TripInvitation>? = null,
+        invitationList: List<String>? = null,
         tripFromSharedViewModel: Trip? = null,
 
         ): Trip {
@@ -308,8 +307,8 @@ class TripManager : Fragment() {
         val participants =
             participantList?.takeIf { it.isNotEmpty() }?.toMutableList() ?: mutableListOf(user)
 
-        val invitations = invitationList?.takeIf { it.isNotEmpty() }?.toMutableList()
-            ?: tripFromSharedViewModel?.invitations?.takeIf { it.isNotEmpty() }?.toMutableList()
+        val invitationsIds = invitationList?.takeIf { it.isNotEmpty() }?.toMutableList()
+            ?: tripFromSharedViewModel?.invitationIds?.takeIf { it.isNotEmpty() }?.toMutableList()
             ?: mutableListOf()
 
         val photo = imagePickerUtil.getImageUri().toString().takeIf { it != "null" }
@@ -325,7 +324,7 @@ class TripManager : Fragment() {
             description = description,
             notes = notes,
             participants = participants,
-            invitations = invitations,
+            invitationIds = invitationsIds,
             equipment = equipments,
             userId = user.id,
             image = photo,
