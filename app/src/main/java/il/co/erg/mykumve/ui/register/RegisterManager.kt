@@ -16,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import il.co.erg.mykumve.R
 import il.co.erg.mykumve.data.db.firebasemvm.util.Status
+import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.databinding.RegisterBinding
 import il.co.erg.mykumve.ui.viewmodel.UserViewModel
 import il.co.erg.mykumve.util.ImagePickerUtil
@@ -175,7 +176,7 @@ class RegisterManager : Fragment(), CoroutineScope {
         }
     }
 
-    fun _normalizePhoneNumber(phoneNumber: String): String {
+    private fun _normalizePhoneNumber(phoneNumber: String): String {
         // Default country code for Israel
         val defaultCountryCode = "+972"
 
@@ -212,8 +213,6 @@ class RegisterManager : Fragment(), CoroutineScope {
         return phoneRegex.matches(phone)
     }
 
-
-
     private fun registerUser(registerBtn: View?) {
         val fullName = binding.name.text.toString()
         val password = binding.passwordRegister.text.toString()
@@ -225,34 +224,24 @@ class RegisterManager : Fragment(), CoroutineScope {
         val firstName = nameParts.firstOrNull() ?: ""
         val surname = if (nameParts.size > 1) nameParts.drop(1).joinToString(" ") else null
 
-        userViewModel.registerUser(
-            firstName,
-            surname,
-            email,
-            password,
-            photo,
-            phone
-        ) { result ->
+        val newUser = User(
+            firstName = firstName,
+            surname = surname,
+            email = email,
+            photo = photo,
+            phone = phone
+        )
+
+        userViewModel.registerUser(newUser, password) { result ->
             launch(Dispatchers.Main) {
                 if (isAdded) {
                     if (result.status == Status.SUCCESS) {
-                        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-                            .addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        R.string.registration_successful,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    findNavController().navigate(R.id.action_registerManager_to_loginManager)
-                                } else {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        task.exception?.message ?: "Registration failed",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
+                        Toast.makeText(
+                            requireContext(),
+                            R.string.registration_successful,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        findNavController().navigate(R.id.action_registerManager_to_loginManager)
                     } else {
                         Toast.makeText(requireContext(), result.message, Toast.LENGTH_SHORT).show()
                     }

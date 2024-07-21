@@ -10,7 +10,7 @@ import il.co.erg.mykumve.data.db.firebasemvm.repository.UserRepository
 import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
 import il.co.erg.mykumve.data.db.firebasemvm.util.Status
-import il.co.erg.mykumve.util.EncryptionUtils
+import il.co.erg.mykumve.data.db.firebasemvm.util.safeCall
 import il.co.erg.mykumve.util.UserManager
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -50,39 +50,37 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun registerUser(
-        firstName: String,
-        surname: String?,
-        email: String,
+        user: User,
         password: String,
-        photo: String?,
-        phone: String?,
-        callback: (Resource<Void>) -> Unit
+        callback: (Resource<User>) -> Unit
     ) {
         viewModelScope.launch {
-            try {
-                val userCredential = auth.createUserWithEmailAndPassword(email, password).await()
+            val result = safeCall {
+                val userCredential = auth.createUserWithEmailAndPassword(user.email, password).await()
                 val firebaseUser = userCredential.user
                 if (firebaseUser != null) {
                     val profileUpdates = UserProfileChangeRequest.Builder()
-                        .setDisplayName("$firstName $surname")
-                        .setPhotoUri(photo?.let { Uri.parse(it) })
+                        .setDisplayName("${user.firstName} ${user.surname}")
+                        .setPhotoUri(user.photo?.let { Uri.parse(it) })
                         .build()
                     firebaseUser.updateProfile(profileUpdates).await()
 
-                    val newUser = User.fromFirebaseUser(firebaseUser).copy(phone = phone)
-                    val result = userRepository.insertUser(newUser)
-                    if (result.status == Status.SUCCESS) {
+                    val newUser = user.copy(_id = firebaseUser.uid)
+                    val insertResult = userRepository.insertUser(newUser)
+                    if (insertResult.status == Status.SUCCESS) {
                         UserManager.saveUser(newUser)
+                        Resource.success(newUser)
+                    } else {
+                        Resource.error("Failed to register user in Firestore", null)
                     }
-                    callback(result)
                 } else {
-                    callback(Resource.error("Failed to register user", null))
+                    Resource.error("Failed to register user with FirebaseAuth", null)
                 }
-            } catch (e: Exception) {
-                callback(Resource.error(e.message ?: "Failed to register user", null))
             }
+            callback(result)
         }
     }
+
 
     fun updateUser(
         user: User,
