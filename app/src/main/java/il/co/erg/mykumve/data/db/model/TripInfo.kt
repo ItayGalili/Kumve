@@ -18,7 +18,6 @@ data class TripInfo(
     var tags: List<String>? = null,
     var isCircular: Boolean? = null,
     var likes: Int? = null,
-    var tripId: String,
     var link:  String? = null,
     var publishedDate: String? = null,
     var isImported: Boolean? = null,
