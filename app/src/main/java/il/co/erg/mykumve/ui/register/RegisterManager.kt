@@ -176,40 +176,25 @@ class RegisterManager : Fragment(), CoroutineScope {
         }
     }
 
-    private fun _normalizePhoneNumber(phoneNumber: String): String {
-        // Default country code for Israel
-        val defaultCountryCode = "+972"
+    private fun _normalizePhoneNumber(phoneNumber: String, defaultCountryCode: String = "+972"): String {
+        // Remove all spaces and other non-digit characters
+        val cleanedPhoneNumber = phoneNumber.replace("\\D".toRegex(), "")
 
-        // Remove spaces
-        var normalizedPhoneNumber = phoneNumber.replace("\\s".toRegex(), "")
-
-        // Check if the number starts with a plus sign and extract the country code
-        val matchResult = Regex(PATTERNS.PHONE).find(normalizedPhoneNumber)
-
-        if (matchResult != null) {
-            var countryCode = matchResult.groupValues[1]
-            var digits = matchResult.groupValues[2]
-
-            // If the digits start with '0' and the total length is 10, remove the leading zero
-            if (digits.startsWith('0') && digits.length == 10) {
-                digits = digits.substring(1)
-            }
-
-            // If no country code is provided, use the default country code
-            if (countryCode.isEmpty()) {
-                countryCode = defaultCountryCode
-            }
-
-            return "$countryCode$digits"
-        } else {
-            throw IllegalArgumentException("Invalid format: Use '+[country code] [9-10 digits]'. Example: +1234567890 or +123 04567890.")
+        // Ensure the number matches the valid phone pattern
+        if (!isValidPhoneNumber(cleanedPhoneNumber)) {
+            throw IllegalArgumentException("Invalid format: Phone number must start with '0' followed by 9 digits.")
         }
+
+        // Remove the leading zero and add the default country code
+        val normalizedPhoneNumber = defaultCountryCode + cleanedPhoneNumber.substring(1)
+
+        return normalizedPhoneNumber
     }
 
     private fun isValidPhoneNumber(phone: String): Boolean {
         // Regex to match an international phone number with a country code (+1 to +9999) optionally followed by a space,
         // then either 10 digits starting with 0 or 9 digits not starting with 0.
-        val phoneRegex = Regex(PATTERNS.PHONE)
+        val phoneRegex = Regex(PATTERNS.VALID_PHONE)
         return phoneRegex.matches(phone)
     }
 

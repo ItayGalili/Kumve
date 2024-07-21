@@ -18,7 +18,8 @@ enum class DifficultyLevel(val id: Int, val stringResId: Int) {
 }
 
 object PATTERNS {
-    const val PHONE = "^\\+?(\\d{1,4})?\\s?(0\\d{9}|\\d{9})$"
+    // Regex for validation: a leading zero followed by 9 digits
+    const val VALID_PHONE = "^0\\d{9}$"
 }
 
 
