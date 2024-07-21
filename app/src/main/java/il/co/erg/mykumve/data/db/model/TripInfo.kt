@@ -20,7 +20,7 @@ data class TripInfo(
     var likes: Int? = null,
     var link:  String? = null,
     var publishedDate: String? = null,
-    var isImported: Boolean? = null,
+    var isImported: Boolean = false,
 ) {
     val id: String
         get() = _id  // Public read-only property
