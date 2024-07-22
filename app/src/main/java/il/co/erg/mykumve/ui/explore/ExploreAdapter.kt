@@ -3,6 +3,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -10,10 +11,15 @@ import il.co.erg.mykumve.R
 import il.co.erg.mykumve.data.db.model.TripInfo
 import il.co.erg.mykumve.databinding.TripInfoCardBinding
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
+import il.co.erg.mykumve.ui.viewmodel.TripViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 
 class ExploreAdapter(
 var tripsInfo: MutableList<TripInfo>,
     private val sharedViewModel: SharedTripViewModel,
+    private val tripViewModel: TripViewModel,
     var context: Context,
     private val lifecycleOwner: LifecycleOwner
 ) : RecyclerView.Adapter<ExploreAdapter.TripInfoViewHolder>() {
@@ -22,10 +28,8 @@ var tripsInfo: MutableList<TripInfo>,
     inner class TripInfoViewHolder(private val binding: TripInfoCardBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(tripInfo: TripInfo) {
             binding.tripInfoDescription.text = tripInfo.description
-            binding.tripInfoDifficulty.text=tripInfo.difficulty.toString()
+            binding.tripInfoDifficulty.text=context.getString(tripInfo.difficulty.prettyString())
             binding.tripInfoTitle.text = tripInfo.title
-            //binding.tripInfoSubarea.text =
-            //binding.tripInfoArea.text =
             if(tripInfo.length?.isNaN() == false){
                 binding.tripInfoLength.text= buildString {
                     append((tripInfo.length.toString()))
@@ -51,7 +55,16 @@ var tripsInfo: MutableList<TripInfo>,
                 .error(R.drawable.my_alerts) // Error image
                 .into(binding.tripInfoImage)
             // Set the content description for accessibility, handle empty alt text
+            binding.tripInfoDescription.setText(imageAltText)
             binding.tripInfoImage.contentDescription = if (imageAltText.isNullOrBlank()) "Image" else imageAltText
+
+            lifecycleOwner.lifecycleScope.launch {
+                val subArea = tripViewModel.allSubAreas.collectLatest { it.find { it.nameKey == tripInfo.subAreaId }}
+                binding.tripInfoSubarea.text = subArea.toString()
+                val area = tripViewModel.allAreas.collectLatest { it.find  { it.nameKey == tripInfo.areaId }}
+                binding.tripInfoArea.text = area.toString()
+            }
+
             binding.addTripInfoCardToMyTrips.setOnClickListener {
                 sharedViewModel.isNavigatedFromExplore = true
                 it.findNavController().navigate(R.id.action_exploreFragment_to_travelManager)

@@ -31,7 +31,7 @@ class ExploreFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var exploreAdapter: ExploreAdapter
     private var currentUser: User? = null
-    private val tripInfoViewModel: TripViewModel by activityViewModels()
+    private val tripViewModel: TripViewModel by activityViewModels()
 
 
     override fun onCreateView(
@@ -62,6 +62,7 @@ class ExploreFragment : Fragment() {
         exploreAdapter = ExploreAdapter(
             mutableListOf(),
             sharedViewModel,
+            tripViewModel,
             requireContext(),
             lifecycleOwner = viewLifecycleOwner,
         )
@@ -72,8 +73,8 @@ class ExploreFragment : Fragment() {
             currentUser?.let { user ->
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        tripInfoViewModel.fetchAllTripsInfo()
-                        tripInfoViewModel.tripsInfo.collectLatest { tripsInfo ->
+                        tripViewModel.fetchAllTripsInfo()
+                        tripViewModel.tripsInfo.collectLatest { tripsInfo ->
                             Log.d(TAG,"${tripsInfo.size} trips info found")
                             exploreAdapter.updateTripList(tripsInfo)
                             exploreAdapter.notifyDataSetChanged()

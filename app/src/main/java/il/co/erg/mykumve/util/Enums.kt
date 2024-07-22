@@ -36,9 +36,6 @@ fun fromDifficultyValue(value: Any?): DifficultyLevel {
     }
 }
 
-
-
-
     object PATTERNS {
         // Regex for validation: a leading zero followed by 9 digits
         const val VALID_PHONE = "^0\\d{9}$"

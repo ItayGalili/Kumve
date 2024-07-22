@@ -79,6 +79,8 @@ class MainScreenManager : Fragment() {
     private fun initializeComponent() {
         sharedViewModel.isEditingExistingTrip = false
         sharedViewModel.isCreatingTripMode = false
+        tripViewModel.fetchAllAreas()
+        tripViewModel.fetchAllSubAreas()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

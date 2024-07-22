@@ -11,12 +11,12 @@ data class TripInfo(
     @PropertyName("id") internal var _id: String = "",  // Internal mutable field
     var title: String,
     var points: List<Point>? = null,
-    var areaId: Int? = null,
-    var subAreaId: Int? = null,
+    var areaId: String? = null,
+    var subAreaId: String? = null,
     var description: String? = null,
     var routeDescription: String? = null,
     var difficulty: DifficultyLevel = DifficultyLevel.UNSET,
-    var length: Float? = null,
+    var length: Double? = null,
     var tags: List<String>? = null,
     var isCircular: Boolean? = null,
     var likes: Int? = null,
@@ -33,14 +33,14 @@ data class TripInfo(
             val id = document.get("id") as? String? ?: ""
             val title = document.get("title") as?  String? ?: ""
             val points = document.get("points") as? List<Point>?
-            val areaId = document.get("areaId") as?  Int?
-            val subAreaId = document.get("subAreaId") as?  Int?
+            val areaId = document.get("areaId") as? String?
+            val subAreaId = document.get("subAreaId") as? String?
             val description = document.get("description") as?  String? ?: ""
             val routeDescription = document.get("routeDescription") as?  String? ?: ""
-            val difficultyValue = document.get("difficulty") as?  DifficultyLevel? ?: DifficultyLevel.UNSET
+            val difficultyValue = document.get("difficulty") as? Double
             val difficulty = fromDifficultyValue(difficultyValue)
-            val length = document.get("length") as? Float? ?: 0.0f
-            val tags = document.get("tags") as?  List<String>? ?: emptyList()
+            val length = document.get("length") as? Double? ?: 0.0 //
+            val tags = document.get("tags") as? List<String>? ?: emptyList()
             val isCircular = document.get("isCircular") as?  Boolean? ?: false
             val likes = document.get("likes") as?  Int? ?: 0
             val link = document.get("link") as?  String? ?: ""
