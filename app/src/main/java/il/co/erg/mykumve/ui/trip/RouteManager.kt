@@ -102,7 +102,9 @@ class RouteManager : Fragment() {
             } else {
                 tripViewModel.updateTrip(trip)
             }
-            result = true
+            tripViewModel.operationResult.collectLatest {
+                result = it.status == Status.SUCCESS
+            }
         }
         job.join() // Ensure the coroutine completes before returning
         return result

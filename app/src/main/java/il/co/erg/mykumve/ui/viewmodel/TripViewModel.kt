@@ -68,7 +68,7 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
                             tripInfoRepository.getTripInfoById(tripInfoId).collectLatest { tripInfoResource ->
                                 val tripInfo = if (tripInfoResource.status == Status.SUCCESS) tripInfoResource.data else null
                                 val tripWithInfo = TripWithInfo(trip, tripInfo)
-                                if (!tripsWithInfoList.any { it.trip.id == tripWithInfo.trip.id }) { // for duplication
+                                if (!tripsWithInfoList.any { it.trip?.id == tripWithInfo.trip?.id }) { // for duplication
                                     tripsWithInfoList.add(tripWithInfo)
                                 }
                             }
