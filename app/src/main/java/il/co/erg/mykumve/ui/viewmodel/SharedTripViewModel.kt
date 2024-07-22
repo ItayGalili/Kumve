@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class SharedTripViewModel : ViewModel() {
+    var isExactlyOneTripIsChecked = false
     val TAG = SharedTripViewModel::class.java.simpleName
 
     private lateinit var tripViewModel: TripViewModel

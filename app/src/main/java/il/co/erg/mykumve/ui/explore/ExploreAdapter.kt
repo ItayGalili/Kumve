@@ -2,6 +2,7 @@ package il.co.erg.mykumve.ui.explore
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
@@ -13,11 +14,10 @@ import il.co.erg.mykumve.databinding.TripInfoCardBinding
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
 import il.co.erg.mykumve.ui.viewmodel.TripViewModel
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 class ExploreAdapter(
-var tripsInfo: MutableList<TripInfo>,
+    var tripsInfo: MutableList<TripInfo>,
     private val sharedViewModel: SharedTripViewModel,
     private val tripViewModel: TripViewModel,
     var context: Context,
@@ -27,7 +27,23 @@ var tripsInfo: MutableList<TripInfo>,
     private var filteredTripList: MutableList<TripInfo> = tripsInfo.toMutableList()
     inner class TripInfoViewHolder(private val binding: TripInfoCardBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(tripInfo: TripInfo) {
-            binding.tripInfoDescription.text = tripInfo.description
+
+            if(sharedViewModel.isNavigatedFromExplore){
+                binding.checkBox.isVisible=false
+                binding.expandTripInfo.isVisible=true
+            }
+            else{
+                binding.checkBox.isVisible=true
+                binding.expandTripInfo.isVisible=false
+            }
+            var checkBoxCunter=0
+            if(binding.checkBox.isVisible){
+                binding.checkBox.setOnClickListener(){
+                    checkBoxCunter=checkBoxCunter+1
+                }
+            }
+            sharedViewModel.isExactlyOneTripIsChecked = checkBoxCunter == 1
+
             binding.tripInfoDifficulty.text=context.getString(tripInfo.difficulty.prettyString())
             binding.tripInfoTitle.text = tripInfo.title
             if(tripInfo.length?.isNaN() == false){
@@ -39,12 +55,6 @@ var tripsInfo: MutableList<TripInfo>,
             else{
                 binding.tripInfoLength.text="Length is not specified"
             }
-            if(tripInfo.publishedDate == null){
-                binding.tripInfoCreationDate.text= tripInfo.publishedDate
-            }
-            else{
-                binding.tripInfoCreationDate.text="No Publish Date"
-            }
             // Extract image URL and alt text from the map, handling null cases
             val imageUrl = tripInfo.imageInfo?.get("src") ?: ""
             val imageAltText = tripInfo.imageInfo?.get("alt") ?: ""
@@ -55,7 +65,7 @@ var tripsInfo: MutableList<TripInfo>,
                 .error(R.drawable.my_alerts) // Error image
                 .into(binding.tripInfoImage)
             // Set the content description for accessibility, handle empty alt text
-            binding.tripInfoDescription.setText(imageAltText)
+            binding.tripInfoImageDescription.setText(imageAltText)
             binding.tripInfoImage.contentDescription = if (imageAltText.isNullOrBlank()) "Image" else imageAltText
 
             lifecycleOwner.lifecycleScope.launch {
@@ -110,6 +120,3 @@ var tripsInfo: MutableList<TripInfo>,
         notifyDataSetChanged()
     }
 }
-
-
-

@@ -1,14 +1,19 @@
 package il.co.erg.mykumve.ui.trip
 
+import android.content.Intent
+import android.net.Uri
 import androidx.recyclerview.widget.RecyclerView
 
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -18,7 +23,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import il.co.erg.mykumve.R
-import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
 import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.data.db.model.TripInvitation
 import il.co.erg.mykumve.data.db.model.User
@@ -35,6 +39,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import android.Manifest
+import android.app.Activity
+import java.util.regex.Pattern
 
 
 class InvitationListFragment : Fragment() {
@@ -46,6 +53,8 @@ class InvitationListFragment : Fragment() {
     private val sharedTripViewModel: SharedTripViewModel by activityViewModels()
     private val tripViewModel: TripViewModel by activityViewModels()
     private val userViewModel: UserViewModel by activityViewModels()
+    private lateinit var contactsPermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var pickContactLauncher: ActivityResultLauncher<Intent>
 
 
     override fun onCreateView(
@@ -59,6 +68,23 @@ class InvitationListFragment : Fragment() {
                 currentUser = user
             }
         }
+        contactsPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                openContacts()
+            } else {
+                Toast.makeText(requireContext(), "Contacts permission is required to pick a contact.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        pickContactLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.data?.let { contactUri ->
+                    extractPhoneNumber(contactUri)
+                }
+            }
+        }
+
+
         setupRecyclerView()
         observeTripInvitations()
         logPossiblePartner()
@@ -88,20 +114,77 @@ class InvitationListFragment : Fragment() {
             }
         }
         binding.addPartner.setOnClickListener {
+            requestContactsPermission()
+            openContacts()
             val phoneNumber = binding.phoneNumberToInvite.text.toString()
-            try {
-                invitePartnerByPhone(normalizePhoneNumber(phoneNumber))
-            } catch (e: Exception) {
-                Log.e(TAG, "Error inviting partner", e)
-                Toast.makeText(requireContext(), "Invalid phone number.", Toast.LENGTH_SHORT).show()
-            }
+//            try {
+//                invitePartnerByPhone(normalizePhoneNumber(phoneNumber))
+//            } catch (e: Exception) {
+//                Log.e(TAG, "Error inviting partner", e)
+//                Toast.makeText(requireContext(), "Invalid phone number.", Toast.LENGTH_SHORT).show()
+//            }
         }
     }
+
 
     private fun handleCloseButton() {
         //            saveData() todo (save to db / cached the removed ones also)
         findNavController().navigate(R.id.action_invitationListFragment_to_partnerListFragment)
     }
+
+    private fun requestContactsPermission() {
+        contactsPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+    }
+
+    private fun openContacts() {
+        val intent = Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI)
+        pickContactLauncher.launch(intent)
+    }
+
+    private fun extractPhoneNumber(contactUri: Uri) {
+        val projection = arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER)
+        val cursor = requireContext().contentResolver.query(contactUri, projection, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val phoneNumber = it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                handlePhoneNumber(phoneNumber)
+            }
+        }
+    }
+
+    private fun handlePhoneNumber(phoneNumber: String) {
+        try {
+            val normalizedPhoneNumber = normalizePhoneNumber(phoneNumber)
+            Log.d(TAG, "normalizedPhoneNumber: $normalizedPhoneNumber")
+            Log.d(TAG, "phoneNumber: $phoneNumber")
+//            invitePartnerByPhone(normalizedPhoneNumber)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error inviting partner", e)
+            Toast.makeText(requireContext(), "Invalid phone number.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun normalizePhoneNumber(phoneNumber: String): String {
+        val defaultCountryCode = "+972"
+        var normalizedPhoneNumber = phoneNumber
+            .replace("\\s".toRegex(), "")  // Remove spaces
+            .replace("-", "")  // Remove dashes
+
+        if (normalizedPhoneNumber.startsWith("+972")) {
+            normalizedPhoneNumber = normalizedPhoneNumber.removePrefix("+972")
+        }
+
+        if (normalizedPhoneNumber.startsWith("0")) {
+            normalizedPhoneNumber = normalizedPhoneNumber.substring(1, (normalizedPhoneNumber.length-1))
+        }
+
+        if (normalizedPhoneNumber.length != 10) {
+            throw IllegalArgumentException("Invalid phone number format: Total number of digits should be 10")
+        }
+
+        return "$defaultCountryCode$normalizedPhoneNumber"
+    }
+
 
     private fun invitePartnerByPhone(phoneNumber: String) {
         Log.d(TAG, "Phone number to invite: $phoneNumber")

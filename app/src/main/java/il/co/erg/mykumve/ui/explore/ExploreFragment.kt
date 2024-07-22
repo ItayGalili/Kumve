@@ -41,7 +41,7 @@ class ExploreFragment : Fragment() {
     ): View {
         _binding = ExploreBinding.inflate(inflater, container, false)
         val view = binding.root
-
+        sharedViewModel.isNavigatedFromExplore = true
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             findNavController().navigate(R.id.exploreFragment)
         }
