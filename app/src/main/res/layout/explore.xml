@@ -1,22 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
-    tools:context=".ui.SocialNetworkManager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#BBA886">
+    android:background="@color/white"
+    tools:context=".ui.explore.ExploreFragment">
+    <androidx.appcompat.widget.SearchView
+        android:layout_width="0dp"
+        android:backgroundTint="@color/almostWhite"
+        android:background="@drawable/search_view_background"
+        android:layout_height="wrap_content"
+        android:id="@+id/search_view"
+        android:layout_margin="8dp"
+        app:queryHint="Search an area in Israel to explore..."
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:iconifiedByDefault="false"/>
+
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/exploreRecyclerView"
+        android:layout_width="395dp"
+        android:layout_height="574dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toTopOf="@id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toBottomOf="@id/search_view"/>
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -33,7 +46,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/white"
+            android:backgroundTint="@color/lightGrey"
             android:padding="15dp"
             android:scaleType="fitCenter"
             android:src="@drawable/search_trips_vector" />
@@ -46,7 +59,7 @@
             android:backgroundTint="@color/white"
             android:padding="15dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/my_trips_vector" />
+            android:src="@drawable/my_trips_vector"/>
 
         <ImageButton
             android:id="@+id/reports_btn"
@@ -57,6 +70,7 @@
             android:scaleType="fitCenter"
             android:src="@drawable/reports_vector" />
     </LinearLayout>
+
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
@@ -73,28 +87,28 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textStyle="bold"
-            android:gravity="center"
             android:background="@color/white"
-            android:text="Explore"/>
+            android:gravity="center"
+            android:text="Explore"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/ms_btn_text"
             android:layout_width="0dp"
-            android:textStyle="bold"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="My Trips"/>
+            android:text="My Trips"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/reports_btn_text"
             android:layout_width="0dp"
-            android:textStyle="bold"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Live Reports" />
+            android:text="Live Reports"
+            android:textStyle="bold" />
     </LinearLayout>
 
 

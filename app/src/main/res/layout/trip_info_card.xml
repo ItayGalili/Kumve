@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:layout_marginBottom="10dp"
+    android:background="@color/almostWhite">
+
+    <ImageView
+        android:id="@+id/trip_info_image"
+        android:layout_width="129dp"
+        android:layout_height="161dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/my_alerts"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
+    <TextView
+        android:id="@+id/trip_info_image_description"
+        android:layout_width="0dp"
+        android:text="Image description"
+        android:layout_height="wrap_content"
+        android:textColor="@color/lightGrey"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_image"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/trip_info_title"
+        android:layout_width="0dp"
+        android:text="trip title"
+        android:layout_height="wrap_content"
+        android:textColor="@color/TextColor"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toTopOf="@id/trip_info_image"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/trip_info_length"
+        android:layout_width="0dp"
+        android:text="trip length"
+        android:layout_height="wrap_content"
+        android:textColor="@color/royalBlue"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_title"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/trip_info_creation_date"
+        android:layout_width="0dp"
+        android:text="trip publish date"
+        android:layout_height="wrap_content"
+        android:textColor="@color/royalBlue"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_length"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/trip_info_area"
+        android:layout_width="0dp"
+        android:text="trip area"
+        android:layout_height="wrap_content"
+        android:textColor="@color/royalBlue"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_creation_date"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <TextView
+        android:id="@+id/trip_info_subarea"
+        android:layout_width="0dp"
+        android:text="trip sub area"
+        android:layout_height="wrap_content"
+        android:textColor="@color/royalBlue"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_area"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <TextView
+        android:id="@+id/trip_info_description"
+        android:layout_width="0dp"
+        android:text="trip description"
+        android:layout_height="wrap_content"
+        android:textColor="@color/royalBlue"
+        android:textSize="14sp"
+        android:maxLines="3"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_subarea"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <TextView
+        android:id="@+id/trip_info_difficulty"
+        android:layout_width="0dp"
+        android:text="trip difficulty"
+        android:layout_height="wrap_content"
+        android:textColor="@color/royalBlue"
+        android:textSize="14sp"
+        android:maxLines="1"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_description"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/trip_info_add"
+        android:layout_width="180dp"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="Start planning this trip"
+        android:textColor="@color/kumve_android_app_icon_background_layer"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_difficulty" />
+
+    <ImageButton
+        android:id="@+id/expand_trip_info"
+        android:layout_width="35dp"
+        android:layout_height="30dp"
+        android:background="@color/almostWhite"
+        android:src="@drawable/expand_vector"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/black" />
+
+    <ImageButton
+        android:id="@+id/add_trip_info_card_to_my_trips"
+        android:layout_width="39dp"
+        android:layout_height="33dp"
+        android:layout_marginLeft="4dp"
+        android:background="@color/almostWhite"
+        android:scaleType="fitXY"
+        android:src="@drawable/add_circle_vector"
+        app:layout_constraintEnd_toStartOf="@id/trip_info_add"
+        app:layout_constraintStart_toEndOf="@id/trip_info_image"
+        app:layout_constraintTop_toBottomOf="@id/trip_info_difficulty"
+        app:tint="@color/kumve_android_app_icon_background_layer" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

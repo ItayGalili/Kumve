@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -16,6 +17,7 @@ import il.co.erg.mykumve.data.db.model.Report
 import il.co.erg.mykumve.databinding.ReportsBinding
 import il.co.erg.mykumve.ui.reports.reports.ReportsAdapter
 import il.co.erg.mykumve.ui.viewmodel.ReportsViewModel
+import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -25,11 +27,16 @@ class UsersReports : Fragment(), AddReportDialogFragment.OnReportAddedListener {
     private val binding get() = _binding!!
     private val viewModel: ReportsViewModel by activityViewModels()
     private lateinit var reportsAdapter: ReportsAdapter
+    private val sharedViewModel: SharedTripViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            findNavController().navigate(R.id.UserReports)
+        }
+
         _binding = ReportsBinding.inflate(inflater, container, false)
 
         setupRecyclerView()
@@ -62,7 +69,7 @@ class UsersReports : Fragment(), AddReportDialogFragment.OnReportAddedListener {
             dialogFragment.show(childFragmentManager, "AddReportDialogFragment")
         }
         binding.partnersBtnMs.setOnClickListener {
-            findNavController().navigate(R.id.action_UsersReports_to_networkManager)
+            findNavController().navigate(R.id.action_UsersReports_to_exploreFragment)
         }
         binding.msBtn.setOnClickListener {
             findNavController().navigate(R.id.action_UsersReports_to_mainScreenManager)

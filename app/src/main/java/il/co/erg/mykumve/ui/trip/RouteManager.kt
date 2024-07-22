@@ -145,6 +145,7 @@ class RouteManager : Fragment() {
             tags = tags,
             isCircular = isCircular,
             likes = likes,
+
         )
         return tripInfo
     }

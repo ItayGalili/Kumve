@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.net.toUri
+import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -140,6 +141,14 @@ class TripManager : Fragment() {
         binding.dateEndBtn.setOnClickListener {
             showDateTimePicker(false)
         }
+        if(sharedViewModel.isCreatingTripMode){
+            binding.tripSaveBtn.isVisible=false
+            binding.NextBtn.isVisible=true
+        }
+        else{
+            binding.tripSaveBtn.isVisible=true
+            binding.NextBtn.isVisible=false
+        }
 
         //equipment list:
         binding.equipmentListBtn.setOnClickListener {
@@ -222,6 +231,7 @@ class TripManager : Fragment() {
                     }
                 }
             }
+
 
 
         }
