@@ -17,7 +17,7 @@
         android:gravity="center_horizontal"
         android:textColor="@color/statusBarColor"
         android:textSize="20sp"
-        android:text="route" />
+        android:text="" />
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"

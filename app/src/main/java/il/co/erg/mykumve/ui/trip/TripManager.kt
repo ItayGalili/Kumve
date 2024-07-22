@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import il.co.erg.mykumve.R
+import il.co.erg.mykumve.data.db.firebasemvm.util.Status
 import il.co.erg.mykumve.data.db.model.Trip
 import il.co.erg.mykumve.data.db.model.TripInfo
 import il.co.erg.mykumve.data.db.model.User
@@ -32,6 +33,7 @@ import il.co.erg.mykumve.util.UserManager
 import il.co.erg.mykumve.util.Utility.timestampToString
 import il.co.erg.mykumve.util.loadImage
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -105,6 +107,25 @@ class TripManager : Fragment() {
         }
     }
 
+    private suspend fun saveTrip(): Boolean {
+        val tripInfo = sharedViewModel.tripInfo.firstOrNull()
+        val trip = sharedViewModel.trip.firstOrNull()?.copy(tripInfoId = tripInfo?.id)
+        if (trip == null) {
+            Log.e(TAG, "saveTrip: trip is Null")
+            return false
+        }
+        var result = false
+        val job = viewLifecycleOwner.lifecycleScope.launch {
+            if (!sharedViewModel.isEditingExistingTrip) { // creating new trip
+                tripViewModel.addTrip(trip)
+            } else {
+                tripViewModel.updateTrip(trip)
+            }
+            result = true
+        }
+        job.join() // Ensure the coroutine completes before returning
+        return result
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -182,10 +203,38 @@ class TripManager : Fragment() {
             }
         }
 
+        binding.tripSaveBtn.setOnClickListener{
+            if (verifyRouteForm()) {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    val saveResult = saveTrip()
+                    Log.d(TAG, "Save result: $saveResult")
+                }
+                // Observe the operation result
+                viewLifecycleOwner.lifecycleScope.launch {
+                    repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        tripViewModel.operationResult.collectLatest { result ->
+                            if (result.status == Status.SUCCESS) {
+                                Log.d(TAG, "Operation succeeded: ${result.message}")
+                                sharedViewModel.isEditingExistingTrip = false
+                                sharedViewModel.resetNewTripState()
+                                findNavController().navigate(R.id.action_routeManager_to_mainScreenManager)
+                            } else {
+                                Log.e(TAG, "Operation failed: ${result.message}")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         binding.tripImage.setOnClickListener {
             imagePickerUtil.pickImage()
         }
         return binding.root
+    }
+
+    private fun verifyRouteForm(): Boolean {
+        return binding.nameTrip.toString().isNotEmpty()
     }
 
     private fun verifyTripForm(): Boolean {

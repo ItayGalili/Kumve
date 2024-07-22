@@ -125,8 +125,19 @@
         <action
             android:id="@+id/action_exploreFragment_to_travelManager"
             app:destination="@id/travelManager"/>
+        <action
+            android:id="@+id/action_exploreFragment_to_expendedTripInfoFragment"
+            app:destination="@id/expendedTripInfoFragment"/>
+    </fragment>
 
-
+    <fragment
+        android:id="@+id/expendedTripInfoFragment"
+        android:name="il.co.erg.mykumve.ui.explore.ExpendedTripInfoFragment"
+        tools:layout="@layout/trip_info"
+        >
+        <action
+            android:id="@+id/action_expendedTripInfoFragment_to_exploreFragment"
+            app:destination="@id/exploreFragment" />
 
     </fragment>
 

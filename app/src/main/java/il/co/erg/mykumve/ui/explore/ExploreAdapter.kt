@@ -65,12 +65,10 @@ var tripsInfo: MutableList<TripInfo>,
                 binding.tripInfoArea.text = area.toString()
             }
 
-            binding.addTripInfoCardToMyTrips.setOnClickListener {
-                sharedViewModel.isNavigatedFromExplore = true
-                it.findNavController().navigate(R.id.action_exploreFragment_to_travelManager)
-            }
             binding.expandTripInfo.setOnClickListener {
-                it.findNavController().navigate(R.id.action_exploreFragment_to_tripReview)
+                sharedViewModel.isNavigatedFromExplore = true
+                sharedViewModel.selectTripInfo(tripInfo)
+                it.findNavController().navigate(R.id.action_exploreFragment_to_expendedTripInfoFragment)
             }
         }
     }

@@ -28,6 +28,7 @@ class SharedTripViewModel : ViewModel() {
                                                 // fill other details about my trip - for the first time ever
                                                 // (like a brand new trip by with no "next" button, replaced with save)
 
+    private val _selectedExistingTripInfo = MutableStateFlow<TripInfo?>(null)
     private val _selectedExistingTripWithInfo = MutableStateFlow<TripWithInfo?>(null)
     private val _partialTrip = MutableStateFlow<Trip?>(null)
     private val _partialTripInfo = MutableStateFlow<TripInfo?>(null)
@@ -42,11 +43,22 @@ class SharedTripViewModel : ViewModel() {
             ).asStateFlow()
         } ?: MutableStateFlow(null).asStateFlow()
     val tripInfo: StateFlow<TripInfo?>
-        get() = if (isCreatingTripMode) _partialTripInfo.asStateFlow() else _selectedExistingTripWithInfo.value?.tripInfo?.let {
-            MutableStateFlow(
-                it
-            ).asStateFlow()
-        } ?: MutableStateFlow(null).asStateFlow()
+        get() {
+            return if (isCreatingTripMode) {
+                _partialTripInfo.asStateFlow()
+            } else if (isNavigatedFromExplore) {
+                _selectedExistingTripInfo.value?.let {
+                    MutableStateFlow(
+                        it
+                    ).asStateFlow()
+                } ?: MutableStateFlow(null).asStateFlow()
+            } else _selectedExistingTripWithInfo.value?.tripInfo?.let {
+                MutableStateFlow(
+                    it
+                ).asStateFlow()
+            } ?: MutableStateFlow(null).asStateFlow()
+        }
+
 
     fun setPartialTrip(trip: Trip) {
         if (_partialTrip.value != trip) {
@@ -73,6 +85,26 @@ class SharedTripViewModel : ViewModel() {
         tripViewModel = ViewModelProvider(viewModelStoreOwner).get(TripViewModel::class.java)
     }
 
+
+    fun selectTripInfo(tripInfo: TripInfo){
+        if(isNavigatedFromExplore){
+            if (_selectedExistingTripInfo.value!=tripInfo){
+                Log.d(
+                    TAG,
+                    "Selecting existing trip from Explore. title:" +
+                            " ${tripInfo.title}, id: ${tripInfo.id}"
+                )
+                _selectedExistingTripInfo.value = tripInfo
+            }
+            else {
+                Log.v(
+                TAG,
+                "Not selecting same trip from explorer. title:" +
+                        " ${tripInfo.title}, id: ${tripInfo.id}"
+            )
+            }
+        }
+    }
     fun selectExistingTripWithInfo(tripWithInfo: TripWithInfo) {
         isEditingExistingTrip = true
         if (_selectedExistingTripWithInfo.value != tripWithInfo) {
