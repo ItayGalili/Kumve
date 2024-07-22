@@ -86,7 +86,7 @@
 
     <fragment
         android:id="@+id/UserReports"
-        android:name="il.co.erg.mykumve.ui.reports.UsersReports"
+        android:name="il.co.erg.mykumve.ui.reports.UsersReportsFragment"
         android:label="user_reports"
         tools:layout="@layout/reports">
         <action

@@ -35,7 +35,7 @@ class AddReportDialogFragment : DialogFragment() {
     private val reportsViewModel: ReportsViewModel by activityViewModels()
     private lateinit var imagePickerUtil: ImagePickerUtil
 
-    private var capturedImageBitmap: Bitmap? = null
+    private var capturedImage: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,9 +45,9 @@ class AddReportDialogFragment : DialogFragment() {
 
         imagePickerUtil = ImagePickerUtil(this,
             onImagePicked = { uri ->
-                uri?.let {
+                uri.let {
                     binding.reportImage.setImageURI(it)
-                    capturedImageBitmap = uriToBitmap(it)
+                    capturedImage = uri.toString()
                 }
             },
             onImageUploadResult = { success, downloadUrl ->
@@ -96,11 +96,22 @@ class AddReportDialogFragment : DialogFragment() {
 
     private fun saveReport() {
         val description = binding.reportDescription.text.toString().trim()
-        val reporterName = UserUtils.getFullName(UserManager.getUser())
+//        val reporterName = UserUtils.getFullName(UserManager.getUser())
+        val reporter = UserManager.getUser()?.id
         val timestamp = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(Date())
 
-        if (description.isNotEmpty() && capturedImageBitmap != null) {
-            val report = Report(capturedImageBitmap!!, description, "Reported By: $reporterName", timestamp)
+        if (description.isNotEmpty() && capturedImage != null) {
+            val report = Report(
+                photo=capturedImage,
+                description = description,
+                reporter = reporter,
+                timestamp = timestamp
+            )
+//            val report = Report(
+//                capturedImage!!,
+//                description,
+//                "Reported By: $reporterName",
+//                timestamp)
             listener?.onReportAdded(report)
             dismiss()
         }

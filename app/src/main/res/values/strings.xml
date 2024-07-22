@@ -91,4 +91,6 @@
     <string name="trip_invitation_list_title">Invitation List</string>
     <string name="permission_denied">Permission Denied</string>
     <string name="password_changed_successfully">Password changed successfully</string>
+    <string name="unkown_reporter">Unknown reporter</string>
+    <string name="reported_by">Reported by</string>
 </resources>

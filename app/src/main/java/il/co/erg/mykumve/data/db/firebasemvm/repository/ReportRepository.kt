@@ -1,16 +1,22 @@
 package il.co.erg.mykumve.data.db.firebasemvm.repository
 
 import android.graphics.Bitmap
+import android.net.Uri
 import android.util.Log
+import androidx.core.net.toUri
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storageMetadata
 import il.co.erg.mykumve.data.db.firebasemvm.util.Resource
 import il.co.erg.mykumve.data.db.firebasemvm.util.Status
+import il.co.erg.mykumve.data.db.firebasemvm.util.safeCall
 import il.co.erg.mykumve.data.db.model.Report
+import il.co.erg.mykumve.util.ImagePickerUtil
 import kotlinx.coroutines.tasks.await
 import java.io.ByteArrayOutputStream
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class ReportRepository {
 
@@ -19,23 +25,34 @@ class ReportRepository {
     private val reportsCollection = db.collection("reports")
 
     suspend fun addReport(report: Report): Resource<String> {
-        return try {
+        return safeCall {
             val reportId = reportsCollection.document().id
-            val imagePath = "reports_images/$reportId.jpg"
-            val uploadImageResult = report.imageBitmap?.let { uploadImage(it, imagePath) }
+            val imageUri = report.photo?.toUri()
+            if (imageUri != null) {
+                val uploadImageResult = suspendCoroutine<Resource<String>> { continuation ->
+                    ImagePickerUtil.uploadImageToFirestore(imageUri) { success, downloadUrl ->
+                        if (success && downloadUrl != null) {
+                            continuation.resume(Resource.success(downloadUrl))
+                        } else {
+                            continuation.resume(Resource.error("Failed to upload image"))
+                        }
+                    }
+                }
 
-            if (uploadImageResult != null && uploadImageResult.status == Status.SUCCESS) {
-                val newReport = report.copy(imageBitmap = null)
-                reportsCollection.document(reportId).set(newReport).await()
-                Resource.success("Report added successfully")
+                if (uploadImageResult.status == Status.SUCCESS) {
+                    val newReport = report.copy(photo = uploadImageResult.data)
+                    reportsCollection.document(reportId).set(newReport).await()
+                    Resource.success("Report added successfully")
+                } else {
+                    uploadImageResult
+                }
             } else {
-                Resource.error("Failed to upload image")
+                reportsCollection.document(reportId).set(report).await()
+                Resource.success("Report added successfully without image")
             }
-        } catch (e: Exception) {
-            Log.e("ReportRepository", "Error adding report", e)
-            Resource.error("Failed to add report: ${e.message}")
         }
     }
+
 
     suspend fun getReports(): Resource<List<Report>> {
         return try {

@@ -1,7 +1,8 @@
 package il.co.erg.mykumve.ui.viewmodel
 
 import android.app.Application
-import android.graphics.Bitmap
+import android.util.Log
+import androidx.core.net.toUri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import il.co.erg.mykumve.data.db.firebasemvm.repository.ReportRepository
@@ -13,7 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class ReportsViewModel(application: Application) : AndroidViewModel(application) {
-
+    val TAG = ReportsViewModel::class.java.simpleName
     private val reportRepository = ReportRepository()
 
     private val _reports = MutableStateFlow<List<Report>>(emptyList())
@@ -28,17 +29,24 @@ class ReportsViewModel(application: Application) : AndroidViewModel(application)
             val result = reportRepository.getReports()
             if (result.status == Status.SUCCESS) {
                 _reports.value = result.data ?: emptyList()
+                Log.d(TAG, "Reports fetched successfully: ${_reports.value.size} reports")
                 _operationResult.value = Resource.success("Reports fetched successfully")
             } else {
+                Log.e(TAG, "Failed to fetch reports: ${result.message}")
                 _operationResult.value = Resource.error(result.message ?: "Failed to fetch reports")
             }
         }
     }
 
-    fun addReport(imageBitmap: Bitmap, description: String, reporter: String) {
+    fun addReport(report: Report) {
         viewModelScope.launch {
             _operationResult.value = Resource.loading()
-            val report = Report(imageBitmap, description, reporter)
+//            val report = Report(
+//                photo=report.photo,
+//                description = report.description,
+//                reporter = report.reporter,
+//                timestamp = report.timestamp)
+
             val result = reportRepository.addReport(report)
             _operationResult.value = result
             if (result.status == Status.SUCCESS) {

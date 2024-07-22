@@ -73,7 +73,7 @@ class MyProfile : Fragment(), CoroutineScope {
                 binding.profilePic.setImageURI(user.photo?.toUri())
                 binding.profileUserFullNameTv.setText(UserUtils.getFullName(user))
                 binding.changeProfilePic.setOnClickListener {
-                    showImagePickerDialog()
+                    imagePickerUtil.showImagePickerDialog(requireContext())
                 }
                 binding.profileEmail.setText(user.email)
                 binding.profilePhoneNumber.setText(user.phone)
@@ -88,34 +88,13 @@ class MyProfile : Fragment(), CoroutineScope {
         return view
     }
 
-    private fun showImagePickerDialog() {
-        val items = arrayOf<CharSequence>("Take Photo", "Choose from Library", "Cancel")
-        val builder = androidx.appcompat.app.AlertDialog.Builder(requireContext())
-        builder.setTitle("Update Profile Picture")
-        builder.setItems(items) { dialog, item ->
-            when {
-                items[item] == "Take Photo" -> {
-                    imagePickerUtil.requestCaptureImagePermission()
-                    dialog.dismiss()
-                }
-                items[item] == "Choose from Library" -> {
-                    imagePickerUtil.pickImage()
-                    dialog.dismiss()
-                }
-                items[item] == "Cancel" -> {
-                    dialog.dismiss()
-                }
-            }
-        }
-        builder.show()
-    }
 
     private fun showChangePasswordDialog() {
         val dialogFragment = ChangePasswordFragment()
         dialogFragment.show(parentFragmentManager, "ChangePasswordFragment")
     }
 
-    private fun updateUserProfilePic(uri: Uri) {
+    fun updateUserProfilePic(uri: Uri) {
         var error = ""
         if (::currentUser.isInitialized) {
             currentUser.photo = uri.toString()

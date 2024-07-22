@@ -1,6 +1,7 @@
 package il.co.erg.mykumve.ui.reports
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,17 +16,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import il.co.erg.mykumve.R
 import il.co.erg.mykumve.data.db.model.Report
 import il.co.erg.mykumve.databinding.ReportsBinding
-import il.co.erg.mykumve.ui.reports.reports.ReportsAdapter
 import il.co.erg.mykumve.ui.viewmodel.ReportsViewModel
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
+import il.co.erg.mykumve.ui.viewmodel.UserViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class UsersReports : Fragment(), AddReportDialogFragment.OnReportAddedListener {
-
+class UsersReportsFragment : Fragment(), AddReportDialogFragment.OnReportAddedListener {
+    val TAG = UsersReportsFragment::class.java.simpleName
     private var _binding: ReportsBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: ReportsViewModel by activityViewModels()
+    private val reportsViewModel: ReportsViewModel by activityViewModels()
+    private val userViewModel: UserViewModel by activityViewModels()
     private lateinit var reportsAdapter: ReportsAdapter
     private val sharedViewModel: SharedTripViewModel by activityViewModels()
 
@@ -48,20 +50,26 @@ class UsersReports : Fragment(), AddReportDialogFragment.OnReportAddedListener {
 
     private fun setupRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        reportsAdapter = ReportsAdapter(mutableListOf())
+        reportsAdapter = ReportsAdapter(
+            mutableListOf(),
+            userViewModel,
+            viewLifecycleOwner,
+            requireContext(),
+            )
         binding.recyclerView.adapter = reportsAdapter
     }
 
     private fun setupObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.reports.collectLatest { reports ->
-                    reportsAdapter.updateReports(reports)
+                reportsViewModel.fetchReports()
+                reportsViewModel.reports.collectLatest { reports ->
+                    Log.d(TAG, "Received ${reports.size} reports")
+                    reportsAdapter.updateReports(reports.sortedByDescending { it.timestamp })
                 }
             }
         }
     }
-
     private fun setupButtons() {
         binding.addReport.setOnClickListener {
             val dialogFragment = AddReportDialogFragment()
@@ -77,8 +85,8 @@ class UsersReports : Fragment(), AddReportDialogFragment.OnReportAddedListener {
     }
 
     override fun onReportAdded(report: Report) {
-        report.imageBitmap?.let { bitmap ->
-            viewModel.addReport(bitmap, report.description, report.reporter)
+        report.photo?.let { photo ->
+            reportsViewModel.addReport(report)
         }
     }
 
