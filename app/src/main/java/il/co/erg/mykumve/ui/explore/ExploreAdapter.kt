@@ -1,8 +1,7 @@
-package il.co.erg.mykumve.explore
+package il.co.erg.mykumve.ui.explore
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -11,8 +10,6 @@ import il.co.erg.mykumve.R
 import il.co.erg.mykumve.data.db.model.TripInfo
 import il.co.erg.mykumve.databinding.TripInfoCardBinding
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
-import il.co.erg.mykumve.util.TripInfoUtils
-import il.co.erg.mykumve.util.fromDifficultyValue
 
 class ExploreAdapter(
 var tripsInfo: MutableList<TripInfo>,
