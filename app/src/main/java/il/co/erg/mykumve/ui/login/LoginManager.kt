@@ -129,40 +129,6 @@ class LoginManager : Fragment() {
         }
     }
 
-    private fun loginUser(email: String, password: String, callback: (Resource<String>) -> Unit) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            val loginState = MutableStateFlow<Resource<String>>(Resource.loading())
-
-            try {
-                val authResult = auth.signInWithEmailAndPassword(email, password).await()
-                val firebaseUser = authResult.user
-                if (firebaseUser != null) {
-                    userViewModel.fetchUserByEmail(email)
-                    userViewModel.userByEmail
-                        .filterNotNull()
-                        .distinctUntilChanged()
-                        .collectLatest { user ->
-                            val resource = if (user != null) {
-                                UserManager.saveUser(user)
-                                Resource.success(getString(R.string.login_successful))
-                            } else {
-                                Resource.error(getString(R.string.login_failed) + ": user not found")
-                            }
-                            loginState.emit(resource)
-                        }
-                } else {
-                    loginState.emit(Resource.error(getString(R.string.login_failed) + ": authentication failed"))
-                }
-            } catch (e: Exception) {
-                loginState.emit(Resource.error(e.message ?: "Authentication failed"))
-            }
-
-            loginState.collectLatest { resource ->
-                callback(resource)
-            }
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
