@@ -58,7 +58,7 @@ class TripAdapter(
             val tripInfo = tripWithInfo.tripInfo
             Log.d(TAG, "Binding trip ${trip.title}, with total ${trip.invitationIds.size} invitations and ${trip.participantIds?.size} participants")
             binding.tripTitle.text = trip.title
-            binding.areaCard.text = mapAreaToString(context, tripInfo?.subAreaId)
+//            binding.areaCard.text = mapAreaToString(context, tripInfo?.subAreaId)
             binding.dateCard.text = trip.gatherTime?.let { Date(it).toFormattedString() }
             binding.difficultyCard.text = mapDifficultyToString(context, tripInfo?.difficulty)
 

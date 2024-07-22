@@ -1,8 +1,9 @@
-package il.co.erg.mykumve.explore
+package il.co.erg.mykumve.ui.explore
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -10,10 +11,15 @@ import il.co.erg.mykumve.R
 import il.co.erg.mykumve.data.db.model.TripInfo
 import il.co.erg.mykumve.databinding.TripInfoCardBinding
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
+import il.co.erg.mykumve.ui.viewmodel.TripViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 
 class ExploreAdapter(
 var tripsInfo: MutableList<TripInfo>,
     private val sharedViewModel: SharedTripViewModel,
+    private val tripViewModel: TripViewModel,
     var context: Context,
     private val lifecycleOwner: LifecycleOwner
 ) : RecyclerView.Adapter<ExploreAdapter.TripInfoViewHolder>() {
@@ -21,7 +27,8 @@ var tripsInfo: MutableList<TripInfo>,
     private var filteredTripList: MutableList<TripInfo> = tripsInfo.toMutableList()
     inner class TripInfoViewHolder(private val binding: TripInfoCardBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(tripInfo: TripInfo) {
-            binding.tripInfoDifficulty.text=tripInfo.difficulty.toString()
+            binding.tripInfoDescription.text = tripInfo.description
+            binding.tripInfoDifficulty.text=context.getString(tripInfo.difficulty.prettyString())
             binding.tripInfoTitle.text = tripInfo.title
             if(tripInfo.length?.isNaN() == false){
                 binding.tripInfoLength.text= buildString {
@@ -32,7 +39,12 @@ var tripsInfo: MutableList<TripInfo>,
             else{
                 binding.tripInfoLength.text="Length is not specified"
             }
-
+            if(tripInfo.publishedDate == null){
+                binding.tripInfoCreationDate.text= tripInfo.publishedDate
+            }
+            else{
+                binding.tripInfoCreationDate.text="No Publish Date"
+            }
             // Extract image URL and alt text from the map, handling null cases
             val imageUrl = tripInfo.imageInfo?.get("src") ?: ""
             val imageAltText = tripInfo.imageInfo?.get("alt") ?: ""
@@ -43,7 +55,16 @@ var tripsInfo: MutableList<TripInfo>,
                 .error(R.drawable.my_alerts) // Error image
                 .into(binding.tripInfoImage)
             // Set the content description for accessibility, handle empty alt text
+            binding.tripInfoDescription.setText(imageAltText)
             binding.tripInfoImage.contentDescription = if (imageAltText.isNullOrBlank()) "Image" else imageAltText
+
+            lifecycleOwner.lifecycleScope.launch {
+                val subArea = tripViewModel.allSubAreas.collectLatest { it.find { it.nameKey == tripInfo.subAreaId }}
+                binding.tripInfoSubarea.text = subArea.toString()
+                val area = tripViewModel.allAreas.collectLatest { it.find  { it.nameKey == tripInfo.areaId }}
+                binding.tripInfoArea.text = area.toString()
+            }
+
             binding.expandTripInfo.setOnClickListener {
                 sharedViewModel.isNavigatedFromExplore = true
                 sharedViewModel.selectTripInfo(tripInfo)

@@ -31,6 +31,7 @@ import il.co.erg.mykumve.util.ImagePickerUtil
 import il.co.erg.mykumve.util.ShareLevel
 import il.co.erg.mykumve.util.UserManager
 import il.co.erg.mykumve.util.Utility.timestampToString
+import il.co.erg.mykumve.util.loadImage
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -55,13 +56,17 @@ class TripManager : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "On view created")
         // Logic to determine if it's a new trip creation
+
         loadFormData()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             sharedViewModel.isEditingExistingTrip = false
             findNavController().navigate(R.id.action_travelManager_to_mainScreenManager)
         }
-        Log.d(TAG, "Creating mode: ${sharedViewModel.isCreatingTripMode}\nEditing mode: ${sharedViewModel.isEditingExistingTrip}")
+        Log.d(
+            TAG,
+            "Creating mode: ${sharedViewModel.isCreatingTripMode}\nEditing mode: ${sharedViewModel.isEditingExistingTrip}"
+        )
         sharedViewModel.isNavigatedFromTripList = false
     }
 
@@ -69,8 +74,16 @@ class TripManager : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 Log.v(TAG, "Loading trip data into form")
+                lateinit var selectedTripWithInfo: TripWithInfo
                 sharedViewModel.trip.collectLatest { trip ->
                     if (trip != null) {
+                        selectedTripWithInfo = TripWithInfo(trip=trip, tripInfo=null)
+                        trip.image?.let { imageUrl ->
+                            loadImage(imageUrl, binding.tripImage)
+                        } ?: run {
+                            // Handle case where there is no profile image URL
+                            binding.tripImage.setImageResource(R.drawable.placeholder)
+                        }
                         binding.tripImage.setImageURI(trip.image?.toUri())
                         binding.tripImage.setPadding(0)
                         binding.nameTrip.setText(trip.title)
@@ -81,9 +94,14 @@ class TripManager : Fragment() {
                     } else {
                         Log.e(TAG, "No trip data to load.")
                     }
-                sharedViewModel.tripInfo.collectLatest { tripInfo ->
-                    Log.d(TAG, "loadFromData, trip info title: ${tripInfo?.title}, trip info id: ${tripInfo?.id}")
-                }
+                    sharedViewModel.tripInfo.collectLatest { tripInfo ->
+                        Log.d(
+                            TAG,
+                            "loadFromData, trip info title: ${tripInfo?.title}, trip info id: ${tripInfo?.id}"
+                        )
+                        selectedTripWithInfo.tripInfo = tripInfo
+                        sharedViewModel.selectExistingTripWithInfo(selectedTripWithInfo)
+                    }
                 }
             }
         }
@@ -131,7 +149,8 @@ class TripManager : Fragment() {
                 if (success && downloadUrl != null) {
                     // Handle successful upload if needed
                 } else {
-                    Toast.makeText(requireContext(), "Image upload failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Image upload failed", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         )
@@ -242,11 +261,15 @@ class TripManager : Fragment() {
                         var tempTripInfo: TripInfo? = null
                         if (trip != null) {
                             tempTrip = formToTripObject(user, tripFromSharedViewModel = trip)
-                            tempTripInfo = sharedViewModel.tripInfo.value // Assuming tripInfo is already set
+                            tempTripInfo =
+                                sharedViewModel.tripInfo.value // Assuming tripInfo is already set
                         } else {
-                            tempTrip = formToTripObject(user )
+                            tempTrip = formToTripObject(user)
                         }
-                        Log.d(TAG, "Caching trip id: ${tempTrip.id} and tripInfo: ${tempTripInfo?.id}")
+                        Log.d(
+                            TAG,
+                            "Caching trip. id: ${tempTrip.id} and tripInfo: ${tempTripInfo?.id}"
+                        )
                         if (sharedViewModel.isCreatingTripMode) {
                             sharedViewModel.setPartialTrip(tempTrip)
                             tempTripInfo?.let { sharedViewModel.setPartialTripInfo(it) }
@@ -352,7 +375,7 @@ class TripManager : Fragment() {
         tripFromSharedViewModel: Trip? = null,
 
         ): Trip {
-        val id = sharedViewModel.tripInfo.value?.id ?: ""
+        val id = tripFromSharedViewModel?.id ?: ""
         val title = binding.nameTrip.text.toString()
         val description = binding.description.text.toString()
         val gatherTime = startDate ?: sharedViewModel.trip.value?.gatherTime
@@ -361,8 +384,9 @@ class TripManager : Fragment() {
 
         val participantsIds = mutableListOf(user.id)
 
-        val invitationsIds = tripFromSharedViewModel?.invitationIds?.takeIf { it.isNotEmpty() }?.toMutableList()
-            ?: mutableListOf()
+        val invitationsIds =
+            tripFromSharedViewModel?.invitationIds?.takeIf { it.isNotEmpty() }?.toMutableList()
+                ?: mutableListOf()
 
         val photo = imagePickerUtil.downloadUrl.toString().takeIf { it != "null" }
             ?: tripFromSharedViewModel?.image

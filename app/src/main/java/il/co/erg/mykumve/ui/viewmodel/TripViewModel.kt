@@ -41,10 +41,10 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     private val _tripsInfo = MutableStateFlow<List<TripInfo>>(emptyList())
     val trips: StateFlow<List<Trip>> get() = _trips.asStateFlow()
     val tripsInfo: StateFlow<List<TripInfo>> get() = _tripsInfo.asStateFlow()
-    private val _area = MutableStateFlow<Area?>(null)
-    private val _subArea = MutableStateFlow<SubArea?>(null)
-//    val area: StateFlow<Area> get() = _area.asStateFlow()
-//    val subArea: StateFlow<SubArea> get() = _subArea.asStateFlow()
+    private val _allAreas = MutableStateFlow<List<Area>>(emptyList())
+    private val _allSubAreas = MutableStateFlow<List<SubArea>>(emptyList())
+    val allAreas: StateFlow<List<Area>> get() = _allAreas.asStateFlow()
+    val allSubAreas: StateFlow<List<SubArea>> get() = _allSubAreas.asStateFlow()
 
     private val _tripInvitations = MutableStateFlow<List<TripInvitation>>(emptyList())
     val tripInvitations: StateFlow<List<TripInvitation>> get() = _tripInvitations.asStateFlow()
@@ -71,13 +71,15 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
                     val tripsWithInfoList = mutableListOf<TripWithInfo>()
                     tripsByParticipant.forEach { trip ->
                         trip.tripInfoId?.let { tripInfoId ->
-                            tripInfoRepository.getTripInfoById(tripInfoId).collectLatest { tripInfoResource ->
-                                val tripInfo = if (tripInfoResource.status == Status.SUCCESS) tripInfoResource.data else null
-                                val tripWithInfo = TripWithInfo(trip, tripInfo)
-                                if (!tripsWithInfoList.any { it.trip.id == tripWithInfo.trip.id }) { // for duplication
-                                    tripsWithInfoList.add(tripWithInfo)
+                            tripInfoRepository.getTripInfoById(tripInfoId)
+                                .collectLatest { tripInfoResource ->
+                                    val tripInfo =
+                                        if (tripInfoResource.status == Status.SUCCESS) tripInfoResource.data else null
+                                    val tripWithInfo = TripWithInfo(trip, tripInfo)
+                                    if (!tripsWithInfoList.any { it.trip?.id == tripWithInfo.trip?.id }) { // for duplication
+                                        tripsWithInfoList.add(tripWithInfo)
+                                    }
                                 }
-                            }
                         }
                     }
                     _tripsWithInfo.emit(tripsWithInfoList)
@@ -147,7 +149,12 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
                     _operationResult.emit(Resource.success(null))
                 }
             } catch (e: Exception) {
-                _operationResult.emit(Resource.error(e.message ?: "Failed to fetch trips info", null))
+                _operationResult.emit(
+                    Resource.error(
+                        e.message ?: "Failed to fetch trips info",
+                        null
+                    )
+                )
             }
         }
     }
@@ -387,23 +394,22 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-
     private suspend fun handleApprovedInvitation(invitation: TripInvitation): Resource<Void> {
         return safeCall {
             val db = FirebaseFirestore.getInstance()
-                viewModelScope.launch {
-                    tripRepository.getTripById(invitation.tripId).collectLatest { tripResource ->
-                        val trip = tripResource.data
-                        if (trip != null) {
-                            trip.participantIds?.add(invitation.userId)
-                            tripRepository.updateTrip(trip)
-                            tripInfoRepository.updateTripInvitation(invitation)
-                            Resource.success(trip)
-                        } else {
-                            Resource.error(tripResource.message.toString())
-                        }
+            viewModelScope.launch {
+                tripRepository.getTripById(invitation.tripId).collectLatest { tripResource ->
+                    val trip = tripResource.data
+                    if (trip != null) {
+                        trip.participantIds?.add(invitation.userId)
+                        tripRepository.updateTrip(trip)
+                        tripInfoRepository.updateTripInvitation(invitation)
+                        Resource.success(trip)
+                    } else {
+                        Resource.error(tripResource.message.toString())
                     }
                 }
+            }
             Log.d(TAG, "Successfully responded to trip invitation: ${invitation.id}")
             Resource.success(null)
         }
@@ -433,6 +439,31 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             tripRepository.getTripInvitationsForUser(userId).collectLatest { resource ->
                 _tripInvitations.value = resource.data ?: emptyList()
+            }
+        }
+    }
+
+    fun fetchAllAreas() {
+        viewModelScope.launch {
+            tripInfoRepository.getAllAreas().collectLatest { areasResource ->
+                if (areasResource.status == Status.SUCCESS){
+                    Resource.success(areasResource.data)
+                } else {
+                    Resource.error(areasResource.message.toString())
+                }
+            }
+        }
+    }
+
+    fun fetchAllSubAreas() {
+        viewModelScope.launch {
+            tripInfoRepository.getAllSubAreas().collectLatest { subAreasResource ->
+                if (subAreasResource.status == Status.SUCCESS && subAreasResource.data != null){
+                    _allSubAreas.emit(subAreasResource.data)
+                    Resource.success(subAreasResource.data)
+                } else {
+                    Resource.error(subAreasResource.message.toString())
+                }
             }
         }
     }

@@ -11,16 +11,16 @@ data class TripInfo(
     @PropertyName("id") internal var _id: String = "",  // Internal mutable field
     var title: String,
     var points: List<Point>? = null,
-    var areaId: Int? = null,
-    var subAreaId: Int? = null,
+    var areaId: String? = null,
+    var subAreaId: String? = null,
     var description: String? = null,
     var routeDescription: String? = null,
-    var difficulty: DifficultyLevel=DifficultyLevel.UNSET,
-    var length: Float? = null,
+    var difficulty: DifficultyLevel = DifficultyLevel.UNSET,
+    var length: Double? = null,
     var tags: List<String>? = null,
     var isCircular: Boolean? = null,
     var likes: Int? = null,
-    var link:  String? = null,
+    var link: String? = null,
     var publishedDate: String? = null,
     var isImported: Boolean = false,
     val imageInfo: Map<String, String>? = null,
@@ -29,21 +29,42 @@ data class TripInfo(
         get() = _id  // Public read-only property
 
     companion object {
-        fun fromFirestoreDocument(document: DocumentSnapshot): TripInfo? {
-            val name = document.get("title")as? String? ?: ""
-            val date = document.get("date").toString()
-            val description = document.get("description") as? String? ?: ""  // Safe cast
-            val difficultyValue = document.get("difficulty")
+        fun fromFirestoreDocument(document: DocumentSnapshot): TripInfo {
+            val id = document.get("id") as? String? ?: ""
+            val title = document.get("title") as?  String? ?: ""
+            val points = document.get("points") as? List<Point>?
+            val areaId = document.get("areaId") as? String?
+            val subAreaId = document.get("subAreaId") as? String?
+            val description = document.get("description") as?  String? ?: ""
+            val routeDescription = document.get("routeDescription") as?  String? ?: ""
+            val difficultyValue = document.get("difficulty") as? Double
             val difficulty = fromDifficultyValue(difficultyValue)
-            val length=document.get("length").toString()
-
+            val length = document.get("length") as? Double? ?: 0.0 //
+            val tags = document.get("tags") as? List<String>? ?: emptyList()
+            val isCircular = document.get("isCircular") as?  Boolean? ?: false
+            val likes = document.get("likes") as?  Int? ?: 0
+            val link = document.get("link") as?  String? ?: ""
+            val publishedDate = document.get("publishedDate").toString() as?  String? ?: ""
+            val isImported = document.get("isImported") as?  Boolean? ?: false
+            val imageInfo = document.get("imageInfo") as? Map<String, String>? ?: emptyMap<String, String>()
 
             return TripInfo(
-                title = name,
-                publishedDate = date,
+                _id = id,
+                title = title,
+                points = points,
+                areaId = areaId,
+                subAreaId = subAreaId,
                 description = description,
+                routeDescription = routeDescription,
                 difficulty = difficulty,
-                length=length.toFloat(),
+                length = length,
+                tags = tags,
+                isCircular = isCircular,
+                likes = likes,
+                link = link,
+                publishedDate = publishedDate,
+                isImported = isImported,
+                imageInfo = imageInfo,
             )
         }
     }

@@ -102,7 +102,9 @@ class RouteManager : Fragment() {
             } else {
                 tripViewModel.updateTrip(trip)
             }
-            result = true
+            tripViewModel.operationResult.collectLatest {
+                result = it.status == Status.SUCCESS
+            }
         }
         job.join() // Ensure the coroutine completes before returning
         return result
@@ -118,15 +120,15 @@ class RouteManager : Fragment() {
         val selectedDifficulty = binding.DifficultySpinner.selectedItem as String
         val selectedArea = binding.AreaSpinner.selectedItem as String
 
-        val areaId = -1 //TripInfoUtils.mapAreaToModel(requireContext(), selectedArea)
-        val subAreaId = TripInfoUtils.mapAreaToModel(requireContext(), selectedArea)
-            ?: sharedViewModel.tripInfo.value?.areaId ?: -1
+        val areaId = "" //TripInfoUtils.mapAreaToModel(requireContext(), selectedArea)
+        val subAreaId = TripInfoUtils.mapAreaToModel(requireContext(), selectedArea).toString()
+            ?: sharedViewModel.tripInfo.value?.areaId ?: ""
         val difficulty = TripInfoUtils.mapDifficultyToModel(requireContext(), selectedDifficulty)
             .takeIf { it != DifficultyLevel.UNSET }
             ?: sharedViewModel.tripInfo.value?.difficulty
             ?: DifficultyLevel.UNSET
 
-        val length = 0.0f
+        val length = 0.0
         val tags = listOf<String>()
         val isCircular = false
         val likes = 0
@@ -143,7 +145,6 @@ class RouteManager : Fragment() {
             tags = tags,
             isCircular = isCircular,
             likes = likes,
-
         )
         return tripInfo
     }
@@ -160,8 +161,8 @@ class RouteManager : Fragment() {
                     if (tripInfo != null) {
                         binding.RouteTitle.setText(tripInfo.title)
                         binding.RouteDescription.setText(tripInfo.routeDescription)
-                        setArea(tripInfo.subAreaId)
-                        setDifficulty(tripInfo.difficulty)
+//                        setArea(tripInfo.subAreaId)
+//                        setDifficulty(tripInfo.difficulty)
                         Log.d(
                             TAG,
                             "Route data loaded. title: ${tripInfo.title}, id: ${tripInfo.id}"

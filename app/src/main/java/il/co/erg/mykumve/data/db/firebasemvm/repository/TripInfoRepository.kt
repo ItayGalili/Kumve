@@ -22,6 +22,7 @@ class TripInfoRepository {
     private val tripInfoCollection = db.collection("trip_info")
     private val tripInvitationsCollection = db.collection("trip_invitations")
     private val areasCollection = db.collection("areas")
+    private val subAreasCollection = db.collection("sub_areas")
 
     fun getAllAreas(): Flow<Resource<List<Area>>> = flow {
         emit(Resource.loading(null))
@@ -29,6 +30,16 @@ class TripInfoRepository {
             val snapshot = areasCollection.get().await()
             val areas = snapshot.documents.mapNotNull { it.toObject<Area>() }
             emit(Resource.success(areas))
+        } catch (e: Exception) {
+            emit(Resource.error(e.message ?: "Unknown error", null))
+        }
+    }
+    fun getAllSubAreas(): Flow<Resource<List<SubArea>>> = flow {
+        emit(Resource.loading(null))
+        try {
+            val snapshot = subAreasCollection.get().await()
+            val subAreas = snapshot.documents.mapNotNull { it.toObject<SubArea>() }
+            emit(Resource.success(subAreas))
         } catch (e: Exception) {
             emit(Resource.error(e.message ?: "Unknown error", null))
         }

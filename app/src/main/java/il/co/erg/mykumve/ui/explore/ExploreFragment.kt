@@ -15,12 +15,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import il.co.erg.mykumve.R
-import il.co.erg.mykumve.data.db.model.TripInfo
 import il.co.erg.mykumve.data.db.model.User
 import il.co.erg.mykumve.databinding.ExploreBinding
-import il.co.erg.mykumve.explore.ExploreAdapter
 import il.co.erg.mykumve.ui.main.MainActivity
-import il.co.erg.mykumve.ui.menu.TripInvitationAdapter
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
 import il.co.erg.mykumve.ui.viewmodel.TripViewModel
 import il.co.erg.mykumve.util.UserManager
@@ -34,7 +31,7 @@ class ExploreFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var exploreAdapter: ExploreAdapter
     private var currentUser: User? = null
-    private val tripInfoViewModel: TripViewModel by activityViewModels()
+    private val tripViewModel: TripViewModel by activityViewModels()
 
 
     override fun onCreateView(
@@ -65,6 +62,7 @@ class ExploreFragment : Fragment() {
         exploreAdapter = ExploreAdapter(
             mutableListOf(),
             sharedViewModel,
+            tripViewModel,
             requireContext(),
             lifecycleOwner = viewLifecycleOwner,
         )
@@ -75,8 +73,8 @@ class ExploreFragment : Fragment() {
             currentUser?.let { user ->
                 viewLifecycleOwner.lifecycleScope.launch {
                     repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        tripInfoViewModel.fetchAllTripsInfo()
-                        tripInfoViewModel.tripsInfo.collectLatest { tripsInfo ->
+                        tripViewModel.fetchAllTripsInfo()
+                        tripViewModel.tripsInfo.collectLatest { tripsInfo ->
                             Log.d(TAG,"${tripsInfo.size} trips info found")
                             exploreAdapter.updateTripList(tripsInfo)
                             exploreAdapter.notifyDataSetChanged()
