@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/search_view"
         android:layout_margin="8dp"
-        app:queryHint="Search an area in Israel to explore..."
+        app:queryHint="Search..."
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

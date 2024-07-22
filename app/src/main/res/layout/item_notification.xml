@@ -84,7 +84,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Accept"
+            android:text="@string/accept"
             android:textColor="@color/white"
             android:background="@color/Approve" />
 
@@ -97,7 +97,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Decline"
+            android:text="@string/decline"
             android:textColor="@color/white"
             android:background="@color/blueSky" />
 

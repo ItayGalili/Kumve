@@ -7,7 +7,8 @@
     tools:context=".ui.reports.UsersReportsFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFEFD2">
+    android:background="#EFDBB8"
+    >
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -16,15 +17,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:paddingBottom="100dp"/>
-
-
     <Button
         android:id="@+id/add_report"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:text="@string/add_report"
         android:backgroundTint="@color/royalBlue"
-        android:text="Add Report"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.945"
@@ -88,7 +87,7 @@
             android:textStyle="bold"
             android:gravity="center"
             android:background="@color/white"
-            android:text="Explore"/>
+            android:text="@string/explore"/>
 
         <TextView
             android:id="@+id/ms_btn_text"
@@ -97,7 +96,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="My Trips"/>
+            android:text="@string/my_trips"/>
 
         <TextView
             android:id="@+id/reports_btn_text"
@@ -106,8 +105,21 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Live Reports" />
+            android:text="@string/live_reports" />
     </LinearLayout>
+    <TextView
+        android:id="@+id/reports_information_while_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="@color/white"
+        android:text="@string/no_reports_to_show_n_n_n_if_you_see_something_worth_reporting_n_like_a_pretty_bird_or_heavy_traffic_n_please_add_a_report"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@id/linearLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="invisible"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

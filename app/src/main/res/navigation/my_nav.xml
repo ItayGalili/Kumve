@@ -23,9 +23,6 @@
             app:popEnterAnim="@anim/from_left"
             app:popExitAnim="@anim/to_right" />
         <action
-            android:id="@+id/action_mainScreenManager_to_tripReviewManager"
-            app:destination="@id/tripDetails" />
-        <action
             android:id="@+id/action_mainScreenManager_to_equipmentFragment"
             app:destination="@id/equipmentFragment" />
         <action
@@ -41,13 +38,6 @@
             app:destination="@id/partnerListFragment" />
     </fragment>
 
-    <fragment
-        android:id="@+id/tripDetails"
-        android:name="il.co.erg.mykumve.ui.trip.TripDetailFragment"
-        android:label="main_screen"
-        tools:layout="@layout/trip_details">
-
-    </fragment>
 
     <fragment
         android:id="@+id/registerManager"
@@ -216,19 +206,10 @@
     </fragment>
 
     <fragment
-        android:id="@+id/mapFragment"
-        android:name="il.co.erg.mykumve.ui.map.MapFragment"
-        android:label="map"
-        tools:layout="@layout/map" />
-
-    <fragment
         android:id="@+id/routeManager"
         android:name="il.co.erg.mykumve.ui.trip.RouteManager"
         android:label="route"
         tools:layout="@layout/route">
-        <action
-            android:id="@+id/action_routeManager_to_mapFragment"
-            app:destination="@id/mapFragment" />
         <action
             android:id="@+id/action_routeManager_to_mainScreenManager"
             app:destination="@id/mainScreenManager" />

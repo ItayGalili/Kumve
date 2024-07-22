@@ -16,23 +16,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@android:color/black"
-        android:textSize="17sp"
-        android:text="Report Time and Date"/>
+        android:textSize="17sp"/>
     <TextView
         android:id="@+id/report_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@android:color/black"
         android:textSize="26sp"
-        android:textStyle="bold"
-        android:text="Report Content"/>
+        android:textStyle="bold"/>
     <TextView
         android:id="@+id/report_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:textColor="@android:color/black"
-        android:textSize="14sp"
-        android:text="Reporter Name"/>
+        android:textSize="14sp"/>
 
 </LinearLayout>

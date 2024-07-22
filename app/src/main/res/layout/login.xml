@@ -24,7 +24,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"
+        android:hint="@string/email"
         app:hintTextColor="@color/blueSky"
         android:textColorHint="@color/blueSky"
         app:boxStrokeWidth="2dp"
@@ -53,7 +53,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
+        android:hint="@string/password"
         app:hintTextColor="@color/blueSky"
         android:textColorHint="@color/blueSky"
         app:boxStrokeWidth="2dp"
@@ -89,7 +89,7 @@
         android:background="@drawable/gradient_background_grey_to_blue"
         android:gravity="center"
         android:textColor="@color/white"
-        android:text="Login"
+        android:text="@string/login"
         android:textSize="20sp" />
 
     <TextView
@@ -99,7 +99,7 @@
         android:layout_below="@id/Login_Btn"
         android:layout_marginTop="13dp"
         android:gravity="center"
-        android:text="Don't have an account?"
+        android:text="@string/not_in_kumve"
         android:textColor="@color/white"
         android:textSize="17sp"
         android:textStyle="bold" />

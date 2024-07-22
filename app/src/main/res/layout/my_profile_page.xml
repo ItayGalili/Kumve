@@ -59,7 +59,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/change_profile_pic"
         android:textColor="@color/royalBlue"
-        android:text="FirstName LastName"
+
         />
 
     <LinearLayout
@@ -87,7 +87,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:gravity="left"
-            android:text="user email"
             android:textColor="@color/royalBlue"
             android:textSize="19dp" />
 
@@ -115,7 +114,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:gravity="left"
-            android:text="user email"
             android:textColor="@color/royalBlue"
             android:textSize="19dp" />
 
@@ -146,7 +144,7 @@
             android:gravity="left"
             android:textColor="@color/royalBlue"
             android:textSize="19dp"
-            android:text="user password"
+            android:text="@string/user_password"
             android:inputType="textPassword"/>
         <ImageView
             android:id="@+id/change_password"

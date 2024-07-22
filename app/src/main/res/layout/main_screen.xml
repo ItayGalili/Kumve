@@ -130,7 +130,6 @@
             android:text="Live Reports"
             android:textStyle="bold" />
     </LinearLayout>
-
     <TextView
         android:id="@+id/information_while_empty"
         android:layout_width="wrap_content"

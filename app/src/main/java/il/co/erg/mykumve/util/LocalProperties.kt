@@ -1,6 +1,5 @@
 package il.co.erg.mykumve.util
 
-import il.co.erg.mykumve.ui.map.MapFragment
 import java.util.Properties
 import android.content.Context
 

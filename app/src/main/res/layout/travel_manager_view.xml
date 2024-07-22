@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center_horizontal"
-        android:text="PLAN A TRIP"
+        android:text="@string/set_a_trip"
         android:textStyle="bold"
         android:textColor="@color/white"
         android:textSize="32sp"
@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center_horizontal"
-        android:text="Add a picture to specify your trip/group"
+        android:text="@string/add_a_picture_to_specify_your_trip_group"
         android:textStyle="bold"
         android:textColor="@color/TextColor"
         android:background="@color/white"
@@ -71,7 +71,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Name your trip"
+        android:hint="@string/name_your_trip"
         android:textColorHint="@color/TextColor"
         app:boxBackgroundColor="@color/white"
         app:boxStrokeColor="@color/TextColor"
@@ -106,7 +106,7 @@
         app:layout_constraintTop_toBottomOf="@id/trip_group_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:hint="Define your trip here"
+        android:hint="@string/define_your_trip_here"
         app:helperTextEnabled="true"
         android:textColorHint="@color/TextColor"
         app:boxBackgroundColor="@color/white"
@@ -144,7 +144,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/TextColor"
-            android:text="The trip starts at:"
+            android:text="@string/the_trip_starts_at"
             android:textSize="20sp" />
 
         <TextView
@@ -177,7 +177,7 @@
             android:id="@+id/EndView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="And will end by:"
+            android:text="@string/and_will_end_by"
             android:textColor="@color/TextColor"
             android:textSize="20sp" />
         <TextView
@@ -210,7 +210,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="@color/TextColor"
-            android:text="List the items needed for the trip"
+            android:text="@string/list_the_items_needed_for_the_trip"
             android:textSize="20sp"
             android:layout_weight="4"/>
 
@@ -237,7 +237,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="@color/TextColor"
-            android:text="Invite group members"
+            android:text="@string/invite_group_members"
             android:textSize="20sp"
             android:layout_weight="5"/>
         <ImageView
@@ -274,7 +274,7 @@
         android:background="@drawable/gradient_background_grey_to_blue"
         android:drawableTint="@color/white"
         android:gravity="center"
-        android:text="Save"
+        android:text="@string/save"
         android:textColor="@color/white"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -286,83 +286,3 @@
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_weight="1"-->
-<!--            android:orientation="horizontal">-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:orientation="vertical">-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/textView6"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:text="select partner"-->
-<!--                    android:gravity="center"-->
-<!--                    />-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/Partners_btn"-->
-<!--                    android:layout_width="60dp"-->
-<!--                    android:layout_height="60dp"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:backgroundTint="@color/white"-->
-<!--                    android:scaleType="fitCenter"-->
-<!--                    android:src="@drawable/partners"-->
-<!--                    android:layout_gravity="center"/>-->
-<!--            </LinearLayout>-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:orientation="vertical">-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/textView5"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:text="select equipment"-->
-<!--                    android:gravity="center"-->
-<!--                    />-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/equipment_list_btn"-->
-<!--                    android:layout_width="60dp"-->
-<!--                    android:layout_height="60dp"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:backgroundTint="@color/white"-->
-<!--                    android:scaleType="fitCenter"-->
-<!--                    android:src="@drawable/list"-->
-<!--                    android:layout_gravity="center"/>-->
-<!--            </LinearLayout>-->
-<!--        </LinearLayout>-->
-<!--    </LinearLayout>-->
-
-
-<!--</LinearLayout>-->
-
-
-<!--<Button-->
-<!--    android:id="@+id/NextBtn"-->
-<!--    android:layout_width="wrap_content"-->
-<!--    android:layout_height="wrap_content"-->
-<!--    android:layout_gravity="center"-->
-<!--    android:layout_marginTop="10dp"-->
-<!--    android:layout_weight="1"-->
-<!--    android:backgroundTint="#C49649"-->
-<!--    android:gravity="center"-->
-<!--    android:text="Next" />-->
-<!--</LinearLayout>-->
-
-

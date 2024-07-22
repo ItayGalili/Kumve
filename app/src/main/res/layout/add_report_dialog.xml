@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="15dp"
     android:orientation="vertical">
 
     <ImageView
@@ -14,9 +15,10 @@
         android:id="@+id/report_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Report Description"
+        android:hint="@string/report_description"
         android:inputType="textMultiLine"
         android:maxLines="3"
+        android:textSize="20sp"
         android:padding="16dp"
         android:scrollbars="vertical" />
 
@@ -25,6 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/statusBarColor"
-        android:text="Report Now" />
+        android:text="@string/report_now"
+        android:textSize="25sp"/>
 
 </LinearLayout>

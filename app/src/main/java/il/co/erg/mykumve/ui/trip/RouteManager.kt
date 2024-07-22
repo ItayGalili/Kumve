@@ -70,9 +70,6 @@ class RouteManager : Fragment() {
             }
         }
 
-        binding.MapBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_routeManager_to_mapFragment)
-        }
 
         return binding.root
     }

@@ -31,10 +31,10 @@
     <TextView
         android:id="@+id/trip_info_title"
         android:layout_width="0dp"
-        android:text="trip title"
         android:layout_height="wrap_content"
         android:textColor="@color/TextColor"
         android:textSize="16sp"
+        android:layout_marginTop="15dp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/trip_info_image"
         app:layout_constraintTop_toTopOf="@id/trip_info_image"
@@ -43,7 +43,6 @@
     <TextView
         android:id="@+id/trip_info_length"
         android:layout_width="0dp"
-        android:text="trip length"
         android:layout_height="wrap_content"
         android:textColor="@color/royalBlue"
         android:textSize="14sp"
@@ -54,7 +53,6 @@
     <TextView
         android:id="@+id/trip_info_area"
         android:layout_width="0dp"
-        android:text="trip area"
         android:layout_height="wrap_content"
         android:textColor="@color/royalBlue"
         android:textSize="14sp"
@@ -64,7 +62,6 @@
     <TextView
         android:id="@+id/trip_info_subarea"
         android:layout_width="0dp"
-        android:text="trip sub area"
         android:layout_height="wrap_content"
         android:textColor="@color/royalBlue"
         android:textSize="14sp"
@@ -75,7 +72,6 @@
     <TextView
         android:id="@+id/trip_info_difficulty"
         android:layout_width="0dp"
-        android:text="trip difficulty"
         android:layout_height="wrap_content"
         android:textColor="@color/royalBlue"
         android:textSize="14sp"

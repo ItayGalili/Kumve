@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.trip.PartnerListFragment">
+    tools:context=".ui.trip.PartnerListFragment"
+    android:background="@drawable/gradient_profile_page">
 
     <TextView
         android:id="@+id/textView3"
@@ -12,8 +13,9 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="@string/trip_partner_list_title"
-        android:textColor="@color/black"
-        android:textSize="20sp"
+        android:textColor="@color/royalBlue"
+        android:textStyle="bold"
+        android:textSize="30sp"
         app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -34,17 +36,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
-        <Button
-            android:id="@+id/showInvitationBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:backgroundTint="#EFE0BA"
-            android:text="@string/show_invitations"
-            android:textColor="@color/black"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="MissingConstraints" />
+    <Button
+        android:id="@+id/showInvitationBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/white"
+        android:text="@string/show_invitations"
+        android:textColor="@color/royalBlue"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="MissingConstraints" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

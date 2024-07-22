@@ -8,7 +8,6 @@
     app:cardCornerRadius="10dp"
     android:background="@color/white"
     >
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,36 +26,31 @@
             android:orientation="vertical"
             android:layout_marginStart="20sp"
             android:gravity="center">
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="The name of the trip"
-                android:textSize="20sp"
+                android:textSize="25sp"
                 android:textStyle="bold"
                 android:id="@+id/trip_title"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
-                android:text="area in the country"
+                android:textSize="15sp"
                 android:layout_marginTop="6dp"
                 android:id="@+id/area_card"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
-                android:text="level of trip"
+                android:textSize="15sp"
                 android:layout_marginTop="6dp"
                 android:id="@+id/difficulty_card"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
-                android:text="date"
+                android:textSize="15sp"
                 android:layout_marginTop="6dp"
                 android:id="@+id/date_card"/>
 
@@ -64,35 +58,52 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
-
                 <ImageButton
                     android:id="@+id/participantListCardBtn"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
                     android:layout_weight="1"
-                    android:src="@drawable/list"
-                    android:backgroundTint="@color/white"
-                    android:scaleType="fitCenter"/>
-
+                    android:background="@color/white"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/items_list_vector" />
                 <ImageButton
                     android:id="@+id/partners_card"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:src="@drawable/partners"
-                    android:backgroundTint="@color/white"
-                    android:scaleType="fitCenter" />
+                    android:background="@color/white"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/invite_vector" />
+            </LinearLayout>
 
-                <ImageButton
-                android:id="@+id/map_btn_card"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:backgroundTint="@color/white"
-                android:scaleType="fitCenter"
-                android:src="@drawable/map" />
+            <LinearLayout
+                android:id="@+id/linearLayout3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:gravity="bottom"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
 
-
+                <TextView
+                    android:id="@+id/equipement_textview"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/white"
+                    android:gravity="center"
+                    android:text="@string/equipement"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/participant_textview"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/participants"
+                    android:textStyle="bold" />
             </LinearLayout>
 
         </LinearLayout>
