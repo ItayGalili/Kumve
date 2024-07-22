@@ -2,7 +2,6 @@ package il.co.erg.mykumve.explore
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -11,8 +10,6 @@ import il.co.erg.mykumve.R
 import il.co.erg.mykumve.data.db.model.TripInfo
 import il.co.erg.mykumve.databinding.TripInfoCardBinding
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
-import il.co.erg.mykumve.util.TripInfoUtils
-import il.co.erg.mykumve.util.fromDifficultyValue
 
 class ExploreAdapter(
 var tripsInfo: MutableList<TripInfo>,
@@ -24,11 +21,8 @@ var tripsInfo: MutableList<TripInfo>,
     private var filteredTripList: MutableList<TripInfo> = tripsInfo.toMutableList()
     inner class TripInfoViewHolder(private val binding: TripInfoCardBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(tripInfo: TripInfo) {
-            binding.tripInfoDescription.text = tripInfo.description
             binding.tripInfoDifficulty.text=tripInfo.difficulty.toString()
             binding.tripInfoTitle.text = tripInfo.title
-            //binding.tripInfoSubarea.text =
-            //binding.tripInfoArea.text =
             if(tripInfo.length?.isNaN() == false){
                 binding.tripInfoLength.text= buildString {
                     append((tripInfo.length.toString()))
@@ -38,12 +32,7 @@ var tripsInfo: MutableList<TripInfo>,
             else{
                 binding.tripInfoLength.text="Length is not specified"
             }
-            if(tripInfo.publishedDate == null){
-                binding.tripInfoCreationDate.text= tripInfo.publishedDate
-            }
-            else{
-                binding.tripInfoCreationDate.text="No Publish Date"
-            }
+
             // Extract image URL and alt text from the map, handling null cases
             val imageUrl = tripInfo.imageInfo?.get("src") ?: ""
             val imageAltText = tripInfo.imageInfo?.get("alt") ?: ""
@@ -55,12 +44,10 @@ var tripsInfo: MutableList<TripInfo>,
                 .into(binding.tripInfoImage)
             // Set the content description for accessibility, handle empty alt text
             binding.tripInfoImage.contentDescription = if (imageAltText.isNullOrBlank()) "Image" else imageAltText
-            binding.addTripInfoCardToMyTrips.setOnClickListener {
-                sharedViewModel.isNavigatedFromExplore = true
-                it.findNavController().navigate(R.id.action_exploreFragment_to_travelManager)
-            }
             binding.expandTripInfo.setOnClickListener {
-                it.findNavController().navigate(R.id.action_exploreFragment_to_tripReview)
+                sharedViewModel.isNavigatedFromExplore = true
+                sharedViewModel.selectTripInfo(tripInfo)
+                it.findNavController().navigate(R.id.action_exploreFragment_to_expendedTripInfoFragment)
             }
         }
     }
