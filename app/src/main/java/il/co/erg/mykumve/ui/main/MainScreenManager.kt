@@ -155,11 +155,12 @@ class MainScreenManager : Fragment() {
             private fun deleteTrip(viewHolder: RecyclerView.ViewHolder) {
                 val tripWithInfo = tripAdapter.tripsWithInfo[viewHolder.adapterPosition]
                 val trip = tripWithInfo.trip
-                Toast.makeText(requireContext(), "Deleting Trip: ${trip.title}", Toast.LENGTH_SHORT).show()
-                Log.d(TAG, "Swipe action, deleting ${trip.title} on ${viewHolder.adapterPosition} index")
+                Toast.makeText(requireContext(), "Deleting Trip: ${trip?.title}", Toast.LENGTH_SHORT).show()
+                Log.d(TAG, "Swipe action, deleting ${trip?.title} on ${viewHolder.adapterPosition} index")
 
                 viewLifecycleOwner.lifecycleScope.launch {
-                    tripViewModel.deleteTrip(trip)
+                    if (trip!= null)
+                        tripViewModel.deleteTrip(trip)
                     observeDeleteResult(viewHolder)
                 }
             }
@@ -183,8 +184,14 @@ class MainScreenManager : Fragment() {
             }
 
         }).attachToRecyclerView(binding.mainRecyclerView)
-        Log.d(TAG, "Creating mode: ${sharedViewModel.isCreatingTripMode}\nEditing mode: ${sharedViewModel.isEditingExistingTrip}")
-    }
+        Log.d(
+            TAG,
+            "Creating mode: ${sharedViewModel.isCreatingTripMode}\n" +
+                    "Editing mode: ${sharedViewModel.isEditingExistingTrip}\n" +
+                    "Navigated from Explore: ${sharedViewModel.isNavigatedFromExplore}\n" +
+                    "Navigated from Trip List: ${sharedViewModel.isNavigatedFromTripList}\n" +
+                    "is Exactly one Trip checked: ${sharedViewModel.isExactlyOneTripIsChecked}\n"
+        )    }
 
     private fun logTripsWithInfo(tripsWithInfo: List<TripWithInfo>) {
         if (tripsWithInfo.isEmpty()) {
@@ -209,16 +216,16 @@ class MainScreenManager : Fragment() {
 
                 val prettyTrip = """
                 |Trip
-                | id: ${trip.id},
-                |    title: ${trip.title},
-                |    description: ${trip.description},
-                |    gatherTime: ${trip.gatherTime},
-                |    tripInfoId: ${trip.tripInfoId},
-                |    endDate: ${trip.endDate},
-                |    participants: ${trip.participantIds?.size},
-                |    equipment: ${trip.equipment?.size},
-                |    invitations: ${trip.invitationIds.size},
-                |    shareLevel: ${trip.shareLevel}
+                | id: ${trip?.id},
+                |    title: ${trip?.title},
+                |    description: ${trip?.description},
+                |    gatherTime: ${trip?.gatherTime},
+                |    tripInfoId: ${trip?.tripInfoId},
+                |    endDate: ${trip?.endDate},
+                |    participants: ${trip?.participantIds?.size},
+                |    equipment: ${trip?.equipment?.size},
+                |    invitations: ${trip?.invitationIds?.size},
+                |    shareLevel: ${trip?.shareLevel}
                 |)
                 |$detailedTripInfo
             """.trimMargin()
@@ -348,10 +355,10 @@ class MainScreenManager : Fragment() {
     }
 
     private fun onTripLongClicked(tripWithInfo: TripWithInfo) {
-        Toast.makeText(requireContext(), "Long-clicked on: ${tripWithInfo.trip.title}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), "Long-clicked on: ${tripWithInfo.trip?.title}", Toast.LENGTH_SHORT).show()
 
         sharedViewModel.selectExistingTripWithInfo(tripWithInfo)
-        Log.v(TAG, "Navigating to travelManager with trip: ${tripWithInfo.trip.title}, ${tripWithInfo.trip.id}")
+        Log.v(TAG, "Navigating to travelManager with trip: ${tripWithInfo.trip?.title}, ${tripWithInfo.trip?.id}")
 
         findNavController().navigate(R.id.action_mainScreenManager_to_travelManager)
     }

@@ -15,6 +15,7 @@ import il.co.erg.mykumve.R
 import il.co.erg.mykumve.databinding.TripInfoBinding
 import il.co.erg.mykumve.ui.viewmodel.SharedTripViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class ExpendedTripInfoFragment: Fragment() {
@@ -29,7 +30,7 @@ class ExpendedTripInfoFragment: Fragment() {
     ): View {
         _binding = TripInfoBinding.inflate(inflater, container, false)
         binding.addTripInfoCardToMyTrips.setOnClickListener {
-            it.findNavController().navigate(R.id.action_exploreFragment_to_travelManager)
+            it.findNavController().navigate(R.id.action_expendedTripInfoFragment_to_travelManager)
         }
         binding.goBackToExplore.setOnClickListener {
             it.findNavController().navigate(R.id.action_expendedTripInfoFragment_to_exploreFragment)
@@ -42,37 +43,48 @@ class ExpendedTripInfoFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Restore data if available
+        Log.d(
+            TAG,
+            "Creating mode: ${sharedViewModel.isCreatingTripMode}\n" +
+                    "Editing mode: ${sharedViewModel.isEditingExistingTrip}\n" +
+                    "Navigated from Explore: ${sharedViewModel.isNavigatedFromExplore}\n" +
+                    "Navigated from Trip List: ${sharedViewModel.isNavigatedFromTripList}\n" +
+                    "is Exactly one Trip checked: ${sharedViewModel.isExactlyOneTripIsChecked}\n"
+        )
         loadFormData()
         Log.d(
             TAG,
-            "Creating mode: ${sharedViewModel.isCreatingTripMode}\nEditing mode: ${sharedViewModel.isEditingExistingTrip}"
+            "Creating mode: ${sharedViewModel.isCreatingTripMode}\n" +
+                    "Editing mode: ${sharedViewModel.isEditingExistingTrip}\n" +
+                    "Navigated from Explore: ${sharedViewModel.isNavigatedFromExplore}\n" +
+                    "Navigated from Trip List: ${sharedViewModel.isNavigatedFromTripList}\n" +
+                    "is Exactly one Trip checked: ${sharedViewModel.isExactlyOneTripIsChecked}\n"
         )
-        sharedViewModel.isNavigatedFromExplore = false
     }
     private fun loadFormData() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                sharedViewModel.tripInfo.collectLatest { tripInfo ->
-                    if (tripInfo != null) {
-                        binding.tripDifficulty.text = tripInfo.description
-                        binding.tripName.setText(tripInfo.title)
-                        if (tripInfo.length?.isNaN() == false) {
-                            binding.tripLength.text = buildString {
-                                append((tripInfo.length.toString()))
-                                append(" km")
-                            }
-                        } else {
-                            binding.tripLength.text = "Length is not specified"
+                val tripInfo = sharedViewModel.tripInfo.firstOrNull()
+                if (tripInfo != null) {
+                    binding.tripDescription.text = tripInfo.description
+                    binding.tripDifficulty.text = context?.getString(tripInfo.difficulty.prettyString())
+                    binding.tripName.setText(tripInfo.title)
+                    if (tripInfo.length?.isNaN() == false) {
+                        binding.tripLength.text = buildString {
+                            append((tripInfo.length.toString()))
+                            append(" km")
                         }
-                        sharedViewModel.tripInfo.collectLatest { tripInfo ->
-                            Log.d(
-                                TAG,
-                                "loadFromData, trip info title: ${tripInfo?.title}, trip info id: ${tripInfo?.id}"
-                            )
-                        }
-                    } else{
-                            Log.e(TAG, "No route data to load.")
+                    } else {
+                        binding.tripLength.text = "Length is not specified"
                     }
+                    sharedViewModel.tripInfo.collectLatest { tripInfo ->
+                        Log.d(
+                            TAG,
+                            "loadFromData, trip info title: ${tripInfo?.title}, trip info id: ${tripInfo?.id}"
+                        )
+                    }
+                } else{
+                        Log.e(TAG, "No route data to load.")
                 }
             }
         }

@@ -532,6 +532,6 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 }
 
 data class TripWithInfo(
-    var trip: Trip,
-    var tripInfo: TripInfo?
+    var trip: Trip? = null,
+    var tripInfo: TripInfo? = null
 )

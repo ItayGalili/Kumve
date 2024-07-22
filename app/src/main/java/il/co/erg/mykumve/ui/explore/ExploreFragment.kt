@@ -55,6 +55,14 @@ class ExploreFragment : Fragment() {
         }
         initializeComponent()
 
+        Log.d(
+            TAG,
+            "Creating mode: ${sharedViewModel.isCreatingTripMode}\n" +
+                    "Editing mode: ${sharedViewModel.isEditingExistingTrip}\n" +
+                    "Navigated from Explore: ${sharedViewModel.isNavigatedFromExplore}\n" +
+                    "Navigated from Trip List: ${sharedViewModel.isNavigatedFromTripList}\n" +
+                    "is Exactly one Trip checked: ${sharedViewModel.isExactlyOneTripIsChecked}\n"
+        )
         return view
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

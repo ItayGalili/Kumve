@@ -74,10 +74,10 @@ class TripManager : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 Log.v(TAG, "Loading trip data into form")
-                lateinit var selectedTripWithInfo: TripWithInfo
+                var selectedTripWithInfo = TripWithInfo()
                 sharedViewModel.trip.collectLatest { trip ->
                     if (trip != null) {
-                        selectedTripWithInfo = TripWithInfo(trip=trip, tripInfo=null)
+                        selectedTripWithInfo = TripWithInfo(trip = trip, tripInfo = null)
                         trip.image?.let { imageUrl ->
                             loadImage(imageUrl, binding.tripImage)
                         } ?: run {
@@ -109,23 +109,23 @@ class TripManager : Fragment() {
 
     private suspend fun saveTrip(): Boolean {
         val tripInfo = sharedViewModel.tripInfo.firstOrNull()
-        val trip = sharedViewModel.trip.firstOrNull()?.copy(tripInfoId = tripInfo?.id)
-        if (trip == null) {
-            Log.e(TAG, "saveTrip: trip is Null")
-            return false
-        }
-        var result = false
-        val job = viewLifecycleOwner.lifecycleScope.launch {
-            if (!sharedViewModel.isEditingExistingTrip) { // creating new trip
-                tripViewModel.addTrip(trip)
-            } else {
-                tripViewModel.updateTrip(trip)
+        UserManager.getUser().let { currentUser ->
+            if (currentUser != null) {
+                val tripFromSharedView =
+                    sharedViewModel.trip.firstOrNull()
+                val trip = formToTripObject(currentUser, tripFromSharedView).copy(tripInfoId = tripInfo?.id)
+                var result = false
+                val job = viewLifecycleOwner.lifecycleScope.launch {
+                        tripViewModel.addTrip(trip)
+                        result = true
+                }
+                job.join() // Ensure the coroutine completes before returning
+                return result
             }
-            result = true
         }
-        job.join() // Ensure the coroutine completes before returning
-        return result
+        return false
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -162,13 +162,12 @@ class TripManager : Fragment() {
         binding.dateEndBtn.setOnClickListener {
             showDateTimePicker(false)
         }
-        if(sharedViewModel.isCreatingTripMode){
-            binding.tripSaveBtn.isVisible=false
-            binding.NextBtn.isVisible=true
-        }
-        else{
-            binding.tripSaveBtn.isVisible=true
-            binding.NextBtn.isVisible=false
+        if (sharedViewModel.isCreatingTripMode) {
+            binding.tripSaveBtn.isVisible = false
+            binding.NextBtn.isVisible = true
+        } else {
+            binding.tripSaveBtn.isVisible = true
+            binding.NextBtn.isVisible = false
         }
 
         //equipment list:
@@ -203,7 +202,7 @@ class TripManager : Fragment() {
             }
         }
 
-        binding.tripSaveBtn.setOnClickListener{
+        binding.tripSaveBtn.setOnClickListener {
             if (verifyRouteForm()) {
                 viewLifecycleOwner.lifecycleScope.launch {
                     val saveResult = saveTrip()
@@ -280,7 +279,6 @@ class TripManager : Fragment() {
                     }
                 }
             }
-
 
 
         }

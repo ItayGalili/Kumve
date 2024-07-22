@@ -46,14 +46,17 @@ class SharedTripViewModel : ViewModel() {
     val tripInfo: StateFlow<TripInfo?>
         get() {
             return if (isCreatingTripMode) {
+                Log.d(TAG, "tripInfo -> _partialTripInfo")
                 _partialTripInfo.asStateFlow()
             } else if (isNavigatedFromExplore) {
+                Log.d(TAG, "tripInfo -> _selectedExistingTripInfo")
                 _selectedExistingTripInfo.value?.let {
                     MutableStateFlow(
                         it
                     ).asStateFlow()
                 } ?: MutableStateFlow(null).asStateFlow()
             } else _selectedExistingTripWithInfo.value?.tripInfo?.let {
+                Log.d(TAG, "tripInfo -> _selectedExistingTripWithInfo")
                 MutableStateFlow(
                     it
                 ).asStateFlow()
@@ -63,10 +66,10 @@ class SharedTripViewModel : ViewModel() {
 
     fun setPartialTrip(trip: Trip) {
         if (_partialTrip.value != trip) {
-            Log.v(TAG, "Setting partial trip ${trip.title} ${trip.id}")
+            Log.v(TAG, "Setting partial trip ${trip?.title} ${trip?.id}")
             _partialTrip.value = trip
         } else {
-            Log.v(TAG, "_partialTrip and trip is the same ${trip.title} ${trip.id}")
+            Log.v(TAG, "_partialTrip and trip is the same ${trip?.title} ${trip?.id}")
         }
     }
 
@@ -111,13 +114,17 @@ class SharedTripViewModel : ViewModel() {
         if (_selectedExistingTripWithInfo.value != tripWithInfo) {
             Log.d(
                 TAG,
-                "Selecting existing trip with info. title: ${tripWithInfo.trip.title}, id: ${tripWithInfo.trip.id}"
+                "Selecting existing trip with info.\n" +
+                        "Trip title: ${tripWithInfo.trip?.title}, id: ${tripWithInfo.trip?.id}\n" +
+                        "Trip Info title: ${tripWithInfo.tripInfo?.title}, id: ${tripWithInfo.tripInfo?.id}"
             )
             _selectedExistingTripWithInfo.value = tripWithInfo
         } else {
             Log.v(
                 TAG,
-                "Not selecting same existing trip with info. title: ${tripWithInfo.trip.title}, id: ${tripWithInfo.trip.id}"
+                "Selecting existing trip with info.\n" +
+                        "Trip title: ${tripWithInfo.trip?.title}, id: ${tripWithInfo.trip?.id}\n" +
+                        "Trip Info title: ${tripWithInfo.tripInfo?.title}, id: ${tripWithInfo.tripInfo?.id}"
             )
         }
     }
@@ -142,7 +149,7 @@ class SharedTripViewModel : ViewModel() {
     fun updateEquipment(equipment: List<Equipment>?) {
         viewModelScope.launch {
             try {
-                trip.collectLatest { currentTrip ->
+                trip?.collectLatest { currentTrip ->
                     if (currentTrip != null) {
                         val updatedTrip = currentTrip.copy(equipment = equipment?.toMutableList())
                         if (!isCreatingTripMode) {
@@ -173,6 +180,7 @@ class SharedTripViewModel : ViewModel() {
             _partialTrip.value = null
             _partialTripInfo.value = null
             isCreatingTripMode = true
+            isNavigatedFromExplore = false
         }
     }
 }

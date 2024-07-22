@@ -138,6 +138,9 @@
         <action
             android:id="@+id/action_expendedTripInfoFragment_to_exploreFragment"
             app:destination="@id/exploreFragment" />
+        <action
+            android:id="@+id/action_expendedTripInfoFragment_to_travelManager"
+            app:destination="@id/travelManager" />
 
     </fragment>
 

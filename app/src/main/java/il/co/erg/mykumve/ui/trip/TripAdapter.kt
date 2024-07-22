@@ -36,13 +36,13 @@ class TripAdapter(
         if (sharedViewModel.isCreatingTripMode) {
             lifecycleOwner.lifecycleScope.launch {
                 lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    sharedViewModel.trip.collectLatest { trip ->
+                    sharedViewModel.trip?.collectLatest { trip ->
                         trip?.let {
                             val updatedList = tripsWithInfo.map {
-                                if (it.trip.id == trip.id) TripWithInfo(trip, it.tripInfo) else it
+                                if (it.trip?.id == trip?.id) TripWithInfo(trip, it.tripInfo) else it
                             }.toMutableList()
                             tripsWithInfo = updatedList
-                            notifyItemChanged(tripsWithInfo.indexOfFirst { it.trip.id == trip.id })
+                            notifyItemChanged(tripsWithInfo.indexOfFirst { it.trip?.id == trip?.id })
                         }
                     }
                 }
@@ -56,15 +56,15 @@ class TripAdapter(
         fun bind(tripWithInfo: TripWithInfo, sharedViewModel: SharedTripViewModel) {
             val trip = tripWithInfo.trip
             val tripInfo = tripWithInfo.tripInfo
-            Log.d(TAG, "Binding trip ${trip.title}, with total ${trip.invitationIds.size} invitations and ${trip.participantIds?.size} participants")
-            binding.tripTitle.text = trip.title
+            Log.d(TAG, "Binding trip ${trip?.title}, with total ${trip?.invitationIds?.size} invitations and ${trip?.participantIds?.size} participants")
+            binding.tripTitle.text = trip?.title
 //            binding.areaCard.text = mapAreaToString(context, tripInfo?.subAreaId)
-            binding.dateCard.text = trip.gatherTime?.let { Date(it).toFormattedString() }
+            binding.dateCard.text = trip?.gatherTime?.let { Date(it).toFormattedString() }
             binding.difficultyCard.text = mapDifficultyToString(context, tripInfo?.difficulty)
 
             // Image upload:
-            if (trip.image != null) {
-                Glide.with(binding.root).load(trip.image).circleCrop()
+            if (trip?.image != null) {
+                Glide.with(binding.root).load(trip?.image).circleCrop()
                     .into(binding.itemImage)
             } else {
                 Glide.with(binding.root).load(R.drawable.hills).circleCrop()
